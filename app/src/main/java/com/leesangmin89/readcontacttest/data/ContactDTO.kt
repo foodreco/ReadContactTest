@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest
+package com.leesangmin89.readcontacttest.data
 
 import android.graphics.Bitmap
 

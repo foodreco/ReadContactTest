@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.leesangmin89.readcontacttest.data.ContactDTO
 import com.leesangmin89.readcontacttest.databinding.ContactChildBinding
 
 class ContactAdapter(ctx: Context) : ListAdapter<ContactDTO, Holder>(ContactDiffCallback()) {

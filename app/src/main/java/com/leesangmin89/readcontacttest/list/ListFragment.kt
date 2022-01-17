@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest
+package com.leesangmin89.readcontacttest.list
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.leesangmin89.readcontacttest.ContactAdapter
+import com.leesangmin89.readcontacttest.data.ContactDTO
 import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
 
 
