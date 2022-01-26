@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/delete_menu"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:iconTint="@android:color/white"
+        android:title="Delete"
+        app:showAsAction="always" />
+    <item
+        android:icon="@drawable/ic_baseline_sort_24"
+        android:iconTint="@android:color/white"
+        android:title="Sort"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/sort_by_name_asc"
+                android:title="이름 오름차순" />
+<!--            <item-->
+<!--                android:id="@+id/sort_by_name_desc"-->
+<!--                android:title="이름 내림차순" />-->
+            <item
+                android:id="@+id/sory_by_number"
+                android:title="번호순 정렬" />
+        </menu>
+    </item>
+</menu>
