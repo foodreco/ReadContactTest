@@ -7,7 +7,7 @@
     tools:context=".add.AddFragment">
 
     <EditText
-        android:id="@+id/textName_add"
+        android:id="@+id/contact_name_add"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -21,7 +21,7 @@
         app:layout_constraintVertical_bias="0.25" />
 
     <EditText
-        android:id="@+id/textContent_add"
+        android:id="@+id/contact_number_add"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -30,16 +30,16 @@
         android:inputType="phone"
         android:scrollHorizontally="false"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/textName_add"
-        app:layout_constraintStart_toStartOf="@+id/textName_add"
-        app:layout_constraintTop_toBottomOf="@+id/textName_add" />
+        app:layout_constraintEnd_toEndOf="@+id/contact_name_add"
+        app:layout_constraintStart_toStartOf="@+id/contact_name_add"
+        app:layout_constraintTop_toBottomOf="@+id/contact_name_add" />
 
     <Button
         android:id="@+id/btn_Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textContent_add"
+        app:layout_constraintTop_toBottomOf="@+id/contact_number_add"
         app:layout_constraintVertical_bias="0.1"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
