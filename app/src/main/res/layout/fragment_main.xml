@@ -7,10 +7,13 @@
     tools:context=".main.MainFragment">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="209dp"
         android:orientation="vertical"
         android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -19,9 +22,9 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="연락처 현황"
-            android:textSize="24sp"
-            android:gravity="center"/>
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/text_contact_number"
@@ -64,5 +67,37 @@
         android:text="종료"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="연락처 통계"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/MostContactNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="최대 통화 대상 : 000"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/MostContactDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="최대 통화 시간 000"
+            android:textSize="16sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,6 +34,9 @@ class MainFragment : Fragment() {
     // 권한 허용 코드
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
 
+    // 총 통화량 집계 변수(맵)
+    private val contactMap = mutableMapOf<String, Int>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,8 +81,8 @@ class MainFragment : Fragment() {
         // 권한 허용 여부 확인
         if (checkNeedPermission()) {
             // 허용 시
-            Toast.makeText(context, "허용 되어있음", Toast.LENGTH_SHORT).show()
             getPhoneInfo()
+            printKingContact()
         } else {
             requestContactPermission()
         }
@@ -123,6 +126,7 @@ class MainFragment : Fragment() {
             }
             if (check) {
                 getPhoneInfo()
+                printKingContact()
                 Toast.makeText(context, "권한 지금 허용 됨", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "허용 거부되었습니다.", Toast.LENGTH_SHORT).show()
@@ -155,6 +159,11 @@ class MainFragment : Fragment() {
             null
         )
 
+        // 데이터 중첩을 막기 위해, 기존 데이터 삭제
+        mainViewModel.clear()
+        contactMap.clear()
+
+        // 반복 작업 구간
         while (contacts!!.moveToNext()) {
             val id =
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID))
@@ -174,6 +183,16 @@ class MainFragment : Fragment() {
             callCountNum++
             val listChild = ContactSpl(id, name, number, duration)
             list.add(listChild)
+
+            // 번호와 누적 통화량을 기록하는 코드
+            if (number in contactMap) {
+                val preValue = contactMap[number]
+                if (preValue != null) {
+                    contactMap[number] = preValue + duration.toInt()
+                }
+            } else {
+                contactMap[number] = duration.toInt()
+            }
         }
 
         val mostRecentContact = list[0].name
@@ -183,6 +202,15 @@ class MainFragment : Fragment() {
 
         contacts.close()
     }
+
+    @SuppressLint("SetTextI18n")
+    private fun printKingContact() {
+        val mapMaxValue = contactMap.maxOf { it.value }
+        val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
+        binding.MostContactNumber.text = getString(R.string.most_contact_number, mapMaxKey)
+        binding.MostContactDuration.text = getString(R.string.most_contact_duration, mapMaxValue)
+    }
+
 }
 
 data class ContactSpl(
