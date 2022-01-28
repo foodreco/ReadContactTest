@@ -32,10 +32,12 @@ class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDif
 
         holder.name.text = item.name
         holder.number.text = item.number
+        holder.group.text = item.group
         // 이미지 관련
-//        if (item.image != null)
-//            holder.profile.setImageBitmap(item.image)
-//        else
+
+        if (item.image != null)
+            holder.profile.setImageBitmap(item.image)
+        else
             holder.profile.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
@@ -51,7 +53,6 @@ class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDif
                 context.startActivity(intent)
             }
         }
-
 
         //리싸이클러 터치 시, update 이동
         holder.update.setOnClickListener {
@@ -69,6 +70,7 @@ class Holder constructor(private val binding: ContactChildBinding) :
     val profile = binding.ivProfile
     val update = binding.contactChildEachList
     val call = binding.btnCall
+    val group = binding.textGroup
 }
 
 class ContactDiffCallback : DiffUtil.ItemCallback<ContactBase>() {

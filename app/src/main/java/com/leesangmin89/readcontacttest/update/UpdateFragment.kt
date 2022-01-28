@@ -35,6 +35,7 @@ class UpdateFragment : Fragment() {
 
         binding.contactNameUpdate.setText(args.currentItem.name)
         binding.contactNumberUpdate.setText(args.currentItem.number)
+        binding.contactGroupUpdate.setText(args.currentItem.group)
 
         // 변경 버튼 클릭 시, data update
         binding.btnUpdate.setOnClickListener {
@@ -49,14 +50,16 @@ class UpdateFragment : Fragment() {
     private fun updateData() {
         val contactName = binding.contactNameUpdate.text.toString()
         val contactNumber = binding.contactNumberUpdate.text.toString()
+        val contactGroup = binding.contactGroupUpdate.text.toString()
 
         val preContactName = args.currentItem.name
         val preContactNumber = args.currentItem.number
+        val preContactGroup = args.currentItem.group
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("예") { _, _ ->
 
-            val updateList = ContactBase(contactName, contactNumber, args.currentItem.id)
+            val updateList = ContactBase(contactName, contactNumber, contactGroup, args.currentItem.image, args.currentItem.id)
             // 업데이트 data to DB
             listViewModel.update(updateList)
             Toast.makeText(requireContext(), "업데이트 완료", Toast.LENGTH_SHORT).show()
@@ -64,7 +67,7 @@ class UpdateFragment : Fragment() {
         }
         builder.setNegativeButton("아니오") { _, _ -> }
         builder.setTitle("데이터 변경")
-        builder.setMessage("$preContactName -> $contactName \n $preContactNumber -> $contactNumber")
+        builder.setMessage("$preContactName -> $contactName \n $preContactNumber -> $contactNumber \n $preContactGroup -> $contactGroup")
         builder.create().show()
 
 

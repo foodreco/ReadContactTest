@@ -70,6 +70,11 @@ class MainFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+        binding.btnGroup.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToGroupFragment()
+            findNavController().navigate(action)
+        }
+
         binding.btnFinish.setOnClickListener {
             activity?.finishAndRemoveTask()
         }

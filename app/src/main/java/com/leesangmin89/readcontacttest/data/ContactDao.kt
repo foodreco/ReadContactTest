@@ -19,6 +19,9 @@ interface ContactDao {
     @Query("DELETE FROM contact_table")
     suspend fun clear()
 
+    @Query("SELECT `group` FROM contact_table WHERE `group`is not '' ")
+    suspend fun getGroupName() : List<String>
+
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     fun getAllDataByNameASC(): LiveData<List<ContactBase>>
 
@@ -27,5 +30,10 @@ interface ContactDao {
 
     @Query("SELECT * FROM contact_table ORDER BY number ASC")
     fun getAllDataByNumberASC(): LiveData<List<ContactBase>>
+
+    @Query("SELECT * FROM contact_table WHERE `group` =:key")
+    suspend fun getGroupList(key:String) : List<ContactBase>
+
+
 
 }

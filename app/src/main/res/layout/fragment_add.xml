@@ -34,15 +34,30 @@
         app:layout_constraintStart_toStartOf="@+id/contact_name_add"
         app:layout_constraintTop_toBottomOf="@+id/contact_name_add" />
 
+    <EditText
+        android:id="@+id/contact_group_add"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="bottom"
+        android:hint="그룹명"
+        android:inputType="textPersonName"
+        android:scrollHorizontally="false"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/contact_name_add"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/contact_name_add"
+        app:layout_constraintTop_toBottomOf="@+id/contact_number_add" />
+
     <Button
         android:id="@+id/btn_Add"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="추가"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contact_number_add"
-        app:layout_constraintVertical_bias="0.1"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:text="추가" />
+        app:layout_constraintTop_toBottomOf="@+id/contact_group_add"
+        app:layout_constraintVertical_bias="0.1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

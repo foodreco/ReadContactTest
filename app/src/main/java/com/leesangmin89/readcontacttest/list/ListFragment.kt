@@ -4,8 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -185,14 +188,22 @@ class ListFragment : Fragment() {
         )
 
         while (contacts!!.moveToNext()) {
+            val photo : Bitmap?
             val name =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
             val number =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
             val photo_uri =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
-            val contactList = ContactBase(name, number, 0)
-
+            val contactList = ContactBase(name, number, "", null,0)
+            if (photo_uri != null) {
+                contactList.image = MediaStore.Images.Media.getBitmap(
+                    requireActivity().contentResolver,
+                    Uri.parse(photo_uri)
+                )
+            } else {
+                contactList.image = null
+            }
             listViewModel.insert(contactList)
         }
 

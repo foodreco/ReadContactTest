@@ -11,7 +11,8 @@ import kotlinx.parcelize.Parcelize
 data class ContactBase(
     var name : String,
     var number : String,
-//    var image : Bitmap?,
+    var group : String? = "",
+    var image : Bitmap? = null,
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
 ) : Parcelable

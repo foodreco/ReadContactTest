@@ -44,8 +44,9 @@ class AddFragment : Fragment() {
     private fun addData() {
         val contactName = binding.contactNameAdd.text.toString()
         val contactNumber = binding.contactNumberAdd.text.toString()
+        val contactGroup = binding.contactGroupAdd.text.toString()
 
-        val addList = ContactBase(contactName, contactNumber, 0)
+        val addList = ContactBase(contactName, contactNumber, contactGroup, null, 0)
         listViewModel.insert(addList)
         Toast.makeText(requireContext(), "$contactName 추가완료", Toast.LENGTH_SHORT).show()
         findNavController().navigate(AddFragmentDirections.actionAddFragmentToListFragment())
