@@ -20,7 +20,8 @@
             app:popUpTo="@id/listFragment" />
         <action
             android:id="@+id/action_listFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -30,7 +31,7 @@
         <action
             android:id="@+id/action_addFragment_to_listFragment"
             app:destination="@id/listFragment"
-            app:popUpTo="@id/listFragment" />
+            app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/updateFragment"
@@ -40,7 +41,7 @@
         <action
             android:id="@+id/action_updateFragment_to_listFragment"
             app:destination="@id/listFragment"
-            app:popUpTo="@id/listFragment" />
+            app:popUpTo="@id/mainFragment" />
         <argument
             android:name="currentItem"
             app:argType="com.leesangmin89.readcontacttest.data.ContactBase" />
@@ -52,7 +53,8 @@
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/listFragment"
+            app:popUpTo="@id/mainFragment" />
         <action
             android:id="@+id/action_mainFragment_to_groupFragment"
             app:destination="@id/groupFragment" />
@@ -64,10 +66,12 @@
         tools:layout="@layout/fragment_group" >
         <action
             android:id="@+id/action_groupFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment" />
         <action
             android:id="@+id/action_groupFragment_to_groupListFragment"
-            app:destination="@id/groupListFragment" />
+            app:destination="@id/groupListFragment"
+            app:popUpTo="@id/groupFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupListFragment"
@@ -76,7 +80,8 @@
         tools:layout="@layout/fragment_group_list" >
         <action
             android:id="@+id/action_groupListFragment_to_groupFragment"
-            app:destination="@id/groupFragment" />
+            app:destination="@id/groupFragment"
+            app:popUpTo="@id/mainFragment" />
         <argument
             android:name="groupName"
             app:argType="string" />

@@ -24,28 +24,32 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="연락처 현황"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:layout_marginTop="16dp"/>
 
         <TextView
             android:id="@+id/text_contact_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="등록자 수 : 00명"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/text_contact_activated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="활성화 수 : 0명"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/text_recent_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="최근통화 : xxx"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
     <Button
@@ -83,21 +87,24 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="연락처 통계"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:layout_marginTop="16dp"/>
 
         <TextView
             android:id="@+id/MostContactNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="최대 통화 대상 : 000"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/MostContactDuration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="최대 통화 시간 000"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
     <Button
@@ -110,5 +117,42 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/btn_to_list"
         app:layout_constraintEnd_toStartOf="@+id/btn_finish"
         app:layout_constraintStart_toEndOf="@+id/btn_to_list" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="통화 활성화 상태"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="'가족' 과의 연락이 부족합니다."
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="'외할머니' 님께 연락해보세요."
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
