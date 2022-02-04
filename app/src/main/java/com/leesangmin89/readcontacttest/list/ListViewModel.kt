@@ -5,15 +5,15 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.ContactBase
 import com.leesangmin89.readcontacttest.data.ContactDao
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListViewModel(
+@HiltViewModel
+class ListViewModel @Inject constructor(
     private val database: ContactDao,
     application: Application
 ) : AndroidViewModel(application) {
-
-
-    private var _listData = MutableLiveData<List<ContactBase>>()
 
     private var _initializeContactEvent = MutableLiveData<Boolean>()
     val initializeContactEvent: LiveData<Boolean> = _initializeContactEvent
@@ -78,6 +78,10 @@ class ListViewModel(
 
     fun contactActivate() {
         _initializeContactEvent.value = true
+    }
+
+    fun searchDatabase(searchQuery: String): LiveData<List<ContactBase>> {
+        return database.searchDatabase(searchQuery).asLiveData()
     }
 
 

@@ -6,17 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.data.ContactBase
-import com.leesangmin89.readcontacttest.data.ContactDatabase
 import com.leesangmin89.readcontacttest.databinding.FragmentAddBinding
 import com.leesangmin89.readcontacttest.list.ListViewModel
-import com.leesangmin89.readcontacttest.list.ListViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddFragment : Fragment() {
 
-    private lateinit var listViewModel: ListViewModel
+    private val listViewModel: ListViewModel by viewModels()
     private val binding by lazy { FragmentAddBinding.inflate(layoutInflater) }
 
 
@@ -26,15 +26,19 @@ class AddFragment : Fragment() {
     ): View? {
 //        binding = FragmentAddBinding.inflate(layoutInflater, container, false)
 
-        // 뷰모델팩토리 세팅
-        val application = requireNotNull(this.activity).application
-        val dataSource = ContactDatabase.getInstance(application).contactDao
-        val viewModelFactory = ListViewModelFactory(dataSource, application)
-        // 뷰모델 초기화
-        listViewModel = ViewModelProvider(this, viewModelFactory).get(ListViewModel::class.java)
+//        // 뷰모델팩토리 세팅
+//        val application = requireNotNull(this.activity).application
+//        val dataSource = ContactDatabase.getInstance(application).contactDao
+//        val viewModelFactory = ListViewModelFactory(dataSource, application)
+//        // 뷰모델 초기화
+//        listViewModel = ViewModelProvider(this, viewModelFactory).get(ListViewModel::class.java)
 
         binding.btnAdd.setOnClickListener {
             addData()
+        }
+
+        binding.addFragmentBackground.setOnClickListener {
+//            hideKeyboard()
         }
 
 

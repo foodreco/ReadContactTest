@@ -13,21 +13,30 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.leesangmin89.readcontacttest.data.ContactBase
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.ContactDatabase
 import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
+import com.leesangmin89.readcontacttest.update.UpdateFragmentArgs
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
-class ListFragment : Fragment() {
-
+    private val args by navArgs<ListFragmentArgs>()
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
-    private lateinit var listViewModel: ListViewModel
+    private val listViewModel: ListViewModel by viewModels()
+    private val adapter : ContactAdapter by lazy { ContactAdapter(requireContext()) }
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
@@ -42,15 +51,21 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        // 뷰모델팩토리 세팅
-        val application = requireNotNull(this.activity).application
-        val dataSource = ContactDatabase.getInstance(application).contactDao
-        val viewModelFactory = ListViewModelFactory(dataSource, application)
-        // 뷰모델 초기화
-        listViewModel = ViewModelProvider(this, viewModelFactory).get(ListViewModel::class.java)
-
-        val adapter = ContactAdapter(requireContext())
         binding.recyclerViewList.adapter = adapter
+
+        //리싸이클러뷰 스크롤 관련 코드 : 작동 안됨??
+//        val smoothScroller : RecyclerView.SmoothScroller by lazy {
+//            object : LinearSmoothScroller(context) {
+//                override fun getVerticalSnapPreference() = SNAP_TO_START
+//            }
+//        }
+//        smoothScroller.targetPosition = args.currentItemId
+//        binding.recyclerViewList.layoutManager?.startSmoothScroll(smoothScroller)
+
+
+        // 리싸이클러뷰 이전 위치 유지하는 코드
+        // 작동안함??
+//        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.button.setOnClickListener {
             checkAndStart()
@@ -64,19 +79,19 @@ class ListFragment : Fragment() {
                     0 -> {
                         listViewModel.listData.observe(viewLifecycleOwner, {
                             adapter.submitList(it)
-                            binding.recyclerViewList.scrollToPosition(0)
+//                            binding.recyclerViewList.scrollToPosition(0)
                         })
                     }
                     1 -> {
                         listViewModel.listDataNameDESC.observe(viewLifecycleOwner, {
                             adapter.submitList(it)
-                            binding.recyclerViewList.scrollToPosition(0)
+//                            binding.recyclerViewList.scrollToPosition(0)
                         })
                     }
                     2 -> {
                         listViewModel.listDataNumberASC.observe(viewLifecycleOwner, {
                             adapter.submitList(it)
-                            binding.recyclerViewList.scrollToPosition(0)
+//                            binding.recyclerViewList.scrollToPosition(0)
 
                         })
                     }
@@ -99,7 +114,7 @@ class ListFragment : Fragment() {
             )
         }
 
-        // 리싸이클러뷰 스크롤을 최상단으로 하는 버튼튼
+        // 리싸이클러뷰 스크롤을 최상단으로 하는 버튼
         binding.btnScrollUp.setOnClickListener {
             binding.recyclerViewList.scrollToPosition(0)
         }
@@ -111,6 +126,32 @@ class ListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
+
+        val search = menu?.findItem(R.id.menu_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        if (query != null) {
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    private fun searchDatabase(query: String) {
+        val searchQuery = "%$query%"
+
+        listViewModel.searchDatabase(searchQuery).observe(this, { list ->
+            list.let {
+                adapter.submitList(it)
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -266,5 +307,7 @@ class ListFragment : Fragment() {
             }
         }
     }
+
+
 
 }

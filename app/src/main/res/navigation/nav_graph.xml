@@ -22,6 +22,10 @@
             android:id="@+id/action_listFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment" />
+        <argument
+            android:name="currentItemId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"

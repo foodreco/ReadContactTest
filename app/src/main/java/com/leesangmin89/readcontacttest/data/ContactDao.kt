@@ -34,6 +34,9 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table WHERE `group` =:key")
     suspend fun getGroupList(key:String) : List<ContactBase>
 
+    @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
+    fun searchDatabase(searchQuery: String) : kotlinx.coroutines.flow.Flow<List<ContactBase>>
+
 
 
 }

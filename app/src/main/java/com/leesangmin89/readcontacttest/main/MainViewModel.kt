@@ -6,9 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.leesangmin89.readcontacttest.data.ContactInfo
 import com.leesangmin89.readcontacttest.data.ContactInfoDao
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val database: ContactInfoDao,
     application: Application
 ) : AndroidViewModel(application)  {

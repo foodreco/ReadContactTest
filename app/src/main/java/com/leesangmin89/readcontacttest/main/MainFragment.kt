@@ -12,21 +12,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.ContactDatabase
 import com.leesangmin89.readcontacttest.data.ContactInfo
-import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
-import com.leesangmin89.readcontacttest.list.ListViewModel
-import com.leesangmin89.readcontacttest.list.ListViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels()
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CALL_LOG)
@@ -41,13 +39,6 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // 뷰모델팩토리 세팅
-        val application = requireNotNull(this.activity).application
-        val dataSource = ContactDatabase.getInstance(application).contactInfoDao
-        val viewModelFactory = MainViewModelFactory(dataSource, application)
-        // 뷰모델 초기화
-        mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         checkAndStart()
 

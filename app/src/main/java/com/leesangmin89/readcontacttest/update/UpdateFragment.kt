@@ -5,33 +5,26 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.leesangmin89.readcontacttest.data.ContactBase
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.ContactDatabase
 import com.leesangmin89.readcontacttest.databinding.FragmentUpdateBinding
 import com.leesangmin89.readcontacttest.list.ListViewModel
-import com.leesangmin89.readcontacttest.list.ListViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UpdateFragment : Fragment() {
 
     private val args by navArgs<UpdateFragmentArgs>()
-    private lateinit var listViewModel: ListViewModel
+    private val listViewModel: ListViewModel by viewModels()
     private val binding by lazy { FragmentUpdateBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // 뷰모델팩토리 세팅
-        val application = requireNotNull(this.activity).application
-        val dataSource = ContactDatabase.getInstance(application).contactDao
-        val viewModelFactory = ListViewModelFactory(dataSource, application)
-        // 뷰모델 초기화
-        listViewModel = ViewModelProvider(this, viewModelFactory).get(ListViewModel::class.java)
 
         binding.contactNameUpdate.setText(args.currentItem.name)
         binding.contactNumberUpdate.setText(args.currentItem.number)
@@ -63,7 +56,7 @@ class UpdateFragment : Fragment() {
             // 업데이트 data to DB
             listViewModel.update(updateList)
             Toast.makeText(requireContext(), "업데이트 완료", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(UpdateFragmentDirections.actionUpdateFragmentToListFragment())
+            findNavController().navigate(UpdateFragmentDirections.actionUpdateFragmentToListFragment(args.currentItem.id))
         }
         builder.setNegativeButton("아니오") { _, _ -> }
         builder.setTitle("데이터 변경")
