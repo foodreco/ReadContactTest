@@ -3,8 +3,8 @@ package com.leesangmin89.readcontacttest.list
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
-import com.leesangmin89.readcontacttest.data.ContactBase
-import com.leesangmin89.readcontacttest.data.ContactDao
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
+import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

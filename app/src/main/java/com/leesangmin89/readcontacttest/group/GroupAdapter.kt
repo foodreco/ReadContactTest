@@ -29,7 +29,7 @@ class GroupAdapter(ctx: Context) : ListAdapter<GroupData, GroupHolder>(GroupDiff
         holder.groupNumber.text = item.groupNumber
         holder.groupRate.text = item.groupRate
 
-        //리싸이클러 터치 시, 그룹리스트로 이동
+        //리싸이클러 터치 시, GroupListFragment 로 이동
         holder.groupEachList.setOnClickListener {
             // 이동 시, 그룹명을 args 로 넘겨준다.
             val action = GroupFragmentDirections.actionGroupFragmentToGroupListFragment(item.groupName)

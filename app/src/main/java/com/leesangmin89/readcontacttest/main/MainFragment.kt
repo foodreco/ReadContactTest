@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CallLog
+import android.provider.ContactsContract
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.ContactInfo
+import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +36,8 @@ class MainFragment : Fragment() {
     // 총 통화량 집계 변수(맵)
     private val contactMap = mutableMapOf<String, Int>()
 
+    private var contactNumbers: Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,17 +45,29 @@ class MainFragment : Fragment() {
 
         checkAndStart()
 
+        // 활성 통화 횟수 및 마지막 통화 표현 코드
         mainViewModel.infoData.observe(viewLifecycleOwner, Observer {
             binding.apply {
                 if (it == null) {
-                    textContactNumber.text = getString(R.string.contact_number, 0)
+//                    textContactNumber.text = getString(R.string.contact_number, 0)
                     textContactActivated.text = getString(R.string.contact_activated, 0)
                     textRecentContact.text = getString(R.string.recent_contact, "해당없음")
                 } else {
-                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
-                    textContactActivated.text = getString(R.string.contact_activated,it.activatedContact)
-                    textRecentContact.text = getString(R.string.recent_contact,it.mostRecentContact)
+//                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
+                    textContactActivated.text =
+                        getString(R.string.contact_activated, it.activatedContact)
+                    textRecentContact.text =
+                        getString(R.string.recent_contact, it.mostRecentContact)
                 }
+            }
+        })
+
+        // 연락처 개수 표현 코드
+        mainViewModel.contactNumbers.observe(viewLifecycleOwner, {
+            if (it == null) {
+                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, 0)
+            } else {
+                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, it)
             }
         })
 
@@ -79,6 +94,7 @@ class MainFragment : Fragment() {
             // 허용 시
             getPhoneInfo()
             printKingContact()
+            countContactNumbers()
         } else {
             requestContactPermission()
         }
@@ -123,6 +139,7 @@ class MainFragment : Fragment() {
             if (check) {
                 getPhoneInfo()
                 printKingContact()
+                countContactNumbers()
                 Toast.makeText(context, "권한 지금 허용 됨", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "허용 거부되었습니다.", Toast.LENGTH_SHORT).show()
@@ -199,6 +216,27 @@ class MainFragment : Fragment() {
         contacts.close()
     }
 
+    // 전체 연락처 갯수를 알려주는 함수
+    @SuppressLint("Range")
+    fun countContactNumbers() {
+        contactNumbers = 0
+
+        val contacts = requireActivity().contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
+
+        while (contacts!!.moveToNext()) {
+            contactNumbers++
+        }
+        mainViewModel._contactNumbers.value = contactNumbers
+        contacts.close()
+    }
+
+    // 최대 통화 번호와 시간을 알려주는 코드
     @SuppressLint("SetTextI18n")
     private fun printKingContact() {
         val mapMaxValue = contactMap.maxOf { it.value }

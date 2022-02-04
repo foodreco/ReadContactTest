@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.leesangmin89.readcontacttest.data.ContactBase
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentAddBinding
 import com.leesangmin89.readcontacttest.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint

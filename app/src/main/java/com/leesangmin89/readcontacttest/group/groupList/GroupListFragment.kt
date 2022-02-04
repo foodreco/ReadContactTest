@@ -27,9 +27,18 @@ class GroupListFragment : Fragment() {
         val adapter = GroupListAdapter(requireContext())
         binding.groupListRecyclerView.adapter = adapter
 
-        groupViewModel.getGroupList(args.groupName)
+        // 넘어온 args를 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
+        groupViewModel.getGroupListFromGroupList(args.groupName)
 
-        groupViewModel.groupList.observe(viewLifecycleOwner, {
+        // 기존 불러오려던 형태 작동코드
+//        groupViewModel.getGroupListFromContactBase(args.groupName)
+        // 기존 불러오려던 형태의 recyclerView
+//        groupViewModel.groupList.observe(viewLifecycleOwner, {
+//            adapter.submitList(it)
+//        })
+
+        // 신규 형태의 recyclerView
+        groupViewModel.newGroupList.observe(viewLifecycleOwner,{
             adapter.submitList(it)
         })
 

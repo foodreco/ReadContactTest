@@ -10,5 +10,6 @@
     <string name="most_contact_duration">최대 통화 시간 : %1$d 초</string>
     <string name="group_list_numbers">등록인원 수 : %1$d명</string>
     <string name="group_list_rate">등록비율 : %1$d%      (%1$d/2000)</string>
+    <string name="contact_phone_numbers"> 등록 연락처 수 : %1$d 개</string>
 
 </resources>

@@ -31,4 +31,8 @@ object DataBaseModule {
     @Provides
     fun provideInfoDao(database: ContactDatabase) = database.contactInfoDao
 
+    @Singleton
+    @Provides
+    fun provideGroupDao(database: ContactDatabase) = database.groupListDao
+
 }

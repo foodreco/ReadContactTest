@@ -1,24 +1,33 @@
 package com.leesangmin89.readcontacttest.update
 
 import android.app.AlertDialog
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.leesangmin89.readcontacttest.data.ContactBase
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.FragmentUpdateBinding
+import com.leesangmin89.readcontacttest.group.GroupViewModel
 import com.leesangmin89.readcontacttest.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 
 @AndroidEntryPoint
 class UpdateFragment : Fragment() {
 
     private val args by navArgs<UpdateFragmentArgs>()
     private val listViewModel: ListViewModel by viewModels()
+    private val groupViewModel : GroupViewModel by viewModels()
     private val binding by lazy { FragmentUpdateBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -53,9 +62,23 @@ class UpdateFragment : Fragment() {
         builder.setPositiveButton("예") { _, _ ->
 
             val updateList = ContactBase(contactName, contactNumber, contactGroup, args.currentItem.image, args.currentItem.id)
+            if (args.groupNumber == "") {
+                val insertList = GroupList(contactName, contactNumber, contactGroup, args.currentItem.image, "0","0",0)
+                groupViewModel.insert(insertList)
+            } else {
+                groupViewModel.find(args.groupNumber)
+                val newList = groupViewModel.groupListForUpdate
+                val insertList = GroupList(contactName, contactNumber, contactGroup, newList.image, newList.recentContact,newList.recentContactCallTime,newList.id)
+                groupViewModel.update(insertList)
+            }
+
             // 업데이트 data to DB
             listViewModel.update(updateList)
             Toast.makeText(requireContext(), "업데이트 완료", Toast.LENGTH_SHORT).show()
+
+            // GroupList DB 인서트
+
+            // recyclerView 정렬을 위해서 인자를 넘겨주는 것임
             findNavController().navigate(UpdateFragmentDirections.actionUpdateFragmentToListFragment(args.currentItem.id))
         }
         builder.setNegativeButton("아니오") { _, _ -> }

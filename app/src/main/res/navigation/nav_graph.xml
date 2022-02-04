@@ -48,7 +48,10 @@
             app:popUpTo="@id/mainFragment" />
         <argument
             android:name="currentItem"
-            app:argType="com.leesangmin89.readcontacttest.data.ContactBase" />
+            app:argType="com.leesangmin89.readcontacttest.data.entity.ContactBase" />
+        <argument
+            android:name="groupNumber"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"

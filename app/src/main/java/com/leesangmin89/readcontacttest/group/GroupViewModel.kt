@@ -1,12 +1,16 @@
 package com.leesangmin89.readcontacttest.group
 
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.leesangmin89.readcontacttest.data.ContactBase
-import com.leesangmin89.readcontacttest.data.ContactDao
+import androidx.room.PrimaryKey
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
+import com.leesangmin89.readcontacttest.data.dao.ContactDao
+import com.leesangmin89.readcontacttest.data.dao.GroupListDao
+import com.leesangmin89.readcontacttest.data.entity.GroupList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupViewModel @Inject constructor(
     private val database: ContactDao,
+    private val datagroup: GroupListDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -24,7 +29,12 @@ class GroupViewModel @Inject constructor(
     val groupList: LiveData<List<ContactBase>> = _groupList
 
     private val _groupListEmptyEvent = MutableLiveData<Boolean>()
-    val groupListEmptyEvent : LiveData<Boolean> = _groupListEmptyEvent
+    val groupListEmptyEvent: LiveData<Boolean> = _groupListEmptyEvent
+
+    private val _newGroupList = MutableLiveData<List<GroupList>>()
+    val newGroupList: LiveData<List<GroupList>> = _newGroupList
+
+    var groupListForUpdate = GroupList("","","",null,"","",0)
 
     init {
         getGroupName()
@@ -69,14 +79,46 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    // 그룹명을 매개변수로 하여, 해당 그룹 리스트를 가져오는 함수
-    fun getGroupList(key: String) {
+    // 그룹명을 매개변수로 하여, ContactBase에서 해당 그룹 리스트를 가져오는 함수
+    fun getGroupListFromContactBase(key: String) {
         viewModelScope.launch {
             _groupList.value = database.getGroupList(key)
         }
     }
 
+    // 그룹명을 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
+    fun getGroupListFromGroupList(key: String) {
+        viewModelScope.launch {
+            _newGroupList.value = datagroup.getGroupList(key)
+        }
+    }
+
     fun groupListEmptyChecked() {
         _groupListEmptyEvent.value = false
+    }
+
+    fun insert(groupList: GroupList) {
+        viewModelScope.launch {
+            datagroup.insert(groupList)
+        }
+    }
+
+    fun update(groupList: GroupList) {
+        viewModelScope.launch {
+            datagroup.update(groupList)
+        }
+    }
+
+    fun delete(groupList: GroupList) {
+        viewModelScope.launch {
+            datagroup.delete(groupList)
+        }
+    }
+
+    // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
+    fun find(number: String) {
+        viewModelScope.launch {
+            groupListForUpdate = datagroup.getGroupByNumber(number)
+        }
     }
 }

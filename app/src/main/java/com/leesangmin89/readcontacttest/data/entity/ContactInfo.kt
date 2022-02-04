@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest.data
+package com.leesangmin89.readcontacttest.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,3 +10,4 @@ data class ContactInfo(
     val mostRecentContact : String = "",
     @PrimaryKey(autoGenerate = true) val id : Int = 0
 )
+

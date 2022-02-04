@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest.data
+package com.leesangmin89.readcontacttest.data.entity
 
 import android.graphics.Bitmap
 import android.os.Parcelable
@@ -16,3 +16,5 @@ data class ContactBase(
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0
 ) : Parcelable
+
+

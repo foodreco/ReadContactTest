@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.ContactBase
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.ContactChildBinding
 
 class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDiffCallback()) {
@@ -56,8 +56,13 @@ class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDif
 
         //리싸이클러 터치 시, update 이동
         holder.update.setOnClickListener {
-            val action = ListFragmentDirections.actionListFragmentToUpdateFragment(item)
-            holder.update.findNavController().navigate(action)
+            if (item.group == "") {
+                val action = ListFragmentDirections.actionListFragmentToUpdateFragment(item,"")
+                holder.update.findNavController().navigate(action)
+            } else {
+                val action = ListFragmentDirections.actionListFragmentToUpdateFragment(item,item.number)
+                holder.update.findNavController().navigate(action)
+            }
         }
     }
 }

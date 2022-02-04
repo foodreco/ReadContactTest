@@ -1,8 +1,8 @@
-package com.leesangmin89.readcontacttest.data
+package com.leesangmin89.readcontacttest.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.leesangmin89.readcontacttest.data.ContactBase
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
 
 @Dao
 interface ContactDao {
@@ -36,7 +36,5 @@ interface ContactDao {
 
     @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
     fun searchDatabase(searchQuery: String) : kotlinx.coroutines.flow.Flow<List<ContactBase>>
-
-
 
 }

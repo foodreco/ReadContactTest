@@ -1,11 +1,11 @@
-package com.leesangmin89.readcontacttest.data
+package com.leesangmin89.readcontacttest.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.leesangmin89.readcontacttest.data.ContactInfo
+import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 
 @Dao
 interface ContactInfoDao {
