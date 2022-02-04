@@ -5,10 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".update.UpdateFragment">
+    tools:context=".update.UpdateFragment"
+    android:id="@+id/updateFragment_background">
 
     <EditText
-        android:id="@+id/textName_update"
+        android:id="@+id/contact_name_update"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -22,7 +23,7 @@
         app:layout_constraintVertical_bias="0.25" />
 
     <EditText
-        android:id="@+id/textContent_update"
+        android:id="@+id/contact_number_update"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -31,9 +32,24 @@
         android:inputType="phone"
         android:scrollHorizontally="false"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/textName_update"
-        app:layout_constraintStart_toStartOf="@+id/textName_update"
-        app:layout_constraintTop_toBottomOf="@+id/textName_update" />
+        app:layout_constraintEnd_toEndOf="@+id/contact_name_update"
+        app:layout_constraintStart_toStartOf="@+id/contact_name_update"
+        app:layout_constraintTop_toBottomOf="@+id/contact_name_update" />
+
+    <EditText
+        android:id="@+id/contact_group_update"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="bottom"
+        android:hint="그룹명"
+        android:inputType="textPersonName"
+        android:scrollHorizontally="false"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/contact_name_update"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/contact_name_update"
+        app:layout_constraintTop_toBottomOf="@+id/contact_number_update" />
 
     <Button
         android:id="@+id/btn_update"
@@ -43,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textContent_update"
+        app:layout_constraintTop_toBottomOf="@+id/contact_group_update"
         app:layout_constraintVertical_bias="0.1" />
 
 

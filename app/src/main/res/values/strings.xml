@@ -2,4 +2,13 @@
     <string name="app_name">ReadContactTest</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="contact_number"> 통화 횟수 : %1$d 회</string>
+    <string name="contact_activated">활성 통화 횟수 : %1$d 회 </string>
+    <string name="recent_contact">마지막 통화 : "%1$s" 상대로 통화함</string>
+    <string name="most_contact_number">최대 통화 번호 : %1$s </string>
+    <string name="most_contact_duration">최대 통화 시간 : %1$d 초</string>
+    <string name="group_list_numbers">등록인원 수 : %1$d명</string>
+    <string name="group_list_rate">등록비율 : %1$d%      (%1$d/2000)</string>
+
 </resources>

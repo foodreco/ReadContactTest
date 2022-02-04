@@ -3,36 +3,91 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/listFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
         android:id="@+id/listFragment"
         android:name="com.leesangmin89.readcontacttest.list.ListFragment"
-        android:label="fragment_list"
-        tools:layout="@layout/fragment_list" >
+        android:label="리스트"
+        tools:layout="@layout/fragment_list">
         <action
             android:id="@+id/action_listFragment_to_addFragment"
-            app:destination="@id/addFragment" />
+            app:destination="@id/addFragment"
+            app:popUpTo="@id/listFragment" />
         <action
             android:id="@+id/action_listFragment_to_updateFragment"
-            app:destination="@id/updateFragment" />
+            app:destination="@id/updateFragment"
+            app:popUpTo="@id/listFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment" />
+        <argument
+            android:name="currentItemId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
         android:name="com.leesangmin89.readcontacttest.add.AddFragment"
-        android:label="fragment_add"
-        tools:layout="@layout/fragment_add" >
+        android:label="추가"
+        tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/listFragment"
+            app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/updateFragment"
         android:name="com.leesangmin89.readcontacttest.update.UpdateFragment"
-        android:label="fragment_update"
-        tools:layout="@layout/fragment_update" >
+        android:label="변경"
+        tools:layout="@layout/fragment_update">
         <action
             android:id="@+id/action_updateFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/listFragment"
+            app:popUpTo="@id/mainFragment" />
+        <argument
+            android:name="currentItem"
+            app:argType="com.leesangmin89.readcontacttest.data.ContactBase" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.leesangmin89.readcontacttest.main.MainFragment"
+        android:label="메인"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_listFragment"
+            app:destination="@id/listFragment"
+            app:popUpTo="@id/mainFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_groupFragment"
+            app:destination="@id/groupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.leesangmin89.readcontacttest.group.GroupFragment"
+        android:label="fragment_group"
+        tools:layout="@layout/fragment_group" >
+        <action
+            android:id="@+id/action_groupFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment" />
+        <action
+            android:id="@+id/action_groupFragment_to_groupListFragment"
+            app:destination="@id/groupListFragment"
+            app:popUpTo="@id/groupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupListFragment"
+        android:name="com.leesangmin89.readcontacttest.group.groupList.GroupListFragment"
+        android:label="fragment_group_list"
+        tools:layout="@layout/fragment_group_list" >
+        <action
+            android:id="@+id/action_groupListFragment_to_groupFragment"
+            app:destination="@id/groupFragment"
+            app:popUpTo="@id/mainFragment" />
+        <argument
+            android:name="groupName"
+            app:argType="string" />
     </fragment>
 </navigation>
