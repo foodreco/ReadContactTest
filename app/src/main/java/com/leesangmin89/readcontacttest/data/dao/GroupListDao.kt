@@ -19,6 +19,9 @@ interface GroupListDao {
     @Query("DELETE FROM group_table")
     suspend fun clear()
 
+    @Query("SELECT `group` FROM group_table ")
+    suspend fun getGroupName() : List<String>
+
     @Query("SELECT * FROM group_table ORDER BY name ASC")
     fun getAllDataByNameASC(): LiveData<List<GroupList>>
 

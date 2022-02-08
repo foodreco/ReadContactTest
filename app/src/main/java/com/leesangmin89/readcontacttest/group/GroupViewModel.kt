@@ -45,7 +45,8 @@ class GroupViewModel @Inject constructor(
     private fun getGroupName() {
         viewModelScope.launch {
             // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
-            val data = database.getGroupName()
+//            val data = database.getGroupName()
+            val data = datagroup.getGroupName()
             val emptyData = emptyList<ContactBase>()
             // GroupData 를 넣을 빈 리스트 변수
             val groupData = mutableListOf<GroupData>()
