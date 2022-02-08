@@ -56,6 +56,8 @@ class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDif
 
         //리싸이클러 터치 시, update 이동
         holder.update.setOnClickListener {
+            // 지정 group 이 없으면, ""를 넘겨주고,
+            // 있으면, 해당 전화번호를 넘겨주는 코드
             if (item.group == "") {
                 val action = ListFragmentDirections.actionListFragmentToUpdateFragment(item,"")
                 holder.update.findNavController().navigate(action)

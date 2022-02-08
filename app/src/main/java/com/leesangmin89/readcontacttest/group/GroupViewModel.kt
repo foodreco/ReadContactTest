@@ -2,6 +2,7 @@ package com.leesangmin89.readcontacttest.group
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.security.acl.Group
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,10 +36,9 @@ class GroupViewModel @Inject constructor(
     private val _newGroupList = MutableLiveData<List<GroupList>>()
     val newGroupList: LiveData<List<GroupList>> = _newGroupList
 
-    var groupListForUpdate = GroupList("","","",null,"","",0)
-
     init {
         getGroupName()
+        Log.d("확인", "그룹 뷰모델 초기화됨")
     }
 
     // 그룹이 존재하는 리스트를 정리하여 recyclerview 에 알맞게 가공하는 함수
@@ -115,10 +116,44 @@ class GroupViewModel @Inject constructor(
         }
     }
 
+    fun clear() {
+        viewModelScope.launch {
+            datagroup.clear()
+        }
+    }
+
     // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
     fun find(number: String) {
         viewModelScope.launch {
-            groupListForUpdate = datagroup.getGroupByNumber(number)
+            val groupListForFind = datagroup.getGroupByNumber(number)
         }
+    }
+
+    fun findAndDelete(number: String) {
+        viewModelScope.launch {
+            val groupListForDelete = datagroup.getGroupByNumber(number)
+            datagroup.delete(groupListForDelete)
+        }
+    }
+
+    fun findAndUpdate(name: String, number: String, group: String) {
+        viewModelScope.launch {
+            val groupListForUpdate = datagroup.getGroupByNumber(number)
+            val updateList = GroupList(
+                name,
+                number,
+                group,
+                groupListForUpdate.image,
+                groupListForUpdate.recentContact,
+                groupListForUpdate.recentContactCallTime,
+                groupListForUpdate.id
+            )
+            datagroup.update(updateList)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.i("확인", "뷰모델 파괴됨")
     }
 }

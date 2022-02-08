@@ -13,6 +13,7 @@ interface ContactDao {
     @Delete
     suspend fun delete(contact: ContactBase)
 
+
     @Update
     suspend fun update(contact: ContactBase)
 

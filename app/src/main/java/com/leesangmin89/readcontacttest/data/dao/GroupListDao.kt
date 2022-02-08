@@ -28,7 +28,7 @@ interface GroupListDao {
     @Query("SELECT * FROM group_table ORDER BY number ASC")
     fun getAllDataByNumberASC(): LiveData<List<GroupList>>
 
-    @Query("SELECT * FROM group_table WHERE `number` =:number")
+    @Query("SELECT * FROM group_table WHERE `number` =:number ORDER BY name ASC LIMIT 1")
     suspend fun getGroupByNumber(number:String) : GroupList
 
     @Query("SELECT * FROM group_table WHERE `group` =:key")

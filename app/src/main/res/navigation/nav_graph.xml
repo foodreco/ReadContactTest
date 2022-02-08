@@ -50,7 +50,7 @@
             android:name="currentItem"
             app:argType="com.leesangmin89.readcontacttest.data.entity.ContactBase" />
         <argument
-            android:name="groupNumber"
+            android:name="phoneNumber"
             app:argType="string" />
     </fragment>
     <fragment

@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
@@ -27,7 +28,7 @@ class UpdateFragment : Fragment() {
 
     private val args by navArgs<UpdateFragmentArgs>()
     private val listViewModel: ListViewModel by viewModels()
-    private val groupViewModel : GroupViewModel by viewModels()
+    private val groupViewModel: GroupViewModel by viewModels()
     private val binding by lazy { FragmentUpdateBinding.inflate(layoutInflater) }
 
     override fun onCreateView(
@@ -61,31 +62,73 @@ class UpdateFragment : Fragment() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("예") { _, _ ->
 
-            val updateList = ContactBase(contactName, contactNumber, contactGroup, args.currentItem.image, args.currentItem.id)
-            if (args.groupNumber == "") {
-                val insertList = GroupList(contactName, contactNumber, contactGroup, args.currentItem.image, "0","0",0)
-                groupViewModel.insert(insertList)
-            } else {
-                groupViewModel.find(args.groupNumber)
-                val newList = groupViewModel.groupListForUpdate
-                val insertList = GroupList(contactName, contactNumber, contactGroup, newList.image, newList.recentContact,newList.recentContactCallTime,newList.id)
-                groupViewModel.update(insertList)
+            val updateList = ContactBase(
+                contactName,
+                contactNumber,
+                contactGroup,
+                args.currentItem.image,
+                args.currentItem.id
+            )
+
+            Log.d("확인", "$updateList")
+            // 업데이트 data to ContactBase DB
+            listViewModel.update(updateList)
+
+            // 아래 코드는 신규 GroupList DB를 관리하는 코드
+            if (args.phoneNumber == "") {
+                val insertList = GroupList(
+                    contactName,
+                    contactNumber,
+                    contactGroup,
+                    args.currentItem.image,
+                    "0",
+                    "0",
+                    0
+                )
+                // 넘어온 groupName 이 없을 때(지정된 Group 이 없을 때)
+                when (contactGroup) {
+                    // 신규 지정 Group 도 없다면
+                    "" -> {
+                        Toast.makeText(requireContext(), "Group DB 변화 없음", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    // 넘어온 건 없는데, 신규 지정 Group 은 있다면, 그룹 DB 에 신규 추가
+                    else -> {
+                        groupViewModel.insert(insertList)
+                        Toast.makeText(requireContext(), "Group DB 추가", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
+            // 넘어온 groupName 이 있을 때(지정된 Group 존재할 때)
+            else {
+                when (contactGroup) {
+                    // 수정하여 Group 을 없앨 때, 그룹 DB 에서 해당 List 제거
+                    "" -> {
+                        groupViewModel.findAndDelete(args.phoneNumber)
+                        Toast.makeText(requireContext(), "Group DB 제거", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    // 수정하여 Group 을 바꿀 때, 그룹 DB 에서 해당 List 업데이트
+                    else -> {
+                        groupViewModel.findAndUpdate(contactName, contactNumber, contactGroup)
+                        Toast.makeText(requireContext(), "Group DB 수정", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
             }
 
-            // 업데이트 data to DB
-            listViewModel.update(updateList)
-            Toast.makeText(requireContext(), "업데이트 완료", Toast.LENGTH_SHORT).show()
-
-            // GroupList DB 인서트
-
             // recyclerView 정렬을 위해서 인자를 넘겨주는 것임
-            findNavController().navigate(UpdateFragmentDirections.actionUpdateFragmentToListFragment(args.currentItem.id))
+            findNavController().navigate(
+                UpdateFragmentDirections.actionUpdateFragmentToListFragment(
+                    args.currentItem.id
+                )
+            )
         }
         builder.setNegativeButton("아니오") { _, _ -> }
         builder.setTitle("데이터 변경")
         builder.setMessage("$preContactName -> $contactName \n $preContactNumber -> $contactNumber \n $preContactGroup -> $contactGroup")
         builder.create().show()
-
 
     }
 
