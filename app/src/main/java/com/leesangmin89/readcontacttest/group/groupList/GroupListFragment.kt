@@ -2,6 +2,7 @@ package com.leesangmin89.readcontacttest.group.groupList
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -21,7 +22,6 @@ class GroupListFragment : Fragment() {
     private val groupViewModel: GroupViewModel by viewModels()
     private val args by navArgs<GroupListFragmentArgs>()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,7 +30,7 @@ class GroupListFragment : Fragment() {
         val adapter = GroupListAdapter(requireContext())
         binding.groupListRecyclerView.adapter = adapter
 
-        // GroupFragment Adapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
+        // GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
         groupViewModel.getGroupListFromGroupList(args.groupName)
 
         // 기존 불러오려던 형태 작동코드
@@ -41,8 +41,15 @@ class GroupListFragment : Fragment() {
 //        })
 
         // 신규 형태의 recyclerView
-        groupViewModel.newGroupList.observe(viewLifecycleOwner,{
+        groupViewModel.newGroupList.observe(viewLifecycleOwner, {
             adapter.submitList(it)
+        })
+
+        // deleteData() 작업이 완료되면 GroupFragment 로 이동
+        groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner, {
+            if (it) {
+                findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupFragment())
+            }
         })
 
         setHasOptionsMenu(true)
@@ -64,22 +71,21 @@ class GroupListFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    // GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹을 삭제하는 함수
     private fun deleteData() {
-//        val builder = AlertDialog.Builder(requireContext())
-//        builder.setPositiveButton("Yes") { _, _ ->
-//            groupViewModel.clear()
-//            Toast.makeText(
-//                requireContext(),
-//                "그룹 DB 삭제됨",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//            findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupFragment())
-//        }
-//        builder.setNegativeButton("No") { _, _ -> }
-//        builder.setTitle("그룹 DB 삭제")
-//        builder.setMessage("해당 정보를 삭제하시겠습니까?")
-//        builder.create().show()
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setPositiveButton("Yes") { _, _ ->
+            groupViewModel.clearByGroupName(args.groupName)
+            groupViewModel.clearGroupNameInContactBase(args.groupName)
+            Toast.makeText(
+                requireContext(),
+                "${args.groupName} DB 삭제됨",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("${args.groupName} 그룹 삭제")
+        builder.setMessage("해당 정보를 삭제하시겠습니까?")
+        builder.create().show()
     }
-
-
 }

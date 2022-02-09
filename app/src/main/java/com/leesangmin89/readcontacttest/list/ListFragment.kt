@@ -227,8 +227,9 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             val photo : Bitmap?
             val name =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+            // 번호 수집 시, - 일괄 제거하여 수집한다.
             val number =
-                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replace("-","")
             val photo_uri =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
             val contactList = ContactBase(name, number, "", null,0)

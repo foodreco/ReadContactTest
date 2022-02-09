@@ -69,8 +69,8 @@
     <fragment
         android:id="@+id/groupFragment"
         android:name="com.leesangmin89.readcontacttest.group.GroupFragment"
-        android:label="fragment_group"
-        tools:layout="@layout/fragment_group" >
+        android:label="그룹관리"
+        tools:layout="@layout/fragment_group">
         <action
             android:id="@+id/action_groupFragment_to_mainFragment"
             app:destination="@id/mainFragment"
@@ -83,7 +83,7 @@
     <fragment
         android:id="@+id/groupListFragment"
         android:name="com.leesangmin89.readcontacttest.group.groupList.GroupListFragment"
-        android:label="fragment_group_list"
+        android:label="그룹 리스트"
         tools:layout="@layout/fragment_group_list" >
         <action
             android:id="@+id/action_groupListFragment_to_groupFragment"
@@ -92,5 +92,22 @@
         <argument
             android:name="groupName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_groupListFragment_to_groupDetailFragment"
+            app:destination="@id/groupDetailFragment"
+            app:popUpTo="@id/groupListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupDetailFragment"
+        android:name="com.leesangmin89.readcontacttest.group.groupList.GroupDetailFragment"
+        android:label="세부정보"
+        tools:layout="@layout/fragment_group_detail">
+        <action
+            android:id="@+id/action_groupDetailFragment_to_groupListFragment"
+            app:destination="@id/groupListFragment"
+            app:popUpTo="@id/groupFragment" />
+        <argument
+            android:name="currentItem"
+            app:argType="com.leesangmin89.readcontacttest.data.entity.GroupList" />
     </fragment>
 </navigation>

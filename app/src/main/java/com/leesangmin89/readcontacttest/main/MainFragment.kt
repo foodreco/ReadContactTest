@@ -52,12 +52,19 @@ class MainFragment : Fragment() {
 //                    textContactNumber.text = getString(R.string.contact_number, 0)
                     textContactActivated.text = getString(R.string.contact_activated, 0)
                     textRecentContact.text = getString(R.string.recent_contact, "해당없음")
+                    MostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
+                    MostContactDuration.text = getString(R.string.most_contact_duration, 0)
+
                 } else {
 //                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
                     textContactActivated.text =
                         getString(R.string.contact_activated, it.activatedContact)
                     textRecentContact.text =
                         getString(R.string.recent_contact, it.mostRecentContact)
+                    MostContactNumber.text =
+                        getString(R.string.most_contact_name, it.mostContactName)
+                    MostContactDuration.text =
+                        getString(R.string.most_contact_duration, it.mostContactTimes)
                 }
             }
         })
@@ -208,10 +215,21 @@ class MainFragment : Fragment() {
             }
         }
 
+        // 가장 최근 통화 대상(최근 대상부터 while 반복됨)
         val mostRecentContact = list[0].name
-        val contactInfo = ContactInfo(callCountNum, activatedContact, mostRecentContact, 0)
+        // 가장 최장 통화시간
+        val mapMaxValue = contactMap.maxOf { it.value }
+        // 가장 최장 통화대상 번호
+        val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
 
-        mainViewModel.insertInfo(contactInfo)
+        // contactInfo 에 data 입력
+        mainViewModel.insertInfo(
+            callCountNum,
+            activatedContact,
+            mostRecentContact,
+            mapMaxKey,
+            mapMaxValue
+        )
 
         contacts.close()
     }
@@ -239,10 +257,7 @@ class MainFragment : Fragment() {
     // 최대 통화 번호와 시간을 알려주는 코드
     @SuppressLint("SetTextI18n")
     private fun printKingContact() {
-        val mapMaxValue = contactMap.maxOf { it.value }
-        val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
-        binding.MostContactNumber.text = getString(R.string.most_contact_number, mapMaxKey)
-        binding.MostContactDuration.text = getString(R.string.most_contact_duration, mapMaxValue)
+
     }
 
 }

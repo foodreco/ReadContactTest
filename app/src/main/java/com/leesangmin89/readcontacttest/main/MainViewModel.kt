@@ -1,10 +1,12 @@
 package com.leesangmin89.readcontacttest.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.data.dao.ContactInfoDao
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,22 +16,33 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val database: ContactInfoDao,
+    private val dataContact: ContactDao,
     application: Application
-) : AndroidViewModel(application)  {
+) : AndroidViewModel(application) {
 
-    val infoData : LiveData<ContactInfo>
+    val infoData: LiveData<ContactInfo>
 
     val _contactNumbers = MutableLiveData<Int>()
-    val contactNumbers : LiveData<Int> = _contactNumbers
+    val contactNumbers: LiveData<Int> = _contactNumbers
 
 
     init {
         infoData = database.getRecentData()
     }
 
-    fun insertInfo(contactInfo: ContactInfo) {
+    fun insertInfo(
+        contactNumber: Int,
+        activatedContact: Int,
+        mostRecentContact: String,
+        mostContactName: String,
+        mostContactTimes: Int
+    ) {
         viewModelScope.launch {
-            database.insert(contactInfo)
+            Log.d("확인","mostContactName : $mostContactName")
+            val insertName = dataContact.getName(mostContactName)
+            Log.d("확인","insertName : $insertName")
+            val insertList = ContactInfo(contactNumber, activatedContact, mostRecentContact, insertName, mostContactTimes)
+            database.insert(insertList)
         }
     }
 
@@ -38,7 +51,6 @@ class MainViewModel @Inject constructor(
             database.clear()
         }
     }
-
 
 
 }

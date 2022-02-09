@@ -85,7 +85,7 @@ class UpdateFragment : Fragment() {
                     "0",
                     0
                 )
-                // 넘어온 groupName 이 없을 때(지정된 Group 이 없을 때)
+                // ContactAdapter 에서 넘어온 groupName 이 없을 때(지정된 Group 이 없을 때)
                 when (contactGroup) {
                     // 신규 지정 Group 도 없다면
                     "" -> {
@@ -105,7 +105,7 @@ class UpdateFragment : Fragment() {
                 when (contactGroup) {
                     // 수정하여 Group 을 없앨 때, 그룹 DB 에서 해당 List 제거
                     "" -> {
-                        groupViewModel.findAndDelete(args.phoneNumber)
+                        groupViewModel.findAndDelete(args.currentItem.number)
                         Toast.makeText(requireContext(), "Group DB 제거", Toast.LENGTH_SHORT)
                             .show()
                     }

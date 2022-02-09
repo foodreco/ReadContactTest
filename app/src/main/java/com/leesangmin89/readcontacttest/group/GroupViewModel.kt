@@ -36,6 +36,10 @@ class GroupViewModel @Inject constructor(
     private val _newGroupList = MutableLiveData<List<GroupList>>()
     val newGroupList: LiveData<List<GroupList>> = _newGroupList
 
+    private val _coroutineDoneEvent = MutableLiveData<Boolean>()
+    val coroutineDoneEvent: LiveData<Boolean> = _coroutineDoneEvent
+
+
     init {
         getGroupName()
         Log.d("확인", "그룹 뷰모델 초기화됨")
@@ -121,6 +125,28 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             datagroup.clear()
         }
+    }
+
+    fun clearByGroupName(groupName: String) {
+        viewModelScope.launch {
+            datagroup.deleteByGroupName(groupName)
+        }
+    }
+
+    fun clearGroupNameInContactBase(groupName: String) {
+        viewModelScope.launch {
+            for (data in database.getAllContactBaseList()) {
+                if (data.group == groupName) {
+                    val newData = ContactBase(data.name, data.number, "", data.image, data.id)
+                    database.update(newData)
+                }
+            }
+            _coroutineDoneEvent.value = true
+        }
+    }
+
+    fun coroutineDoneEventFinished() {
+        _coroutineDoneEvent.value = false
     }
 
     // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수

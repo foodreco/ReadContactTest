@@ -13,6 +13,9 @@ interface GroupListDao {
     @Delete
     suspend fun delete(groupList: GroupList)
 
+    @Query("DELETE FROM group_table WHERE `group` =:group")
+    suspend fun deleteByGroupName(group:String)
+
     @Update
     suspend fun update(groupList: GroupList)
 

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -52,10 +53,10 @@ class GroupListAdapter(ctx: Context) : ListAdapter<GroupList, GroupListAdapter.G
             }
         }
 
-        //리싸이클러 터치 시, update 이동
+        //리싸이클러 터치 시, GroupDetailFragment 로 이동
         holder.detail.setOnClickListener {
-//            val action = GroupListFragmentDirections.actionGroupListFragmentToGroupFragment()
-//            holder.update.findNavController().navigate(action)
+            val action = GroupListFragmentDirections.actionGroupListFragmentToGroupDetailFragment(item)
+            holder.detail.findNavController().navigate(action)
         }
     }
 
