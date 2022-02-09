@@ -9,7 +9,9 @@ import androidx.navigation.fragment.navArgs
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupDetailBinding
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GroupDetailFragment : Fragment() {
 
     private val binding by lazy { FragmentGroupDetailBinding.inflate(layoutInflater) }

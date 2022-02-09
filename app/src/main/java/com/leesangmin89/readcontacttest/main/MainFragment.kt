@@ -53,7 +53,7 @@ class MainFragment : Fragment() {
                     textContactActivated.text = getString(R.string.contact_activated, 0)
                     textRecentContact.text = getString(R.string.recent_contact, "해당없음")
                     MostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
-                    MostContactDuration.text = getString(R.string.most_contact_duration, 0)
+                    MostContactDuration.text = getString(R.string.most_contact_duration, 0,0)
 
                 } else {
 //                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
@@ -63,8 +63,11 @@ class MainFragment : Fragment() {
                         getString(R.string.recent_contact, it.mostRecentContact)
                     MostContactNumber.text =
                         getString(R.string.most_contact_name, it.mostContactName)
+
+                    val minutes = it.mostContactTimes!!.toLong() / 60
+                    val seconds = it.mostContactTimes.toLong() % 60
                     MostContactDuration.text =
-                        getString(R.string.most_contact_duration, it.mostContactTimes)
+                        getString(R.string.most_contact_duration, minutes, seconds)
                 }
             }
         })
@@ -90,6 +93,11 @@ class MainFragment : Fragment() {
 
         binding.btnFinish.setOnClickListener {
             activity?.finishAndRemoveTask()
+        }
+
+        binding.btnToCallLog.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToCallLogFragment()
+            findNavController().navigate(action)
         }
 
         return binding.root

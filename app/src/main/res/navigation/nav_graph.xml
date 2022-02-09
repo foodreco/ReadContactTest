@@ -65,6 +65,10 @@
         <action
             android:id="@+id/action_mainFragment_to_groupFragment"
             app:destination="@id/groupFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_callLogFragment"
+            app:destination="@id/callLogFragment"
+            app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupFragment"
@@ -109,5 +113,15 @@
         <argument
             android:name="currentItem"
             app:argType="com.leesangmin89.readcontacttest.data.entity.GroupList" />
+    </fragment>
+    <fragment
+        android:id="@+id/callLogFragment"
+        android:name="com.leesangmin89.readcontacttest.callLog.CallLogFragment"
+        android:label="통화기록"
+        tools:layout="@layout/fragment_call_log">
+        <action
+            android:id="@+id/action_callLogFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment" />
     </fragment>
 </navigation>
