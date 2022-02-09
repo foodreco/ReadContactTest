@@ -81,7 +81,7 @@ class CallLogFragment : Fragment() {
                 name = "발신자불명"
             }
             val number =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER))
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER)).replace("-","")
             val date =
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE))
             val duration =

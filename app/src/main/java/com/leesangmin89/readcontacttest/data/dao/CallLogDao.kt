@@ -23,4 +23,7 @@ interface CallLogDao {
     @Query("SELECT * FROM call_history ORDER BY date DESC")
     fun getAllDataByDate(): LiveData<List<CallLogData>>
 
+    @Query("SELECT * FROM call_history WHERE number LIKE :number")
+    suspend fun findAndReturn(number: String): List<CallLogData>
+
 }

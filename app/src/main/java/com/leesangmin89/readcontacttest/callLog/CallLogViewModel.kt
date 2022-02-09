@@ -1,8 +1,11 @@
 package com.leesangmin89.readcontacttest.callLog
 
 import android.app.Application
+import android.provider.CallLog
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
@@ -20,6 +23,9 @@ class CallLogViewModel @Inject constructor(
 
     val callLogList : LiveData<List<CallLogData>>
 
+    private val _logList = MutableLiveData<List<CallLogData>>()
+    val logList :LiveData<List<CallLogData>> = _logList
+
     init {
         callLogList = database.getAllDataByDate()
     }
@@ -33,6 +39,13 @@ class CallLogViewModel @Inject constructor(
     fun insert(callLogData: CallLogData) {
         viewModelScope.launch {
             database.insert(callLogData)
+        }
+    }
+
+    fun findAndReturn(number: String) {
+        viewModelScope.launch {
+            _logList.value = database.findAndReturn(number)
+            Log.i("확인","콜로그뷰모델 : $number")
         }
     }
 
