@@ -153,6 +153,7 @@ class UpdateFragment : Fragment() {
         }
     }
 
+    // 그룹을 추가하고(GroupList), 연락처 정보를 변경하는 함수
     private fun updateData() {
         val contactName = binding.contactNameUpdate.text.toString()
         val contactNumber = binding.contactNumberUpdate.text.toString()

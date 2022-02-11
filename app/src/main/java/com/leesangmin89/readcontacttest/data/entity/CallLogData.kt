@@ -10,9 +10,9 @@ import kotlinx.parcelize.Parcelize
 data class CallLogData(
     var name: String?,
     var number: String,
-    var date: String,
-    var duration: String,
-    var callType: String,
+    var date: String? = "",
+    var duration: String? = "",
+    var callType: String? = "",
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 ) : Parcelable

@@ -37,6 +37,7 @@ interface GroupListDao {
     @Query("SELECT * FROM group_table WHERE `number` =:number ORDER BY name ASC LIMIT 1")
     suspend fun getGroupByNumber(number:String) : GroupList
 
+    // 그룹명을 인자로 받아, 해당 그룹 리스트를 출력하는 함수
     @Query("SELECT * FROM group_table WHERE `group` =:key")
     suspend fun getGroupList(key:String) : List<GroupList>
 

@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.convertCallTypeToString
+import com.leesangmin89.readcontacttest.convertLongToDateString
+import com.leesangmin89.readcontacttest.convertLongToTimeString
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
 
@@ -26,29 +29,10 @@ class CallLogAdapter : ListAdapter<CallLogData, CallHolder>(CallLogDiffCallback(
     override fun onBindViewHolder(holder: CallHolder, position: Int) {
         val item = getItem(position)
 
-        // Date 출력 변환 코드
-        val simpleDateFormat = java.text.SimpleDateFormat("yyyy년MM월dd일")
-//        val dateString = simpleDateFormat.format(date)
-
         holder.callName.text = item.name
-        when (item.callType.toInt()) {
-            // callType에 따라 변환
-            1 -> holder.callType.text = "수신"
-            2 -> holder.callType.text = "발신"
-            3 -> holder.callType.text = "부재중"
-        }
-
-        val minutes = item.duration.toLong() / 60
-        val seconds = item.duration.toLong() % 60
-
-        // 통화시간 1분 미만은 초 단위로만 출력함
-        when (item.duration.toLong()) {
-            in 0..59 -> holder.callDuration.text = "${seconds}초"
-            else -> holder.callDuration.text = "${minutes}분 ${seconds}초"
-        }
-
-        // 밀리초를 년월일 로 변환하여 출력
-        holder.callDate.text = simpleDateFormat.format(item.date.toLong())
+        holder.callType.text = convertCallTypeToString(item.callType!!.toInt())
+        holder.callDuration.text = convertLongToTimeString(item.duration!!.toLong())
+        holder.callDate.text = convertLongToDateString(item.date!!.toLong())
 
 //        //리싸이클러 터치 시, GroupListFragment 로 이동
 //        holder.groupEachList.setOnClickListener {

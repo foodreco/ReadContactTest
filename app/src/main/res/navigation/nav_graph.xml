@@ -83,6 +83,10 @@
             android:id="@+id/action_groupFragment_to_groupListFragment"
             app:destination="@id/groupListFragment"
             app:popUpTo="@id/groupFragment" />
+        <action
+            android:id="@+id/action_groupFragment_to_listFragment"
+            app:destination="@id/listFragment"
+            app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupListFragment"

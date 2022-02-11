@@ -162,6 +162,7 @@ class MainFragment : Fragment() {
         }
     }
 
+    // 전화 통계를 계산하는 함수(ContactInfo)
     @SuppressLint("Range")
     fun getPhoneInfo() {
         val list = mutableListOf<ContactSpl>()

@@ -68,6 +68,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
+        Log.i("보완","정렬 및 recyclerView 위치")
         listViewModel.sortEvent.observe(viewLifecycleOwner,
             {
                 when (it) {
@@ -205,11 +206,11 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         builder.setNegativeButton("아니오") { _, _ -> }
         builder.setTitle("데이터 초기화")
-        builder.setMessage("모든 정보를 초기화하시겠습니까?")
+        builder.setMessage("연락처 정보를 초기화하시겠습니까?")
         builder.create().show()
     }
 
-    // 초기 데이터 로드 함수
+    // 초기 데이터 로드 함수(ContactBase)
     @SuppressLint("Range")
     fun loadContact() {
         // 기존 데이터 삭제
@@ -233,6 +234,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             val photo_uri =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
             val contactList = ContactBase(name, number, "", null,0)
+            Log.i("수정","그룹 DB 확인해서 group 인자 동기화 필요")
             if (photo_uri != null) {
                 contactList.image = MediaStore.Images.Media.getBitmap(
                     requireActivity().contentResolver,

@@ -12,7 +12,7 @@ data class GroupList(
     var name: String,
     var number: String,
     var group: String,
-    var image: Bitmap? = null,
+    var image: Bitmap?,
     var recentContact : String?,
     var recentContactCallTime : String?,
     @PrimaryKey(autoGenerate = true)

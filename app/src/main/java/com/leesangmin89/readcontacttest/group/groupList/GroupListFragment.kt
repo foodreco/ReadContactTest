@@ -2,7 +2,6 @@ package com.leesangmin89.readcontacttest.group.groupList
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -12,7 +11,6 @@ import androidx.navigation.fragment.navArgs
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
-import com.leesangmin89.readcontacttest.update.UpdateFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,19 +28,25 @@ class GroupListFragment : Fragment() {
         val adapter = GroupListAdapter(requireContext())
         binding.groupListRecyclerView.adapter = adapter
 
-        // GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
+        // 1.GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
         groupViewModel.getGroupListFromGroupList(args.groupName)
 
-        // 기존 불러오려던 형태 작동코드
-//        groupViewModel.getGroupListFromContactBase(args.groupName)
-        // 기존 불러오려던 형태의 recyclerView
-//        groupViewModel.groupList.observe(viewLifecycleOwner, {
-//            adapter.submitList(it)
-//        })
+        // 2. GroupList recyclerView 출력 코드 (GroupList 정보 소환 후, 작동)
+        groupViewModel.groupListGetEvent.observe(viewLifecycleOwner,{ listGetFinished ->
+            if (listGetFinished) {
+                // GroupList 정보를 업데이트하는 함수
+                groupViewModel.updateGroupRecentInfo(args.groupName)
+            }
+        })
 
-        // 신규 형태의 recyclerView
-        groupViewModel.newGroupList.observe(viewLifecycleOwner, {
-            adapter.submitList(it)
+        // 3. 업데이트 된 GroupList 정보 출력 코드 (GroupList 업데이트 후, 작동)
+        groupViewModel.groupListUpdateEvent.observe(viewLifecycleOwner,{ updateFinished ->
+            if (updateFinished) {
+                // 가져온 GroupList 정보를 recyclerView 형태로 출력하는 코드
+                groupViewModel.newGroupList.observe(viewLifecycleOwner, {
+                    adapter.submitList(it)
+                })
+            }
         })
 
         // deleteData() 작업이 완료되면 GroupFragment 로 이동
@@ -56,7 +60,6 @@ class GroupListFragment : Fragment() {
 
         return binding.root
     }
-
 
     // 메뉴 활성화
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

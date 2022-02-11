@@ -35,6 +35,7 @@ class CallLogFragment : Fragment() {
         binding.callLogRecyclerView.adapter = adapter
 
         getCallLogInfo()
+        Log.i("수정","나중에는 앱 빌드와 동시에 getCallLogInfo()가 실행되어야 한다.")
 
         callLogViewModel.callLogList.observe(viewLifecycleOwner, {
             adapter.submitList(it)
@@ -43,6 +44,7 @@ class CallLogFragment : Fragment() {
         return binding.root
     }
 
+    // 통화기록을 가져오는 함수(CallLogData)
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("Range", "SimpleDateFormat")
     fun getCallLogInfo() {

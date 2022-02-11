@@ -1,14 +1,13 @@
 package com.leesangmin89.readcontacttest.group
 
 import android.app.Application
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.PrimaryKey
 import com.leesangmin89.readcontacttest.MyApplication
+import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
@@ -16,13 +15,13 @@ import com.leesangmin89.readcontacttest.data.entity.GroupList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONArray
-import java.security.acl.Group
 import javax.inject.Inject
 
 @HiltViewModel
 class GroupViewModel @Inject constructor(
     private val database: ContactDao,
-    private val datagroup: GroupListDao,
+    private val dataGroup: GroupListDao,
+    private val dataCall : CallLogDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -44,6 +43,13 @@ class GroupViewModel @Inject constructor(
     private val _getOnlyGroupNameDoneEvent = MutableLiveData<Boolean>()
     val getOnlyGroupNameDoneEvent: LiveData<Boolean> = _getOnlyGroupNameDoneEvent
 
+    private val _groupListGetEvent = MutableLiveData<Boolean>()
+    val groupListGetEvent: LiveData<Boolean> = _groupListGetEvent
+
+    private val _groupListUpdateEvent = MutableLiveData<Boolean>()
+    val groupListUpdateEvent: LiveData<Boolean> = _groupListUpdateEvent
+
+
     init {
         getGroupName()
         getOnlyGroupName()
@@ -55,7 +61,7 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
 //            val data = database.getGroupName()
-            val data = datagroup.getGroupName()
+            val data = dataGroup.getGroupName()
             val emptyData = emptyList<ContactBase>()
             // GroupData 를 넣을 빈 리스트 변수
             val groupData = mutableListOf<GroupData>()
@@ -101,9 +107,50 @@ class GroupViewModel @Inject constructor(
     // 그룹명을 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
     fun getGroupListFromGroupList(key: String) {
         viewModelScope.launch {
-            _newGroupList.value = datagroup.getGroupList(key)
+            _newGroupList.value = dataGroup.getGroupList(key)
+            _groupListGetEvent.value = true
         }
     }
+
+    // 특정 그룹의 리스트를 반복하면서, 번호를 넘겨 가장 최근 통화일자, 시간, 유형을 받아오는 함수
+    fun updateGroupRecentInfo(key: String) {
+        viewModelScope.launch {
+            val groupList : List<GroupList>? = _newGroupList.value
+            if (groupList != null) {
+                for (item in groupList) {
+                    val newInfo = dataCall.getDDC(item.number)
+                    if (newInfo != null) {
+                        val newList = GroupList(
+                            item.name,
+                            item.number,
+                            item.group,
+                            item.image,
+                            newInfo.date,
+                            newInfo.duration,
+                            item.id
+                        )
+                        dataGroup.update(newList)
+                    } else {
+                        // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
+                        val newList = GroupList(
+                            item.name,
+                            item.number,
+                            item.group,
+                            item.image,
+                            "",
+                            "",
+                            item.id
+                        )
+                        dataGroup.update(newList)
+                    }
+                }
+            }
+            _newGroupList.value = dataGroup.getGroupList(key)
+            _groupListUpdateEvent.value = true
+            _groupListGetEvent.value = false
+        }
+    }
+
 
     fun groupListEmptyChecked() {
         _groupListEmptyEvent.value = false
@@ -111,31 +158,31 @@ class GroupViewModel @Inject constructor(
 
     fun insert(groupList: GroupList) {
         viewModelScope.launch {
-            datagroup.insert(groupList)
+            dataGroup.insert(groupList)
         }
     }
 
     fun update(groupList: GroupList) {
         viewModelScope.launch {
-            datagroup.update(groupList)
+            dataGroup.update(groupList)
         }
     }
 
     fun delete(groupList: GroupList) {
         viewModelScope.launch {
-            datagroup.delete(groupList)
+            dataGroup.delete(groupList)
         }
     }
 
     fun clear() {
         viewModelScope.launch {
-            datagroup.clear()
+            dataGroup.clear()
         }
     }
 
     fun clearByGroupName(groupName: String) {
         viewModelScope.launch {
-            datagroup.deleteByGroupName(groupName)
+            dataGroup.deleteByGroupName(groupName)
         }
     }
 
@@ -158,20 +205,20 @@ class GroupViewModel @Inject constructor(
     // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
     fun find(number: String) {
         viewModelScope.launch {
-            val groupListForFind = datagroup.getGroupByNumber(number)
+            val groupListForFind = dataGroup.getGroupByNumber(number)
         }
     }
 
     fun findAndDelete(number: String) {
         viewModelScope.launch {
-            val groupListForDelete = datagroup.getGroupByNumber(number)
-            datagroup.delete(groupListForDelete)
+            val groupListForDelete = dataGroup.getGroupByNumber(number)
+            dataGroup.delete(groupListForDelete)
         }
     }
 
     fun findAndUpdate(name: String, number: String, group: String) {
         viewModelScope.launch {
-            val groupListForUpdate = datagroup.getGroupByNumber(number)
+            val groupListForUpdate = dataGroup.getGroupByNumber(number)
             val updateList = GroupList(
                 name,
                 number,
@@ -181,7 +228,7 @@ class GroupViewModel @Inject constructor(
                 groupListForUpdate.recentContactCallTime,
                 groupListForUpdate.id
             )
-            datagroup.update(updateList)
+            dataGroup.update(updateList)
         }
     }
 
@@ -189,7 +236,7 @@ class GroupViewModel @Inject constructor(
     private fun getOnlyGroupName() {
         viewModelScope.launch {
             // DB 로부터 그룹 명만 리스트 형태로 받아
-            val groupNameList = datagroup.getGroupName().distinct()
+            val groupNameList = dataGroup.getGroupName().distinct()
             Log.i("확인", "groupNameList : $groupNameList")
             val jsonList = JSONArray()
 //            "그룹명", "직접입력"

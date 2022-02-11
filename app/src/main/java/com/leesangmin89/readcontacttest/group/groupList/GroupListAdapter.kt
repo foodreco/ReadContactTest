@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.convertLongToDateString
+import com.leesangmin89.readcontacttest.convertLongToTimeString
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.GroupListChildBinding
 
@@ -31,8 +34,17 @@ class GroupListAdapter(ctx: Context) : ListAdapter<GroupList, GroupListAdapter.G
 
         holder.name.text = item.name
         holder.number.text = item.number
-        holder.currentCall.text = item.recentContact
-        holder.currentCallTimes.text = item.recentContactCallTime
+        if (item.recentContact == "") {
+            holder.currentCall.text = "최근 통화 없음"
+        } else {
+            holder.currentCall.text = convertLongToDateString(item.recentContact!!.toLong())
+        }
+        if (item.recentContactCallTime == "") {
+            holder.currentCallTimes.text = ""
+        } else {
+            holder.currentCallTimes.text = convertLongToTimeString(item.recentContactCallTime!!.toLong())
+        }
+
         //이미지 관련
         if (item.image != null)
             holder.profile.setImageBitmap(item.image)
