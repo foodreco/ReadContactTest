@@ -8,12 +8,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.PrimaryKey
+import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.security.acl.Group
 import javax.inject.Inject
 
@@ -39,9 +41,12 @@ class GroupViewModel @Inject constructor(
     private val _coroutineDoneEvent = MutableLiveData<Boolean>()
     val coroutineDoneEvent: LiveData<Boolean> = _coroutineDoneEvent
 
+    private val _getOnlyGroupNameDoneEvent = MutableLiveData<Boolean>()
+    val getOnlyGroupNameDoneEvent: LiveData<Boolean> = _getOnlyGroupNameDoneEvent
 
     init {
         getGroupName()
+        getOnlyGroupName()
         Log.d("확인", "그룹 뷰모델 초기화됨")
     }
 
@@ -57,6 +62,7 @@ class GroupViewModel @Inject constructor(
 
             val groupDataMap = mutableMapOf<String, Int>()
 
+            // 그룹명을 리스트 형태로 모아서, 그룹당 사람 수를 출력하는 코드
             // 만약 data 가 empty 상태라면
             if (data == emptyData) {
                 _groupListEmptyEvent.value = true
@@ -176,6 +182,27 @@ class GroupViewModel @Inject constructor(
                 groupListForUpdate.id
             )
             datagroup.update(updateList)
+        }
+    }
+
+    // 그룹명 만 리스트 형태로 출력하는 함수
+    private fun getOnlyGroupName() {
+        viewModelScope.launch {
+            // DB 로부터 그룹 명만 리스트 형태로 받아
+            val groupNameList = datagroup.getGroupName().distinct()
+            Log.i("확인", "groupNameList : $groupNameList")
+            val jsonList = JSONArray()
+//            "그룹명", "직접입력"
+            jsonList.put("그룹명 선택")
+            jsonList.put("직접입력")
+            for (i in groupNameList) {
+                jsonList.put(i)
+            }
+            val saveList = jsonList.toString()
+            Log.i("확인", "saveList : $saveList")
+            // SharedPreferences 에 저장
+            MyApplication.prefs.setString("group",saveList)
+            _getOnlyGroupNameDoneEvent.value = true
         }
     }
 
