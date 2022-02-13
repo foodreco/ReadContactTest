@@ -6,13 +6,16 @@ import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +25,8 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
+import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +45,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("Range")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,6 +105,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         listViewModel.initializeContactEvent.observe(viewLifecycleOwner,
             {
                 if (it) {
+                    // 연락처 가져오기
                     loadContact()
                 }
             })
@@ -116,6 +123,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         setHasOptionsMenu(true)
+
+
         return binding.root
     }
 
@@ -213,6 +222,9 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     // 초기 데이터 로드 함수(ContactBase)
     @SuppressLint("Range")
     fun loadContact() {
+
+        Log.i("확인"," 리스트 뷰모델 : loadContact()")
+
         // 기존 데이터 삭제
         listViewModel.clear()
 
@@ -305,6 +317,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
     }
+
 
 
 

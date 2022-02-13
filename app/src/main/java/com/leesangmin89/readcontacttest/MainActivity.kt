@@ -7,20 +7,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.navigateUp
+import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     // 권한 허용 리스트
-    val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
+    private val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG)
 
     // 권한 허용 코드
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.i("수정","초기 중복 허용 다듬을 것")
+        Log.i("수정","권한 초기 중복 허용 다듬을 것")
 
         // 권한 허용 체크
         checkAndStart()

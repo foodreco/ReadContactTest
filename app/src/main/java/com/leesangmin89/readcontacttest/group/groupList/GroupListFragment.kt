@@ -2,6 +2,7 @@ package com.leesangmin89.readcontacttest.group.groupList
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -48,6 +49,8 @@ class GroupListFragment : Fragment() {
                 })
             }
         })
+
+        Log.e("수정","로드 딜레이 있음, 프로그래스바 추가")
 
         // deleteData() 작업이 완료되면 GroupFragment 로 이동
         groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner, {

@@ -3,20 +3,25 @@ package com.leesangmin89.readcontacttest.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.CallLog
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
+import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +31,7 @@ class MainFragment : Fragment() {
 
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
     private val mainViewModel: MainViewModel by viewModels()
+    private val callLogViewModel: CallLogViewModel by viewModels()
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CALL_LOG)
@@ -38,6 +44,7 @@ class MainFragment : Fragment() {
 
     private var contactNumbers: Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -103,6 +110,7 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun checkAndStart() {
         // 권한 허용 여부 확인
         if (checkNeedPermission()) {
@@ -110,6 +118,9 @@ class MainFragment : Fragment() {
             getPhoneInfo()
             printKingContact()
             countContactNumbers()
+            // 통화기록 가져오기
+            getCallLogInfo()
+            Log.i("보완","비슷한 콘텐츠 리졸버 함수 통합하기")
         } else {
             requestContactPermission()
         }
@@ -267,6 +278,63 @@ class MainFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun printKingContact() {
 
+    }
+
+    // 통화기록을 가져오는 함수(CallLogData)
+    @RequiresApi(Build.VERSION_CODES.N)
+    @SuppressLint("Range")
+    fun getCallLogInfo() {
+
+        Log.i("확인"," 리스트 뷰모델 : getCallLogInfo()")
+
+        // 전화 로그 가져오는 uri
+        val callLogUri = CallLog.Calls.CONTENT_URI
+
+        // 통화 총 횟수 카운드 변수
+        var callCountNum = 0
+        var activatedContact = 0
+
+        val proj = arrayOf(
+            CallLog.Calls.CACHED_NAME,
+            CallLog.Calls.NUMBER,
+            CallLog.Calls.DATE,
+            CallLog.Calls.DURATION,
+            CallLog.Calls.TYPE
+        )
+
+        val contacts = requireActivity().contentResolver.query(
+            callLogUri,
+            null,
+            null,
+            null,
+            null
+        )
+
+        // 데이터 중첩을 막기 위해, 기존 데이터 삭제
+        callLogViewModel.clear()
+
+        // 반복 작업 구간
+        while (contacts!!.moveToNext()) {
+            var name =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.CACHED_NAME))
+            if (name == null) {
+                name = "발신자불명"
+            }
+            val number =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER)).replace("-","")
+            val date =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE))
+            val duration =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DURATION))
+            val callType =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.TYPE))
+
+
+            val listChild = CallLogData(name, number, date, duration, callType)
+
+            callLogViewModel.insert(listChild)
+        }
+        contacts.close()
     }
 
 }
