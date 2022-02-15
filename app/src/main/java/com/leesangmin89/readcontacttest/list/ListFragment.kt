@@ -318,9 +318,4 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
-
-
-
-
-
 }

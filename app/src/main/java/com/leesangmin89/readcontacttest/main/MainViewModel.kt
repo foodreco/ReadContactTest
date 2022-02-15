@@ -25,9 +25,13 @@ class MainViewModel @Inject constructor(
     val _contactNumbers = MutableLiveData<Int>()
     val contactNumbers: LiveData<Int> = _contactNumbers
 
+    private val _progressBarEventFinished = MutableLiveData<Boolean>()
+    val progressBarEventFinished : LiveData<Boolean> = _progressBarEventFinished
+
 
     init {
         infoData = database.getRecentData()
+        Log.i("프로그래스바","${_progressBarEventFinished.value}")
     }
 
     fun insertInfo(
@@ -43,6 +47,8 @@ class MainViewModel @Inject constructor(
             Log.d("확인","insertName : $insertName")
             val insertList = ContactInfo(contactNumber, activatedContact, mostRecentContact, insertName, mostContactTimes)
             database.insert(insertList)
+            _progressBarEventFinished.value = true
+            Log.i("프로그래스바","동작 후 : ${_progressBarEventFinished.value}")
         }
     }
 
@@ -52,5 +58,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.i("프로그래스바","뷰모델 파괴")
+    }
 
+    fun progressBarEventReset() {
+        _progressBarEventFinished.value = false
+    }
 }

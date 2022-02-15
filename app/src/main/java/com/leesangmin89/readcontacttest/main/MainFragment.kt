@@ -18,12 +18,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,7 +48,17 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.i("프로그래스바", "mainFragment 생성")
+
         checkAndStart()
+
+        // 프로그래스바 노출 코드
+        mainViewModel.progressBarEventFinished.observe(viewLifecycleOwner, { progressBarFinish ->
+            if (progressBarFinish) {
+                showProgress(false)
+                mainViewModel.progressBarEventReset()
+            }
+        })
 
         // 활성 통화 횟수 및 마지막 통화 표현 코드
         mainViewModel.infoData.observe(viewLifecycleOwner, Observer {
@@ -62,7 +69,6 @@ class MainFragment : Fragment() {
                     textRecentContact.text = getString(R.string.recent_contact, "해당없음")
                     MostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
                     MostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
-
                 } else {
                     Log.i("보완", "메인프레그먼트 로드될때마다 해당 데이터 로딩 오래걸림")
 //                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
@@ -155,6 +161,9 @@ class MainFragment : Fragment() {
     @SuppressLint("Range")
     fun getPhoneInfo() {
         Log.i("보완", "로딩 오래걸림?")
+
+        showProgress(true)
+
         val list = mutableListOf<ContactSpl>()
         // 전화 로그 가져오는 uri
         val callLogUri = CallLog.Calls.CONTENT_URI
@@ -189,9 +198,6 @@ class MainFragment : Fragment() {
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID))
             var name =
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.CACHED_NAME))
-            if (name == null) {
-                name = "발신자 불명"
-            }
             val number =
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER))
             val duration =
@@ -200,6 +206,10 @@ class MainFragment : Fragment() {
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE))
             val callType =
                 contacts.getString(contacts.getColumnIndex(CallLog.Calls.TYPE))
+
+            if (name == null) {
+                name = number
+            }
 
             // CallLogData 통화기록 데이터 갱신
             val callLogListChild = CallLogData(name, number, date, duration, callType)
@@ -262,6 +272,10 @@ class MainFragment : Fragment() {
         }
         mainViewModel._contactNumbers.value = contactNumbers
         contacts.close()
+    }
+
+    fun showProgress(show: Boolean) {
+        binding.progressBarMain.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
 
