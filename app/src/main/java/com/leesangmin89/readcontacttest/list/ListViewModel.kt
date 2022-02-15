@@ -59,17 +59,14 @@ class ListViewModel @Inject constructor(
 
     fun getAllDataByASC() {
         _sortEvent.value = 0
-        Log.i("확인","getAllDataByASC")
     }
 
     fun getAllDataByDESC() {
         _sortEvent.value = 1
-        Log.i("확인","getAllDataByDESC")
     }
 
     fun getAllDataByNumberASD() {
         _sortEvent.value = 2
-        Log.i("확인","getAllDataByNumberASD")
     }
 
     fun contactInitCompleted() {

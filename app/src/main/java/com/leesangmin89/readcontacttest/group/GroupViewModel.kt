@@ -51,13 +51,11 @@ class GroupViewModel @Inject constructor(
 
 
     init {
-        getGroupName()
-        getOnlyGroupName()
-        Log.d("확인", "그룹 뷰모델 초기화됨")
     }
 
     // 그룹이 존재하는 리스트를 정리하여 recyclerview 에 알맞게 가공하는 함수
-    private fun getGroupName() {
+    fun getGroupName() {
+        Log.i("수정","GroupData 전용 DB를 만들거나, GroupList DB에서 불러와서 submitlist")
         viewModelScope.launch {
             // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
 //            val data = database.getGroupName()
@@ -239,11 +237,10 @@ class GroupViewModel @Inject constructor(
     }
 
     // 그룹명 만 리스트 형태로 출력하는 함수
-    private fun getOnlyGroupName() {
+    fun getOnlyGroupName() {
         viewModelScope.launch {
             // DB 로부터 그룹 명만 리스트 형태로 받아
             val groupNameList = dataGroup.getGroupName().distinct()
-            Log.i("확인", "groupNameList : $groupNameList")
             val jsonList = JSONArray()
 //            "그룹명", "직접입력"
             jsonList.put("그룹명 선택")
@@ -252,15 +249,9 @@ class GroupViewModel @Inject constructor(
                 jsonList.put(i)
             }
             val saveList = jsonList.toString()
-            Log.i("확인", "saveList : $saveList")
             // SharedPreferences 에 저장
             MyApplication.prefs.setString("group", saveList)
             _getOnlyGroupNameDoneEvent.value = true
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("확인", "뷰모델 파괴됨")
     }
 }

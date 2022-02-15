@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.ui.state.ToggleableState
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +29,10 @@ class GroupFragment : Fragment() {
         val adapter = GroupAdapter(requireContext())
         binding.groupRecyclerView.adapter = adapter
 
-        //
+        // onCreateView 와 함께 리스트 업데이트
+        groupViewModel.getGroupName()
+
+        // 업데이트 리스트 recyclerView로 반환
         groupViewModel.groupInfo.observe(viewLifecycleOwner, {
             adapter.submitList(it)
         })
@@ -47,9 +51,6 @@ class GroupFragment : Fragment() {
                 builder.create().show()
             }
         })
-
         return binding.root
     }
-
-
 }

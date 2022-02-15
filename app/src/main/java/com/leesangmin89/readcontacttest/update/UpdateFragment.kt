@@ -54,6 +54,9 @@ class UpdateFragment : Fragment() {
         binding.contactNumberUpdate.setText(args.currentItem.number)
         binding.contactGroupUpdate.setText(args.currentItem.group)
 
+        //그룹명 리스트 형태로 출력하는 함수
+        groupViewModel.getOnlyGroupName()
+
         // 그룹명을 리스트로 받는게 끝나면, 스피너를 동작시키는 코드
         groupViewModel.getOnlyGroupNameDoneEvent.observe(viewLifecycleOwner, {
             if (it) {
@@ -66,8 +69,6 @@ class UpdateFragment : Fragment() {
                         spinnerGroupNameList
                     )
                 binding.spinnerGroup.adapter = spinnerAdapter
-
-                Log.d("확인", "spinnerGroupNameList : $spinnerGroupNameList")
 
 
                 // 전달된 데이터 선택 시, 해당값 출력하기
@@ -147,7 +148,6 @@ class UpdateFragment : Fragment() {
     // SharedPreferences 로부터 groupList를 불러와서 spinnerGroupNameList에 추가하는 함수
     private fun spinnerAddListCall() {
         val lastList = MyApplication.prefs.getString("group", "None")
-        Log.d("확인", "lastList : $lastList")
         val arrJson = JSONArray(lastList)
         for (i in 0 until arrJson.length()) {
             spinnerGroupNameList.add(arrJson.optString(i))

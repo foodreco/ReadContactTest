@@ -48,8 +48,6 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.i("프로그래스바", "mainFragment 생성")
-
         checkAndStart()
 
         // 프로그래스바 노출 코드

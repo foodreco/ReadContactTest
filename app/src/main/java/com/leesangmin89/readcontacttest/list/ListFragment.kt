@@ -98,7 +98,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                         })
                     }
                 }
-                Log.i("확인", "adapter.submitList(list)")
             })
 
         // 최초 데이터 불러오기 옵저버
@@ -167,17 +166,14 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             R.id.sort_by_name_asc -> {
                 listViewModel.getAllDataByASC()
-                Log.i("확인", "sort_by_name_asc")
                 true
             }
 //            R.id.sort_by_name_desc -> {
 //                listViewModel.getAllDataByDESC()
-//                Log.i("확인", "sort_by_name_desc")
 //                true
 //            }
             R.id.sory_by_number -> {
                 listViewModel.getAllDataByNumberASD()
-                Log.i("확인", "sort_by_number")
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -222,9 +218,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     // 초기 데이터 로드 함수(ContactBase)
     @SuppressLint("Range")
     fun loadContact() {
-
-        Log.i("확인"," 리스트 뷰모델 : loadContact()")
-
         // 기존 데이터 삭제
         listViewModel.clear()
 

@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 
 // 기본 데이터 저장소
 // 1. DB 존재하는 그룹명 리스트 key : group
-// 2. Phone 에 저장된 연락처 갯수 key : contactsNumber
+// 2. Phone 에 저장된 연락처 갯수 key : contactsNumber - 미사용
 class PreferenceUtil(context: Context) {
 
     private val prefs: SharedPreferences =

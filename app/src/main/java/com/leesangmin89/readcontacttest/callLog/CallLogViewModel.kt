@@ -45,7 +45,6 @@ class CallLogViewModel @Inject constructor(
     fun findAndReturn(number: String) {
         viewModelScope.launch {
             _logList.value = database.findAndReturn(number)
-            Log.i("확인","콜로그뷰모델 : $number")
         }
     }
 

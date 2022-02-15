@@ -27,7 +27,7 @@ class ContactAdapter(ctx: Context) : ListAdapter<ContactBase, Holder>(ContactDif
 
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        var safePosition = holder.adapterPosition
+        val safePosition = holder.adapterPosition
         val item = getItem(safePosition)
 
         holder.name.text = item.name
