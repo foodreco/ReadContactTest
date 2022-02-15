@@ -34,7 +34,6 @@ import android.widget.EditText
 
 @AndroidEntryPoint
 class UpdateFragment : Fragment() {
-
     private val args by navArgs<UpdateFragmentArgs>()
     private val listViewModel: ListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
@@ -48,6 +47,8 @@ class UpdateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        Log.d("수정", "UpdateFragment -> custom Dialog로 전환?? 그룹편집 기능만 살리기?")
 
         binding.contactNameUpdate.setText(args.currentItem.name)
         binding.contactNumberUpdate.setText(args.currentItem.number)

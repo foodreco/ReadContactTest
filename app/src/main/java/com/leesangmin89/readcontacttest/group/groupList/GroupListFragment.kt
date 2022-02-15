@@ -29,6 +29,9 @@ class GroupListFragment : Fragment() {
         val adapter = GroupListAdapter(requireContext())
         binding.groupListRecyclerView.adapter = adapter
 
+        showProgress(true)
+
+
         // 1.GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
         groupViewModel.getGroupListFromGroupList(args.groupName)
 
@@ -36,6 +39,7 @@ class GroupListFragment : Fragment() {
         groupViewModel.groupListGetEvent.observe(viewLifecycleOwner,{ listGetFinished ->
             if (listGetFinished) {
                 // GroupList 정보를 업데이트하는 함수
+                Log.e("수정","로드 딜레이 있음, 프로그래스바 추가 or 앱 빌드 시 실행")
                 groupViewModel.updateGroupRecentInfo(args.groupName)
             }
         })
@@ -46,11 +50,11 @@ class GroupListFragment : Fragment() {
                 // 가져온 GroupList 정보를 recyclerView 형태로 출력하는 코드
                 groupViewModel.newGroupList.observe(viewLifecycleOwner, {
                     adapter.submitList(it)
+                    showProgress(false)
                 })
             }
         })
 
-        Log.e("수정","로드 딜레이 있음, 프로그래스바 추가")
 
         // deleteData() 작업이 완료되면 GroupFragment 로 이동
         groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner, {
@@ -93,5 +97,9 @@ class GroupListFragment : Fragment() {
         builder.setTitle("${args.groupName} 그룹 삭제")
         builder.setMessage("해당 정보를 삭제하시겠습니까?")
         builder.create().show()
+    }
+
+    fun showProgress(show:Boolean) {
+        binding.groupListProgressBar.visibility = if(show) View.VISIBLE else View.GONE
     }
 }

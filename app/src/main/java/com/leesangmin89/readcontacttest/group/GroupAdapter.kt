@@ -22,8 +22,7 @@ class GroupAdapter(ctx: Context) : ListAdapter<GroupData, GroupHolder>(GroupDiff
 
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: GroupHolder, position: Int) {
-        var safePosition = holder.adapterPosition
-        val item = getItem(safePosition)
+        val item = getItem(position)
 
         holder.groupName.text = item.groupName
         holder.groupNumber.text = item.groupNumber

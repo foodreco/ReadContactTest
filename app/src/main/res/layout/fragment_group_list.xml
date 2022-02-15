@@ -18,4 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         android:padding="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <ProgressBar
+        android:id="@+id/group_list_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/group_list_recyclerView"
+        app:layout_constraintStart_toStartOf="@+id/group_list_recyclerView"
+        app:layout_constraintTop_toTopOf="@+id/group_list_recyclerView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

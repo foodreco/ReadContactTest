@@ -21,7 +21,7 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
     private val database: ContactDao,
     private val dataGroup: GroupListDao,
-    private val dataCall : CallLogDao,
+    private val dataCall: CallLogDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -85,9 +85,15 @@ class GroupViewModel @Inject constructor(
                         groupDataMap[groupName] = 1
                     }
                 }
+
+                // 그룹 등록이 된 연락처 총수
+                val groupNameToSumOfNumbers: Int =
+                    groupDataMap.map { it.value }.sum()
+
                 // groupDataMap 을 순회하면서
                 for ((name, numbers) in groupDataMap) {
-                    val rate = "등록비율 : ${(numbers / 2000) * 100}%      (${numbers}/2000)"
+                    val rateNumber : Double = (numbers.toDouble() / groupNameToSumOfNumbers.toDouble()) * 100
+                    val rate = "등록비율 : ${String.format("%.0f",rateNumber)}%      (${numbers}/${groupNameToSumOfNumbers})"
                     val regiNumbers = "등록인원 수 : ${numbers}명"
                     val list = GroupData(name, regiNumbers, rate)
                     groupData.add(list)
@@ -115,7 +121,7 @@ class GroupViewModel @Inject constructor(
     // 특정 그룹의 리스트를 반복하면서, 번호를 넘겨 가장 최근 통화일자, 시간, 유형을 받아오는 함수
     fun updateGroupRecentInfo(key: String) {
         viewModelScope.launch {
-            val groupList : List<GroupList>? = _newGroupList.value
+            val groupList: List<GroupList>? = _newGroupList.value
             if (groupList != null) {
                 for (item in groupList) {
                     val newInfo = dataCall.getDDC(item.number)
@@ -248,7 +254,7 @@ class GroupViewModel @Inject constructor(
             val saveList = jsonList.toString()
             Log.i("확인", "saveList : $saveList")
             // SharedPreferences 에 저장
-            MyApplication.prefs.setString("group",saveList)
+            MyApplication.prefs.setString("group", saveList)
             _getOnlyGroupNameDoneEvent.value = true
         }
     }

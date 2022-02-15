@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogBinding
-import com.leesangmin89.readcontacttest.main.ContactSpl
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 
@@ -34,69 +33,17 @@ class CallLogFragment : Fragment() {
         val adapter = CallLogAdapter()
         binding.callLogRecyclerView.adapter = adapter
 
-//        getCallLogInfo()
+        showProgress(true)
 
         callLogViewModel.callLogList.observe(viewLifecycleOwner, {
             adapter.submitList(it)
+            showProgress(false)
         })
 
         return binding.root
     }
 
-    // 통화기록을 가져오는 함수(CallLogData)
-//    @RequiresApi(Build.VERSION_CODES.N)
-//    @SuppressLint("Range", "SimpleDateFormat")
-//    fun getCallLogInfo() {
-//
-//        // 전화 로그 가져오는 uri
-//        val callLogUri = CallLog.Calls.CONTENT_URI
-//
-//        // 통화 총 횟수 카운드 변수
-//        var callCountNum = 0
-//        var activatedContact = 0
-//
-//        val proj = arrayOf(
-//            CallLog.Calls.CACHED_NAME,
-//            CallLog.Calls.NUMBER,
-//            CallLog.Calls.DATE,
-//            CallLog.Calls.DURATION,
-//            CallLog.Calls.TYPE
-//        )
-//
-//        val contacts = requireActivity().contentResolver.query(
-//            callLogUri,
-//            null,
-//            null,
-//            null,
-//            null
-//        )
-//
-//        // 데이터 중첩을 막기 위해, 기존 데이터 삭제
-//        callLogViewModel.clear()
-//
-//        // 반복 작업 구간
-//        while (contacts!!.moveToNext()) {
-//            var name =
-//                contacts.getString(contacts.getColumnIndex(CallLog.Calls.CACHED_NAME))
-//            if (name == null) {
-//                name = "발신자불명"
-//            }
-//            val number =
-//                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER)).replace("-","")
-//            val date =
-//                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE))
-//            val duration =
-//                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DURATION))
-//            val callType =
-//                contacts.getString(contacts.getColumnIndex(CallLog.Calls.TYPE))
-//
-//
-//            val listChild = CallLogData(name, number, date, duration, callType)
-//
-//            callLogViewModel.insert(listChild)
-//        }
-//
-//        contacts.close()
-//    }
-
+    fun showProgress(show:Boolean) {
+        binding.callLogProgressBar.visibility = if(show) View.VISIBLE else View.GONE
+    }
 }

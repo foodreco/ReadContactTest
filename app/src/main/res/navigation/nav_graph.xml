@@ -18,10 +18,6 @@
             android:id="@+id/action_listFragment_to_updateFragment"
             app:destination="@id/updateFragment"
             app:popUpTo="@id/listFragment" />
-        <action
-            android:id="@+id/action_listFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainFragment" />
         <argument
             android:name="currentItemId"
             app:argType="integer"
@@ -57,28 +53,12 @@
         android:id="@+id/mainFragment"
         android:name="com.leesangmin89.readcontacttest.main.MainFragment"
         android:label="메인"
-        tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_listFragment"
-            app:destination="@id/listFragment"
-            app:popUpTo="@id/mainFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_groupFragment"
-            app:destination="@id/groupFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_callLogFragment"
-            app:destination="@id/callLogFragment"
-            app:popUpTo="@id/mainFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_main"/>
     <fragment
         android:id="@+id/groupFragment"
         android:name="com.leesangmin89.readcontacttest.group.GroupFragment"
         android:label="그룹관리"
         tools:layout="@layout/fragment_group">
-        <action
-            android:id="@+id/action_groupFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainFragment" />
         <action
             android:id="@+id/action_groupFragment_to_groupListFragment"
             app:destination="@id/groupListFragment"
@@ -122,10 +102,5 @@
         android:id="@+id/callLogFragment"
         android:name="com.leesangmin89.readcontacttest.callLog.CallLogFragment"
         android:label="통화기록"
-        tools:layout="@layout/fragment_call_log">
-        <action
-            android:id="@+id/action_callLogFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_call_log"/>
 </navigation>

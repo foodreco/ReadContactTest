@@ -3,6 +3,7 @@ package com.leesangmin89.readcontacttest.callLog
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -33,6 +34,8 @@ class CallLogAdapter : ListAdapter<CallLogData, CallHolder>(CallLogDiffCallback(
         holder.callType.text = convertCallTypeToString(item.callType!!.toInt())
         holder.callDuration.text = convertLongToTimeString(item.duration!!.toLong())
         holder.callDate.text = convertLongToDateString(item.date!!.toLong())
+
+        Log.d("추가", "터치 시, 칸 확장되면서 메모 기능 보이기")
 
 //        //리싸이클러 터치 시, GroupListFragment 로 이동
 //        holder.groupEachList.setOnClickListener {
