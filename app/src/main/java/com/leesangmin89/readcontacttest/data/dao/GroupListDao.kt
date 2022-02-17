@@ -22,6 +22,9 @@ interface GroupListDao {
     @Query("DELETE FROM group_table")
     suspend fun clear()
 
+    @Query("SELECT * FROM group_table")
+    suspend fun getAllDataFromGroupList() : List<GroupList>
+
     @Query("SELECT `group` FROM group_table ")
     suspend fun getGroupName() : List<String>
 

@@ -68,7 +68,6 @@ class MainFragment : Fragment() {
                     MostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
                     MostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
                 } else {
-                    Log.i("보완", "메인프레그먼트 로드될때마다 해당 데이터 로딩 오래걸림")
 //                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
                     textContactActivated.text =
                         getString(R.string.contact_activated, it.activatedContact)
@@ -158,7 +157,6 @@ class MainFragment : Fragment() {
     // 전화 통계, 통화기록을 불러오는 함수(ContactInfo,CallLogData)
     @SuppressLint("Range")
     fun getPhoneInfo() {
-        Log.i("보완", "로딩 오래걸림?")
 
         showProgress(true)
 

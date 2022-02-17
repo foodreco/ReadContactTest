@@ -55,7 +55,6 @@ class GroupViewModel @Inject constructor(
 
     // 그룹이 존재하는 리스트를 정리하여 recyclerview 에 알맞게 가공하는 함수
     fun getGroupName() {
-        Log.i("수정","GroupData 전용 DB를 만들거나, GroupList DB에서 불러와서 submitlist")
         viewModelScope.launch {
             // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
 //            val data = database.getGroupName()
@@ -206,12 +205,7 @@ class GroupViewModel @Inject constructor(
         _coroutineDoneEvent.value = false
     }
 
-    // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
-    fun find(number: String) {
-        viewModelScope.launch {
-            val groupListForFind = dataGroup.getGroupByNumber(number)
-        }
-    }
+
 
     fun findAndDelete(number: String) {
         viewModelScope.launch {

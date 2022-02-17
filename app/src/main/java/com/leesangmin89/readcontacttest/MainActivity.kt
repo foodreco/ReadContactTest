@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        Log.i("수정","권한 초기 중복 허용 다듬을 것")
         Log.i("추가","통화별 메모기능으로 인한 보안 로그인 설정 추가 필요")
         Log.i("추가","각 Fragment back 버튼 시, 즉시 종료되야 함")
 

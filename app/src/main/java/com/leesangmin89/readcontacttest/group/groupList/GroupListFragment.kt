@@ -39,7 +39,6 @@ class GroupListFragment : Fragment() {
         groupViewModel.groupListGetEvent.observe(viewLifecycleOwner,{ listGetFinished ->
             if (listGetFinished) {
                 // GroupList 정보를 업데이트하는 함수
-                Log.e("수정","로드 딜레이 있음, 프로그래스바 추가 or 앱 빌드 시 실행")
                 groupViewModel.updateGroupRecentInfo(args.groupName)
             }
         })
@@ -70,15 +69,20 @@ class GroupListFragment : Fragment() {
 
     // 메뉴 활성화
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.delete_menu, menu)
+        inflater.inflate(R.menu.grouplist_menu, menu)
     }
 
     // 메뉴 터치 시 작동
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_delte) {
-            deleteData()
+        when (item.itemId) {
+            R.id.menu_group_delete -> deleteData()
+            R.id.menu_group_add -> addGroup()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun addGroup() {
+//        findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToListFragment(args.groupName))
     }
 
     // GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹을 삭제하는 함수

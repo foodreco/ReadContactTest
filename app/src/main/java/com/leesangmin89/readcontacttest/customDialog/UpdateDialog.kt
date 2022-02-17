@@ -1,39 +1,34 @@
-package com.leesangmin89.readcontacttest.update
+package com.leesangmin89.readcontacttest.customDialog
 
+import android.R
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.fragment.app.Fragment
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.datastore.dataStore
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.FragmentUpdateBinding
+import com.leesangmin89.readcontacttest.databinding.GroupdetailDialogBinding
+import com.leesangmin89.readcontacttest.databinding.UpdateDialogBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
 import com.leesangmin89.readcontacttest.list.ListViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.parcelize.Parcelize
+import com.leesangmin89.readcontacttest.update.UpdateFragmentArgs
+import com.leesangmin89.readcontacttest.update.UpdateFragmentDirections
 import org.json.JSONArray
-import android.widget.EditText
 
-@AndroidEntryPoint
-class UpdateFragment : Fragment() {
+class UpdateDialog : DialogFragment() {
     private val args by navArgs<UpdateFragmentArgs>()
     private val listViewModel: ListViewModel by viewModels()
     private val groupViewModel: GroupViewModel by viewModels()
@@ -65,7 +60,7 @@ class UpdateFragment : Fragment() {
                 val spinnerAdapter =
                     ArrayAdapter<String>(
                         requireContext(),
-                        android.R.layout.simple_list_item_1,
+                        R.layout.simple_list_item_1,
                         spinnerGroupNameList
                     )
                 binding.spinnerGroup.adapter = spinnerAdapter
@@ -239,12 +234,12 @@ class UpdateFragment : Fragment() {
 
     // 메뉴 활성화
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.delete_menu, menu)
+        inflater.inflate(com.leesangmin89.readcontacttest.R.menu.delete_menu, menu)
     }
 
     // 메뉴 터치 시 작동
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_delete) {
+        if (item.itemId == com.leesangmin89.readcontacttest.R.id.menu_delete) {
             deleteData()
         }
         return super.onOptionsItemSelected(item)

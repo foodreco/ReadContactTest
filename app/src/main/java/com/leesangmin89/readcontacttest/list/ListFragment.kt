@@ -5,10 +5,10 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
@@ -17,33 +17,31 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.compose.animation.core.animateDpAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
-import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
-    private val args by navArgs<ListFragmentArgs>()
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
     private val listViewModel: ListViewModel by viewModels()
-    private val adapter : ContactAdapter by lazy { ContactAdapter(requireContext()) }
+
+    //    private val adapter: ContactAdapter by lazy { ContactAdapter(requireContext()) }
+    private val adapter: ContactAdapterTest by lazy { ContactAdapterTest(requireContext()) }
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
 
     // 권한 허용 코드
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
-
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("Range")
@@ -68,33 +66,37 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         // 작동안함??
 //        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
+        // 초기화 버튼 클릭 시, 연락처 데이터를 다시 가져오는 코드
         binding.button.setOnClickListener {
             checkAndStart()
         }
 
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-        Log.i("보완","정렬 및 recyclerView 위치")
+        Log.i("보완", "정렬 및 recyclerView 위치")
         listViewModel.sortEvent.observe(viewLifecycleOwner,
             {
+                Log.i("수정", "초기화 직후 group 반영되지 않음")
+                Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
+                // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
+                listViewModel.updateGroupNameInContactBase()
                 when (it) {
                     0 -> {
                         listViewModel.listData.observe(viewLifecycleOwner, {
-                            adapter.submitList(it)
-//                            binding.recyclerViewList.scrollToPosition(0)
+//                            adapter.submitList(it)
+                            adapter.setData(it)
                         })
                     }
                     1 -> {
                         listViewModel.listDataNameDESC.observe(viewLifecycleOwner, {
-                            adapter.submitList(it)
-//                            binding.recyclerViewList.scrollToPosition(0)
+//                            adapter.submitList(it)
+                            adapter.setData(it)
                         })
                     }
                     2 -> {
                         listViewModel.listDataNumberASC.observe(viewLifecycleOwner, {
-                            adapter.submitList(it)
-//                            binding.recyclerViewList.scrollToPosition(0)
-
+//                            adapter.submitList(it)
+                            adapter.setData(it)
                         })
                     }
                 }
@@ -121,9 +123,15 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             binding.recyclerViewList.scrollToPosition(0)
         }
 
+        // 체크박스 테스트
+        binding.switchCheckboxTest.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                adapter.onCheckBox(1)
+            } else {
+                adapter.onCheckBox(0)
+            }
+        }
         setHasOptionsMenu(true)
-
-
         return binding.root
     }
 
@@ -153,7 +161,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         listViewModel.searchDatabase(searchQuery).observe(this, { list ->
             list.let {
-                adapter.submitList(it)
+//                adapter.submitList(it)
+                adapter.setData(it)
             }
         })
     }
@@ -230,28 +239,30 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         )
 
         while (contacts!!.moveToNext()) {
-            val photo : Bitmap?
+            val photo: Bitmap?
             val name =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
             // 번호 수집 시, - 일괄 제거하여 수집한다.
             val number =
-                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replace("-","")
-            val photo_uri =
+                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                    .replace("-", "")
+            val photoUri =
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
-            val contactList = ContactBase(name, number, "", null,0)
-            Log.i("수정","그룹 DB 확인해서 group 인자 동기화 필요")
-            if (photo_uri != null) {
+            val contactList = ContactBase(name, number, "", null, 0)
+
+            if (photoUri != null) {
+                Log.i("수정", "getBitmap -> ImageDecoder 변경시도 but 오류발생")
                 contactList.image = MediaStore.Images.Media.getBitmap(
                     requireActivity().contentResolver,
-                    Uri.parse(photo_uri)
+                    Uri.parse(photoUri)
                 )
-            } else {
-                contactList.image = null
+//                    val source = ImageDecoder.createSource(requireActivity().contentResolver, photoUri)
+//                    val bitmap = ImageDecoder.decodeBitmap(source)
             }
             listViewModel.insert(contactList)
         }
-
         contacts.close()
+
         listViewModel.contactInitCompleted()
     }
 

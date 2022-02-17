@@ -23,15 +23,6 @@ interface ContactDao {
     suspend fun getGroupName() : List<String>
 
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
-    fun getAllDataByNameASC(): LiveData<List<ContactBase>>
-
-    @Query("SELECT * FROM contact_table ORDER BY name DESC")
-    fun getAllDataByNameDESC(): LiveData<List<ContactBase>>
-
-    @Query("SELECT * FROM contact_table ORDER BY number ASC")
-    fun getAllDataByNumberASC(): LiveData<List<ContactBase>>
-
-    @Query("SELECT * FROM contact_table")
     suspend fun getAllContactBaseList() : List<ContactBase>
 
     @Query("SELECT * FROM contact_table WHERE `group` =:key")
@@ -39,6 +30,17 @@ interface ContactDao {
 
     @Query("SELECT name FROM contact_table WHERE `number` =:key")
     suspend fun getName(key:String) : String
+
+
+
+    @Query("SELECT * FROM contact_table ORDER BY name ASC")
+    fun getAllDataByNameASC(): LiveData<List<ContactBase>>
+
+    @Query("SELECT * FROM contact_table ORDER BY name DESC")
+    fun getAllDataByNameDESC(): LiveData<List<ContactBase>>
+
+    @Query("SELECT * FROM contact_table ORDER BY number ASC")
+    fun getAllDataByNumberASC(): LiveData<List<ContactBase>>
 
     @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
     fun searchDatabase(searchQuery: String) : kotlinx.coroutines.flow.Flow<List<ContactBase>>

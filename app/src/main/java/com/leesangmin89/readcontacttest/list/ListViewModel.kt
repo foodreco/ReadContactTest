@@ -1,10 +1,12 @@
 package com.leesangmin89.readcontacttest.list
 
 import android.app.Application
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
+import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -12,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ListViewModel @Inject constructor(
     private val database: ContactDao,
+    private val dataGroup: GroupListDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -19,7 +22,7 @@ class ListViewModel @Inject constructor(
     val initializeContactEvent: LiveData<Boolean> = _initializeContactEvent
 
     private var _sortEvent = MutableLiveData<Int>()
-    var sortEvent : LiveData<Int> = _sortEvent
+    var sortEvent: LiveData<Int> = _sortEvent
 
     var listData: LiveData<List<ContactBase>>
     var listDataNameDESC: LiveData<List<ContactBase>>
@@ -30,6 +33,8 @@ class ListViewModel @Inject constructor(
         listData = database.getAllDataByNameASC()
         listDataNameDESC = database.getAllDataByNameDESC()
         listDataNumberASC = database.getAllDataByNumberASC()
+
+        // 최초 정렬 기본값(0) 주기
         _sortEvent.value = 0
     }
 
@@ -81,7 +86,34 @@ class ListViewModel @Inject constructor(
         return database.searchDatabase(searchQuery).asLiveData()
     }
 
+    // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
+    fun find(number: String) {
+        viewModelScope.launch {
+            val groupListForFind = dataGroup.getGroupByNumber(number)
+            groupListForFind.group
+        }
+    }
 
+    fun updateGroupNameInContactBase() {
+        viewModelScope.launch {
+            for (contact in database.getAllContactBaseList()) {
+                for (groupList in dataGroup.getAllDataFromGroupList()) {
+                    if (contact.number == groupList.number) {
+                        val updateList = ContactBase(
+                            contact.name,
+                            contact.number,
+                            groupList.group,
+                            contact.image,
+                            contact.id
+                        )
+                        database.update(updateList)
+                    }
+                }
+            }
+        }
+    }
 
-
+    override fun onCleared() {
+        super.onCleared()
+    }
 }
