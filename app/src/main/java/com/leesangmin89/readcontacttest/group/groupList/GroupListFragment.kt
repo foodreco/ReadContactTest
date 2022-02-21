@@ -32,7 +32,7 @@ class GroupListFragment : Fragment() {
         showProgress(true)
 
 
-        // 1.GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
+        // 1.GroupAdapter, GroupListAddFragment 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹 정보를 가져오는 함수
         groupViewModel.getGroupListFromGroupList(args.groupName)
 
         // 2. GroupList recyclerView 출력 코드 (GroupList 정보 소환 후, 작동)
@@ -82,7 +82,7 @@ class GroupListFragment : Fragment() {
     }
 
     private fun addGroup() {
-//        findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToListFragment(args.groupName))
+        findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupListAddFragment(args.groupName))
     }
 
     // GroupAdapter 에서 넘어온 groupName 을 매개로 GroupList 로부터 해당 그룹을 삭제하는 함수

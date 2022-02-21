@@ -24,19 +24,32 @@ class ListViewModel @Inject constructor(
     private var _sortEvent = MutableLiveData<Int>()
     var sortEvent: LiveData<Int> = _sortEvent
 
-    var listData: LiveData<List<ContactBase>>
+    private var _listData = MutableLiveData<List<ContactBase>>()
+    var listData: LiveData<List<ContactBase>> = _listData
+
+    //    var listData: LiveData<List<ContactBase>>
     var listDataNameDESC: LiveData<List<ContactBase>>
     var listDataNumberASC: LiveData<List<ContactBase>>
 
 
     init {
-        listData = database.getAllDataByNameASC()
+        initSort()
+        Log.i("확인", "뷰모델 초기화")
+//        listData = database.getAllDataByNameASC()
         listDataNameDESC = database.getAllDataByNameDESC()
         listDataNumberASC = database.getAllDataByNumberASC()
 
         // 최초 정렬 기본값(0) 주기
         _sortEvent.value = 0
     }
+
+    fun initSort() {
+        viewModelScope.launch {
+            _listData.value = database.getAllDataByNameASCTest()
+        }
+        Log.i("확인", "initSort / _listData.value = database.getAllDataByNameASCTest()")
+    }
+
 
     fun insert(contact: ContactBase) {
         viewModelScope.launch {
@@ -47,6 +60,8 @@ class ListViewModel @Inject constructor(
     fun clear() {
         viewModelScope.launch {
             database.clear()
+            // DB clear 후 정렬 다시 초기화
+            initSort()
         }
     }
 
@@ -63,19 +78,28 @@ class ListViewModel @Inject constructor(
     }
 
     fun getAllDataByASC() {
-        _sortEvent.value = 0
+        initSort()
+        Log.i("확인", "getAllDataByASC")
     }
 
     fun getAllDataByDESC() {
-        _sortEvent.value = 1
+        viewModelScope.launch {
+            _listData.value = database.getAllDataByNameDESCTest()
+        }
+        Log.i("확인", "getAllDataByDESC")
+
     }
 
-    fun getAllDataByNumberASD() {
-        _sortEvent.value = 2
+    fun getAllDataByNumberASC() {
+        viewModelScope.launch {
+            _listData.value = database.getAllDataByNumberASCTest()
+        }
+        Log.i("확인", "getAllDataByNumberASC")
     }
 
-    fun contactInitCompleted() {
-        _initializeContactEvent.value = false
+    fun syncWithGroupList() {
+        // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
+        updateGroupNameInContactBase()
     }
 
     fun contactActivate() {
@@ -110,10 +134,15 @@ class ListViewModel @Inject constructor(
                     }
                 }
             }
+            // 처음 불러오고 다시 초기화해줌
+            initSort()
+            _initializeContactEvent.value = false
         }
     }
 
     override fun onCleared() {
         super.onCleared()
     }
+
+
 }

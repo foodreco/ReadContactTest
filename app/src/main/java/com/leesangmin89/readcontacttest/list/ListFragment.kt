@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.compose.animation.core.animateDpAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -35,7 +33,12 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val listViewModel: ListViewModel by viewModels()
 
     //    private val adapter: ContactAdapter by lazy { ContactAdapter(requireContext()) }
-    private val adapter: ContactAdapterTest by lazy { ContactAdapterTest(requireContext()) }
+    private val adapter: ContactAdapterTest by lazy {
+        ContactAdapterTest(
+            requireContext(),
+            childFragmentManager
+        )
+    }
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
@@ -49,6 +52,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.i("확인", "ListFragment onCreateView")
 
         binding.recyclerViewList.adapter = adapter
 
@@ -71,36 +75,46 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             checkAndStart()
         }
 
+//        // 리싸이클러뷰 옵저버
+//        // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
+//        Log.i("보완", "정렬 및 recyclerView 위치")
+//        listViewModel.sortEvent.observe(viewLifecycleOwner,
+//            {
+//                Log.i("수정", "초기화 직후 group 반영되지 않음")
+//                Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
+//                // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
+//                listViewModel.updateGroupNameInContactBase()
+//                when (it) {
+//                    0 -> {
+//                        listViewModel.listData.observe(viewLifecycleOwner, {
+////                            adapter.submitList(it)
+//                            adapter.setData(it)
+//                        })
+//                    }
+//                    1 -> {
+//                        listViewModel.listDataNameDESC.observe(viewLifecycleOwner, {
+////                            adapter.submitList(it)
+//                            adapter.setData(it)
+//                        })
+//                    }
+//                    2 -> {
+//                        listViewModel.listDataNumberASC.observe(viewLifecycleOwner, {
+////                            adapter.submitList(it)
+//                            adapter.setData(it)
+//                        })
+//                    }
+//                }
+//            })
+
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
         Log.i("보완", "정렬 및 recyclerView 위치")
-        listViewModel.sortEvent.observe(viewLifecycleOwner,
-            {
-                Log.i("수정", "초기화 직후 group 반영되지 않음")
-                Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
-                // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
-                listViewModel.updateGroupNameInContactBase()
-                when (it) {
-                    0 -> {
-                        listViewModel.listData.observe(viewLifecycleOwner, {
-//                            adapter.submitList(it)
-                            adapter.setData(it)
-                        })
-                    }
-                    1 -> {
-                        listViewModel.listDataNameDESC.observe(viewLifecycleOwner, {
-//                            adapter.submitList(it)
-                            adapter.setData(it)
-                        })
-                    }
-                    2 -> {
-                        listViewModel.listDataNumberASC.observe(viewLifecycleOwner, {
-//                            adapter.submitList(it)
-                            adapter.setData(it)
-                        })
-                    }
-                }
-            })
+        Log.i("수정", "초기화 직후 group 반영되지 않음")
+        Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
+        listViewModel.listData.observe(viewLifecycleOwner, {
+            adapter.setData(it)
+            Log.i("확인", "listViewModel.listData.observe 발동")
+        })
 
         // 최초 데이터 불러오기 옵저버
         listViewModel.initializeContactEvent.observe(viewLifecycleOwner,
@@ -158,7 +172,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
-
         listViewModel.searchDatabase(searchQuery).observe(this, { list ->
             list.let {
 //                adapter.submitList(it)
@@ -177,12 +190,12 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 listViewModel.getAllDataByASC()
                 true
             }
-//            R.id.sort_by_name_desc -> {
-//                listViewModel.getAllDataByDESC()
-//                true
-//            }
+            R.id.sort_by_name_desc -> {
+                listViewModel.getAllDataByDESC()
+                true
+            }
             R.id.sory_by_number -> {
-                listViewModel.getAllDataByNumberASD()
+                listViewModel.getAllDataByNumberASC()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -263,7 +276,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         contacts.close()
 
-        listViewModel.contactInitCompleted()
+        // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
+        listViewModel.syncWithGroupList()
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
