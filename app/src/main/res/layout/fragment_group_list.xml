@@ -30,4 +30,29 @@
         app:layout_constraintStart_toStartOf="@+id/group_list_recyclerView"
         app:layout_constraintTop_toTopOf="@+id/group_list_recyclerView" />
 
+    <Button
+        android:id="@+id/btn_group_delete"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:clickable="true"
+        android:text="삭제하기"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_baseline_cancel_24"
+        android:backgroundTint="@android:color/transparent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/btn_group_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

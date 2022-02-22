@@ -32,13 +32,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
     private val listViewModel: ListViewModel by viewModels()
 
-    //    private val adapter: ContactAdapter by lazy { ContactAdapter(requireContext()) }
-    private val adapter: ContactAdapterTest by lazy {
-        ContactAdapterTest(
+    private val adapter: ContactAdapter by lazy {
+        ContactAdapter(
             requireContext(),
             childFragmentManager
         )
     }
+//    private val adapter: ContactAdapterTest by lazy {
+//        ContactAdapterTest(
+//            requireContext(),
+//            childFragmentManager
+//        )}
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
@@ -112,7 +116,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         Log.i("수정", "초기화 직후 group 반영되지 않음")
         Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
         listViewModel.listData.observe(viewLifecycleOwner, {
-            adapter.setData(it)
+            adapter.submitList(it)
             Log.i("확인", "listViewModel.listData.observe 발동")
         })
 
@@ -125,26 +129,11 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
             })
 
-        // Add 버튼 클릭 시
-        binding.floatingActionButtonAdd.setOnClickListener {
-            findNavController().navigate(
-                ListFragmentDirections.actionListFragmentToAddFragment()
-            )
-        }
-
         // 리싸이클러뷰 스크롤을 최상단으로 하는 버튼
         binding.btnScrollUp.setOnClickListener {
             binding.recyclerViewList.scrollToPosition(0)
         }
 
-        // 체크박스 테스트
-        binding.switchCheckboxTest.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                adapter.onCheckBox(1)
-            } else {
-                adapter.onCheckBox(0)
-            }
-        }
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -174,8 +163,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val searchQuery = "%$query%"
         listViewModel.searchDatabase(searchQuery).observe(this, { list ->
             list.let {
-//                adapter.submitList(it)
-                adapter.setData(it)
+                adapter.submitList(it)
             }
         })
     }

@@ -61,7 +61,6 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
                         args.groupName
                     )
                 findNavController().navigate(action)
-                Log.i("그룹추가","findNavController 작동")
                 groupListAddViewModel.navigateDone()
             }
         })

@@ -20,7 +20,6 @@ import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.ContactChildBinding
 import com.leesangmin89.readcontacttest.databinding.ContactGroupAddChildBinding
-import com.leesangmin89.readcontacttest.list.CheckBoxData
 
 class GroupListAddAdapter(ctx: Context) :
     ListAdapter<ContactBase, GroupListAddAdapter.Holder>(ContactDiffCallback()) {
@@ -63,11 +62,9 @@ class GroupListAddAdapter(ctx: Context) :
             checkBox.setOnClickListener {
                 if (checkBox.isChecked) {
                     checkboxStatus.put(num, true)
-                    Log.i("어댑터","체크됨")
                     checkBoxReturnList.add(item)
                 } else {
                     checkboxStatus.put(num, false)
-                    Log.i("어댑터","체크해제")
                     checkBoxReturnList.remove(item)
                 }
                 notifyItemChanged(num)

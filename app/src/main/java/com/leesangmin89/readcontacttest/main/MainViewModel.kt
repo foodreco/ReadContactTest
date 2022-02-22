@@ -47,7 +47,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun clear() {
+    fun contactInfoDataClear() {
         viewModelScope.launch {
             database.clear()
         }

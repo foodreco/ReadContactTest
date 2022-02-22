@@ -30,6 +30,10 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table WHERE `group` =:key")
     suspend fun getGroupList(key: String): List<ContactBase>
 
+    // 번호를 받아서, 해당 ContactBase 를 불러오는 함수
+    @Query("SELECT * FROM contact_table WHERE `number` =:number LIMIT 1")
+    suspend fun getContact(number: String): ContactBase
+
     @Query("SELECT name FROM contact_table WHERE `number` =:key")
     suspend fun getName(key: String): String
 

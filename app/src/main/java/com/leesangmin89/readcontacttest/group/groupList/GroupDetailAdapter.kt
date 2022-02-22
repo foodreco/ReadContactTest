@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest.callLog
+package com.leesangmin89.readcontacttest.group.groupList
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
@@ -26,21 +26,32 @@ import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
+import com.leesangmin89.readcontacttest.databinding.GroupDetailChildBinding
 
-class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData, CallLogAdapter.CallHolder>(CallLogDiffCallback()) {
+class GroupDetailAdapter(fragmentManager: FragmentManager) :
+    ListAdapter<CallLogData, GroupDetailAdapter.CallHolder>(CallLogDiffCallback()) {
 
     private var mFragmentManager: FragmentManager = fragmentManager
     private val expandStatus = SparseBooleanArray()
 
-    inner class CallHolder constructor(private val binding: FragmentCallLogChildBinding) :
+    inner class CallHolder constructor(private val binding: GroupDetailChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager ) {
+        @SuppressLint("SetTextI18n")
+        fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager) {
 
-            binding.logName.text = item.name
             binding.logCallType.text = convertCallTypeToString(item.callType!!.toInt())
             binding.logDuration.text = convertLongToTimeString(item.duration!!.toLong())
             binding.logDate.text = convertLongToDateString(item.date!!.toLong())
-            binding.callLogContentText.text = item.callContent
+            if (item.callKeyword == "") {
+                binding.callKeyword.text = "키워드없음"
+            } else {
+                binding.callKeyword.text = "통화키워드 : ${item.callKeyword}"
+            }
+            if (item.callContent == "") {
+                binding.callLogContentText.text = "메모없음"
+            } else {
+                binding.callLogContentText.text = item.callContent
+            }
 
             // expandable layout 코드
             if (expandStatus[num]) {
@@ -59,7 +70,7 @@ class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData
                 // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
                 // 해당 전화번호를 넘겨주는 코드
                 val bundle = bundleOf()
-                val list : CallLogData = item
+                val list: CallLogData = item
                 bundle.putParcelable("callLogData", list)
                 val dialog = EditCallContent()
                 dialog.arguments = bundle
@@ -70,7 +81,7 @@ class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallHolder {
         val binding =
-            FragmentCallLogChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            GroupDetailChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CallHolder(binding)
     }
 

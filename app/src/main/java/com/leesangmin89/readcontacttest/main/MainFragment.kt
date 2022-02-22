@@ -48,6 +48,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+
         checkAndStart()
 
         // 프로그래스바 노출 코드
@@ -184,9 +185,8 @@ class MainFragment : Fragment() {
         )
 
         // 데이터 중첩을 막기 위해, 기존 데이터 삭제
-        mainViewModel.clear()
+        mainViewModel.contactInfoDataClear()
         contactMap.clear()
-        callLogViewModel.clear()
 
         // 반복 작업 구간
         while (contacts!!.moveToNext()) {
@@ -208,8 +208,8 @@ class MainFragment : Fragment() {
             }
 
             // CallLogData 통화기록 데이터 갱신
-            val callLogListChild = CallLogData(name, number, date, duration, callType)
-            callLogViewModel.insert(callLogListChild)
+            // 없는 기록만 insert
+            callLogViewModel.confirmAndInsert(name, number, date, duration, callType)
 
             // 59초 이상 통화 -> 유효 통화횟수 추가
             if (duration.toInt() > 59) {

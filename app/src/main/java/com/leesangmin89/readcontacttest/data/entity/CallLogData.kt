@@ -1,6 +1,7 @@
 package com.leesangmin89.readcontacttest.data.entity
 
 import android.os.Parcelable
+import android.text.Editable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
@@ -13,6 +14,8 @@ data class CallLogData(
     var date: String? = "",
     var duration: String? = "",
     var callType: String? = "",
+    var callContent: String? = "",
+    var callKeyword: String? = "",
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 ) : Parcelable

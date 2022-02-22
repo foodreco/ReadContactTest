@@ -1,15 +1,12 @@
 package com.leesangmin89.readcontacttest.callLog
 
 import android.app.Application
-import android.provider.CallLog
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
-import com.leesangmin89.readcontacttest.data.dao.ContactDao
-import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,16 +18,23 @@ class CallLogViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    val callLogList : LiveData<List<CallLogData>>
+    val callLogList: LiveData<List<CallLogData>>
 
-    private val _logList = MutableLiveData<List<CallLogData>>()
-    val logList :LiveData<List<CallLogData>> = _logList
+    private val _dialogDismissEvent = MutableLiveData<Boolean>()
+    val dialogDismissEvent : LiveData<Boolean> = _dialogDismissEvent
+
+    lateinit var groupDetailList : LiveData<List<CallLogData>>
+
 
     init {
         callLogList = database.getAllDataByDate()
     }
 
-    fun clear() {
+    fun findAndReturnLive(phoneNumber : String) {
+        groupDetailList = database.findAndReturnLive(phoneNumber)
+    }
+
+    fun callLogClear() {
         viewModelScope.launch {
             database.clear()
         }
@@ -42,10 +46,31 @@ class CallLogViewModel @Inject constructor(
         }
     }
 
-    fun findAndReturn(number: String) {
+    fun confirmAndInsert(
+        name: String,
+        number: String,
+        date: String,
+        duration: String,
+        callType: String
+    ) {
         viewModelScope.launch {
-            _logList.value = database.findAndReturn(number)
+            val check = database.confirmAndInsert(number, date, duration)
+            if (check == null) {
+                val callLogListChild = CallLogData(name, number, date, duration, callType)
+                database.insert(callLogListChild)
+            }
         }
+    }
+
+    fun updateCallContent(callLogData: CallLogData) {
+        viewModelScope.launch {
+            database.update(callLogData)
+            _dialogDismissEvent.value = true
+        }
+    }
+
+    fun diaLogDismissDone() {
+        _dialogDismissEvent.value = false
     }
 
 }

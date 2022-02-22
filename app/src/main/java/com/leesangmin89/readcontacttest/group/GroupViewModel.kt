@@ -89,8 +89,14 @@ class GroupViewModel @Inject constructor(
 
                 // groupDataMap 을 순회하면서
                 for ((name, numbers) in groupDataMap) {
-                    val rateNumber : Double = (numbers.toDouble() / groupNameToSumOfNumbers.toDouble()) * 100
-                    val rate = "등록비율 : ${String.format("%.0f",rateNumber)}%      (${numbers}/${groupNameToSumOfNumbers})"
+                    val rateNumber: Double =
+                        (numbers.toDouble() / groupNameToSumOfNumbers.toDouble()) * 100
+                    val rate = "등록비율 : ${
+                        String.format(
+                            "%.0f",
+                            rateNumber
+                        )
+                    }%      (${numbers}/${groupNameToSumOfNumbers})"
                     val regiNumbers = "등록인원 수 : ${numbers}명"
                     val list = GroupData(name, regiNumbers, rate)
                     groupData.add(list)
@@ -108,15 +114,15 @@ class GroupViewModel @Inject constructor(
     }
 
     // 그룹명을 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
-    fun getGroupListFromGroupList(key: String) {
+    fun getGroupListFromGroupList(group: String) {
         viewModelScope.launch {
-            _newGroupList.value = dataGroup.getGroupList(key)
+            _newGroupList.value = dataGroup.getGroupList(group)
             _groupListGetEvent.value = true
         }
     }
 
     // 특정 그룹의 리스트를 반복하면서, 번호를 넘겨 가장 최근 통화일자, 시간, 유형을 받아오는 함수
-    fun updateGroupRecentInfo(key: String) {
+    fun updateGroupRecentInfo(group: String) {
         viewModelScope.launch {
             val groupList: List<GroupList>? = _newGroupList.value
             if (groupList != null) {
@@ -148,7 +154,7 @@ class GroupViewModel @Inject constructor(
                     }
                 }
             }
-            _newGroupList.value = dataGroup.getGroupList(key)
+            _newGroupList.value = dataGroup.getGroupList(group)
             _groupListUpdateEvent.value = true
             _groupListGetEvent.value = false
         }
@@ -206,7 +212,6 @@ class GroupViewModel @Inject constructor(
     }
 
 
-
     fun findAndDelete(number: String) {
         viewModelScope.launch {
             val groupListForDelete = dataGroup.getGroupByNumber(number)
@@ -248,4 +253,41 @@ class GroupViewModel @Inject constructor(
             _getOnlyGroupNameDoneEvent.value = true
         }
     }
+
+    // 선택 삭제 시 조건부(1.전체삭제 2.부분삭제)로 데이터를 정리하는 함수
+    fun arrangeGroupList(testList: List<GroupList>, groupName: String) {
+        viewModelScope.launch {
+            val newGroupList = dataGroup.getGroupList(groupName)
+            if (newGroupList.count() == testList.count()) {
+                clearByGroupName(groupName)
+                clearGroupNameInContactBase(groupName)
+            } else {
+                deleteGroupListPart(testList, groupName)
+            }
+        }
+    }
+
+    // 선택 삭제 시, 2.부분삭제 시 발동될 코드
+    fun deleteGroupListPart(testList: List<GroupList>, groupName: String) {
+        viewModelScope.launch {
+            for (item in testList) {
+                // 번호를 받아서, ContactBase 정보를 불러와
+                // group 을 삭제하는 코드
+                val preContactBase = database.getContact(item.number)
+                val updateContactBase = ContactBase(
+                    preContactBase.name,
+                    preContactBase.number,
+                    "",
+                    preContactBase.image,
+                    preContactBase.id
+                )
+                database.update(updateContactBase)
+
+                // GroupList 에서 group 을 삭제하는 코드
+                dataGroup.delete(item)
+            }
+            getGroupListFromGroupList(groupName)
+        }
+    }
+
 }

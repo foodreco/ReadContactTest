@@ -30,7 +30,7 @@ class CallLogFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val adapter = CallLogAdapter()
+        val adapter = CallLogAdapter(childFragmentManager)
         binding.callLogRecyclerView.adapter = adapter
 
         showProgress(true)

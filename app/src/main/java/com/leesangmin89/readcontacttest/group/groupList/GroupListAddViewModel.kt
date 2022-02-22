@@ -51,7 +51,6 @@ class GroupListAddViewModel @Inject constructor(
                     0
                 )
                 dataGroup.insert(newList)
-                Log.i("그룹추가","인서트 : $newList")
             } else {
                 // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                 val newList = GroupList(
@@ -64,7 +63,6 @@ class GroupListAddViewModel @Inject constructor(
                     0
                 )
                 dataGroup.insert(newList)
-                Log.i("그룹추가","인서트 : $newList")
 
             }
         }
@@ -90,7 +88,6 @@ class GroupListAddViewModel @Inject constructor(
                     preGroupList.id
                 )
                 dataGroup.update(newList)
-                Log.i("그룹추가","업데이트 : $newList")
             } else {
                 // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                 val newList = GroupList(
@@ -103,7 +100,6 @@ class GroupListAddViewModel @Inject constructor(
                     preGroupList.id
                 )
                 dataGroup.update(newList)
-                Log.i("그룹추가","업데이트 : $newList")
             }
         }
     }
@@ -111,18 +107,15 @@ class GroupListAddViewModel @Inject constructor(
     fun updateContactBase(updateList: ContactBase) {
         viewModelScope.launch {
             database.update(updateList)
-            Log.i("그룹추가","updateContactBase")
         }
     }
 
     fun navigateActive() {
-        Log.i("그룹추가","navigateActive 작동")
         _navigateEvent.value = true
     }
 
     fun navigateDone() {
         _navigateEvent.value = false
-        Log.i("그룹추가","navigateDone : ${_navigateEvent.value}")
     }
 
     fun addGroupListData(list: List<ContactBase>, groupName : String) {
@@ -133,7 +126,6 @@ class GroupListAddViewModel @Inject constructor(
                 val updateList =
                     ContactBase(item.name, item.number, groupName, item.image, item.id)
                 updateContactBase(updateList)
-                Log.i("그룹추가","$item")
 
                 // 2. 업데이트 data to GroupList DB
                 val newGroupList =
@@ -153,7 +145,6 @@ class GroupListAddViewModel @Inject constructor(
                             0
                         )
                         dataGroup.insert(newList)
-                        Log.i("그룹추가","인서트 : $newList")
                     } else {
                         // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                         val newList = GroupList(
@@ -166,7 +157,6 @@ class GroupListAddViewModel @Inject constructor(
                             0
                         )
                         dataGroup.insert(newList)
-                        Log.i("그룹추가","인서트 : $newList")
 
                     }
                 } else {
@@ -187,7 +177,6 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.id
                         )
                         dataGroup.update(newList)
-                        Log.i("그룹추가","업데이트 : $newList")
                     } else {
                         // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                         val newList = GroupList(
@@ -200,11 +189,9 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.id
                         )
                         dataGroup.update(newList)
-                        Log.i("그룹추가","업데이트 : $newList")
                     }
                 }
             }
-            Log.i("그룹추가","순회 끝")
             navigateActive()
         }
     }

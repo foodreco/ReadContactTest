@@ -24,7 +24,6 @@ import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.GroupList
-import com.leesangmin89.readcontacttest.databinding.FragmentUpdateBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
 import com.leesangmin89.readcontacttest.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint

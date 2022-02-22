@@ -1,7 +1,6 @@
 package com.leesangmin89.readcontacttest.customDialog
 
 import android.R
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,19 +13,14 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.GroupList
-import com.leesangmin89.readcontacttest.databinding.FragmentUpdateBinding
-import com.leesangmin89.readcontacttest.databinding.GroupdetailDialogBinding
 import com.leesangmin89.readcontacttest.databinding.UpdateDialogBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
 import com.leesangmin89.readcontacttest.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
-import java.util.ArrayList
 
 @AndroidEntryPoint
 class UpdateDialog : DialogFragment() {

@@ -10,24 +10,10 @@
         android:name="com.leesangmin89.readcontacttest.list.ListFragment"
         android:label="리스트"
         tools:layout="@layout/fragment_list">
-        <action
-            android:id="@+id/action_listFragment_to_addFragment"
-            app:destination="@id/addFragment"
-            app:popUpTo="@id/listFragment" />
         <argument
             android:name="currentItemId"
-            app:argType="integer"
-            android:defaultValue="0" />
-    </fragment>
-    <fragment
-        android:id="@+id/addFragment"
-        android:name="com.leesangmin89.readcontacttest.add.AddFragment"
-        android:label="추가"
-        tools:layout="@layout/fragment_add">
-        <action
-            android:id="@+id/action_addFragment_to_listFragment"
-            app:destination="@id/listFragment"
-            app:popUpTo="@id/mainFragment" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
@@ -78,8 +64,8 @@
             app:destination="@id/groupListFragment"
             app:popUpTo="@id/groupFragment" />
         <argument
-            android:name="currentItem"
-            app:argType="com.leesangmin89.readcontacttest.data.entity.GroupList" />
+            android:name="phoneNumber"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/callLogFragment"

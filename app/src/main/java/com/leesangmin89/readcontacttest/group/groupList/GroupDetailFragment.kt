@@ -36,14 +36,14 @@ class GroupDetailFragment : Fragment() {
     ): View? {
 
         //CallLogAdapter 사용하여 해당 User 기록만 출력
-        val adapter = CallLogAdapter()
+        val adapter = GroupDetailAdapter(childFragmentManager)
         binding.groupDetailRecyclerView.adapter = adapter
 
         Log.d("추가", "CallLogData 메모 기능 추가 / 간단하게는 키워드만 보이기")
 
-        // 콜로그 뷰모델 사용하여, 넘어온 번호에 해당하는 기록만 출력
-        callLogViewModel.findAndReturn(args.currentItem.number)
-        callLogViewModel.logList.observe(viewLifecycleOwner, {
+        // 넘어온 number 에 해당하는 CallLogData 만 출력
+        callLogViewModel.findAndReturnLive(args.phoneNumber)
+        callLogViewModel.groupDetailList.observe(viewLifecycleOwner,{
             adapter.submitList(it)
             if (it == emptyList<CallLogData>()) {
                 // 통화기록이 없는 경우, 확인창 띄우기
@@ -52,7 +52,7 @@ class GroupDetailFragment : Fragment() {
                     override fun onButton1Clicked() {
                         // diaBtnCall 클릭 시,
                         // 전화걸기
-                        val uri = Uri.parse("tel:${args.currentItem.number}")
+                        val uri = Uri.parse("tel:${args.phoneNumber}")
                         val intent = Intent(Intent.ACTION_CALL, uri)
                         requireContext().startActivity(intent)
                     }
@@ -65,6 +65,7 @@ class GroupDetailFragment : Fragment() {
                 dialog.show(childFragmentManager, "CustomDialog")
             }
         })
+
         return binding.root
     }
 

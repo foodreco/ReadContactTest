@@ -8,10 +8,19 @@
         app:showAsAction="always"
         android:iconTint="@android:color/white"/>
 
-    <item android:title="삭제"
-        android:id="@+id/menu_group_delete"
+    <item
         android:icon="@drawable/ic_baseline_delete_24"
-        app:showAsAction="always"
-        android:iconTint="@android:color/white"/>
+        android:iconTint="@android:color/white"
+        android:title="삭제"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/delete_all"
+                android:title="전체 삭제" />
+            <item
+                android:id="@+id/delete_part"
+                android:title="선택 삭제" />
+        </menu>
+    </item>
 
 </menu>

@@ -34,7 +34,6 @@ class ListViewModel @Inject constructor(
 
     init {
         initSort()
-        Log.i("확인", "뷰모델 초기화")
 //        listData = database.getAllDataByNameASC()
         listDataNameDESC = database.getAllDataByNameDESC()
         listDataNumberASC = database.getAllDataByNumberASC()
@@ -47,7 +46,6 @@ class ListViewModel @Inject constructor(
         viewModelScope.launch {
             _listData.value = database.getAllDataByNameASCTest()
         }
-        Log.i("확인", "initSort / _listData.value = database.getAllDataByNameASCTest()")
     }
 
 
@@ -79,22 +77,18 @@ class ListViewModel @Inject constructor(
 
     fun getAllDataByASC() {
         initSort()
-        Log.i("확인", "getAllDataByASC")
     }
 
     fun getAllDataByDESC() {
         viewModelScope.launch {
             _listData.value = database.getAllDataByNameDESCTest()
         }
-        Log.i("확인", "getAllDataByDESC")
-
     }
 
     fun getAllDataByNumberASC() {
         viewModelScope.launch {
             _listData.value = database.getAllDataByNumberASCTest()
         }
-        Log.i("확인", "getAllDataByNumberASC")
     }
 
     fun syncWithGroupList() {

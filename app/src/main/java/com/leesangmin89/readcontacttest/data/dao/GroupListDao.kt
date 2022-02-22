@@ -41,8 +41,8 @@ interface GroupListDao {
     suspend fun getGroupByNumber(number:String) : GroupList
 
     // 그룹명을 인자로 받아, 해당 그룹 리스트를 출력하는 함수
-    @Query("SELECT * FROM group_table WHERE `group` =:key")
-    suspend fun getGroupList(key:String) : List<GroupList>
+    @Query("SELECT * FROM group_table WHERE `group` =:group")
+    suspend fun getGroupList(group:String) : List<GroupList>
 
     @Query("SELECT * FROM group_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
     fun searchDatabase(searchQuery: String) : kotlinx.coroutines.flow.Flow<List<GroupList>>
