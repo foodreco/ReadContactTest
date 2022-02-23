@@ -1,19 +1,13 @@
 package com.leesangmin89.readcontacttest.group.groupList
 
 import android.annotation.SuppressLint
-import android.icu.text.SimpleDateFormat
-import android.os.Build
-import android.provider.CallLog
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,10 +16,7 @@ import com.leesangmin89.readcontacttest.convertCallTypeToString
 import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.convertLongToTimeString
 import com.leesangmin89.readcontacttest.customDialog.EditCallContent
-import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
 import com.leesangmin89.readcontacttest.databinding.GroupDetailChildBinding
 
 class GroupDetailAdapter(fragmentManager: FragmentManager) :
@@ -45,12 +36,15 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
             if (item.callKeyword == "") {
                 binding.callKeyword.text = "키워드없음"
             } else {
-                binding.callKeyword.text = "통화키워드 : ${item.callKeyword}"
+                binding.callKeyword.text = "${item.callKeyword}"
             }
             if (item.callContent == "") {
                 binding.callLogContentText.text = "메모없음"
             } else {
                 binding.callLogContentText.text = item.callContent
+            }
+            if (item.importance == true) {
+                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
             }
 
             // expandable layout 코드

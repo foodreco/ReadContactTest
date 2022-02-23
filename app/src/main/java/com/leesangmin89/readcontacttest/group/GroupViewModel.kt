@@ -49,6 +49,9 @@ class GroupViewModel @Inject constructor(
     private val _groupListUpdateEvent = MutableLiveData<Boolean>()
     val groupListUpdateEvent: LiveData<Boolean> = _groupListUpdateEvent
 
+    private val _groupListForSwitch = MutableLiveData<Boolean>()
+    val groupListForSwitch: LiveData<Boolean> = _groupListForSwitch
+
 
     init {
     }
@@ -136,6 +139,7 @@ class GroupViewModel @Inject constructor(
                             item.image,
                             newInfo.date,
                             newInfo.duration,
+                            item.recommendation,
                             item.id
                         )
                         dataGroup.update(newList)
@@ -148,6 +152,7 @@ class GroupViewModel @Inject constructor(
                             item.image,
                             "",
                             "",
+                            item.recommendation,
                             item.id
                         )
                         dataGroup.update(newList)
@@ -214,14 +219,14 @@ class GroupViewModel @Inject constructor(
 
     fun findAndDelete(number: String) {
         viewModelScope.launch {
-            val groupListForDelete = dataGroup.getGroupByNumber(number)
-            dataGroup.delete(groupListForDelete)
+            val groupListForDelete = dataGroup.getGroupByNumber(number)!!
+                dataGroup.delete(groupListForDelete)
         }
     }
 
-    fun findAndUpdate(name: String, number: String, group: String) {
+    fun findAndUpdate(name: String, number: String, group: String, recommendation: Boolean) {
         viewModelScope.launch {
-            val groupListForUpdate = dataGroup.getGroupByNumber(number)
+            val groupListForUpdate = dataGroup.getGroupByNumber(number)!!
             val updateList = GroupList(
                 name,
                 number,
@@ -229,6 +234,7 @@ class GroupViewModel @Inject constructor(
                 groupListForUpdate.image,
                 groupListForUpdate.recentContact,
                 groupListForUpdate.recentContactCallTime,
+                recommendation,
                 groupListForUpdate.id
             )
             dataGroup.update(updateList)
@@ -288,6 +294,18 @@ class GroupViewModel @Inject constructor(
             }
             getGroupListFromGroupList(groupName)
         }
+    }
+
+    fun checkRecommendationState(number: String) {
+        viewModelScope.launch {
+            val groupList = dataGroup.getGroupByNumber(number)
+            if (groupList != null) {
+                _groupListForSwitch.value = groupList.recommendation
+            } else {
+                _groupListForSwitch.value = false
+            }
+        }
+
     }
 
 }

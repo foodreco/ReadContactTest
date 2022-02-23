@@ -48,6 +48,7 @@ class GroupListAddViewModel @Inject constructor(
                     groupList.image,
                     newInfo.date,
                     newInfo.duration,
+                    groupList.recommendation,
                     0
                 )
                 dataGroup.insert(newList)
@@ -60,46 +61,11 @@ class GroupListAddViewModel @Inject constructor(
                     groupList.image,
                     "",
                     "",
+                    groupList.recommendation,
                     0
                 )
                 dataGroup.insert(newList)
 
-            }
-        }
-    }
-
-    // 특정 정보를 넘겨 가장 최근 통화일자, 시간, 유형을 받아와 update 하는 함수
-    fun updateGroupRecentInfo(groupList:GroupList) {
-        viewModelScope.launch {
-            // 번호를 받아서, 기존 groupList 에서 가져옴
-            val preGroupList = dataGroup.getGroupByNumber(groupList.number)
-
-            // 번호를 받아서, 최근 통화 정보를 가져옴
-            val newInfo = dataCall.getDDC(groupList.number)
-
-            if (newInfo != null) {
-                val newList = GroupList(
-                    preGroupList.name,
-                    preGroupList.number,
-                    groupList.group,
-                    preGroupList.image,
-                    newInfo.date,
-                    newInfo.duration,
-                    preGroupList.id
-                )
-                dataGroup.update(newList)
-            } else {
-                // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
-                val newList = GroupList(
-                    preGroupList.name,
-                    preGroupList.number,
-                    groupList.group,
-                    preGroupList.image,
-                    "",
-                    "",
-                    preGroupList.id
-                )
-                dataGroup.update(newList)
             }
         }
     }
@@ -129,7 +95,7 @@ class GroupListAddViewModel @Inject constructor(
 
                 // 2. 업데이트 data to GroupList DB
                 val newGroupList =
-                    GroupList(item.name, item.number, groupName, item.image, "", "", 0)
+                    GroupList(item.name, item.number, groupName, item.image, "", "",false, 0)
 
                 if (item.group == "") {
                     // 기존 GroupList 없는 경우,
@@ -142,6 +108,7 @@ class GroupListAddViewModel @Inject constructor(
                             newGroupList.image,
                             newInfo.date,
                             newInfo.duration,
+                            newGroupList.recommendation,
                             0
                         )
                         dataGroup.insert(newList)
@@ -154,6 +121,7 @@ class GroupListAddViewModel @Inject constructor(
                             newGroupList.image,
                             "",
                             "",
+                            newGroupList.recommendation,
                             0
                         )
                         dataGroup.insert(newList)
@@ -161,9 +129,8 @@ class GroupListAddViewModel @Inject constructor(
                     }
                 } else {
                     // 기존 GroupList 에 다른 그룹으로 존재하는 경우,
-                    updateGroupRecentInfo(newGroupList)
                     // 번호를 받아서, 기존 groupList 에서 가져옴
-                    val preGroupList = dataGroup.getGroupByNumber(newGroupList.number)
+                    val preGroupList = dataGroup.getGroupByNumber(newGroupList.number)!!
                     // 번호를 받아서, 최근 통화 정보를 가져옴
                     val newInfo = dataCall.getDDC(newGroupList.number)
                     if (newInfo != null) {
@@ -174,6 +141,7 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.image,
                             newInfo.date,
                             newInfo.duration,
+                            preGroupList.recommendation,
                             preGroupList.id
                         )
                         dataGroup.update(newList)
@@ -186,6 +154,7 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.image,
                             "",
                             "",
+                            preGroupList.recommendation,
                             preGroupList.id
                         )
                         dataGroup.update(newList)

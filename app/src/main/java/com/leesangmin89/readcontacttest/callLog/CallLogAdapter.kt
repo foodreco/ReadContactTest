@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.provider.CallLog
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
@@ -41,6 +42,14 @@ class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData
             binding.logDuration.text = convertLongToTimeString(item.duration!!.toLong())
             binding.logDate.text = convertLongToDateString(item.date!!.toLong())
             binding.callLogContentText.text = item.callContent
+            if (item.callContent == "") {
+                binding.callLogContentText.text = "메모없음"
+            } else {
+                binding.callLogContentText.text = item.callContent
+            }
+            if (item.importance == true) {
+                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
+            }
 
             // expandable layout 코드
             if (expandStatus[num]) {

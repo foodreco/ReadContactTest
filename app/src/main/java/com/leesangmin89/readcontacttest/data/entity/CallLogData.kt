@@ -16,6 +16,7 @@ data class CallLogData(
     var callType: String? = "",
     var callContent: String? = "",
     var callKeyword: String? = "",
+    var importance : Boolean? = false,
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 ) : Parcelable

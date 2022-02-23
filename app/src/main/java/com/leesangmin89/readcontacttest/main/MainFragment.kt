@@ -48,16 +48,18 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.e("수정", "최초 앱 빌드 시, 리스트 업 의무화 필요")
 
-        checkAndStart()
+            checkAndStart()
 
-        // 프로그래스바 노출 코드
-        mainViewModel.progressBarEventFinished.observe(viewLifecycleOwner, { progressBarFinish ->
-            if (progressBarFinish) {
-                showProgress(false)
-                mainViewModel.progressBarEventReset()
-            }
-        })
+                    // 프로그래스바 노출 코드
+                    mainViewModel . progressBarEventFinished . observe (viewLifecycleOwner,
+            { progressBarFinish ->
+                if (progressBarFinish) {
+                    showProgress(false)
+                    mainViewModel.progressBarEventReset()
+                }
+            })
 
         // 활성 통화 횟수 및 마지막 통화 표현 코드
         mainViewModel.infoData.observe(viewLifecycleOwner, Observer {

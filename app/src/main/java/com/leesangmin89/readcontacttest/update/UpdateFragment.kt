@@ -47,8 +47,6 @@ import android.widget.EditText
 //        savedInstanceState: Bundle?
 //    ): View? {
 //
-//        Log.d("수정", "UpdateFragment -> custom Dialog로 전환?? 그룹편집 기능만 살리기?")
-//
 //        binding.contactNameUpdate.setText(args.currentItem.name)
 //        binding.contactNumberUpdate.setText(args.currentItem.number)
 //        binding.contactGroupUpdate.setText(args.currentItem.group)

@@ -60,20 +60,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         binding.recyclerViewList.adapter = adapter
 
-        //리싸이클러뷰 스크롤 관련 코드 : 작동 안됨??
-//        val smoothScroller : RecyclerView.SmoothScroller by lazy {
-//            object : LinearSmoothScroller(context) {
-//                override fun getVerticalSnapPreference() = SNAP_TO_START
-//            }
-//        }
-//        smoothScroller.targetPosition = args.currentItemId
-//        binding.recyclerViewList.layoutManager?.startSmoothScroll(smoothScroller)
-
-
-        // 리싸이클러뷰 이전 위치 유지하는 코드
-        // 작동안함??
-//        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-
         // 초기화 버튼 클릭 시, 연락처 데이터를 다시 가져오는 코드
         binding.button.setOnClickListener {
             checkAndStart()
@@ -81,11 +67,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
 //        // 리싸이클러뷰 옵저버
 //        // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-//        Log.i("보완", "정렬 및 recyclerView 위치")
 //        listViewModel.sortEvent.observe(viewLifecycleOwner,
 //            {
-//                Log.i("수정", "초기화 직후 group 반영되지 않음")
-//                Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
 //                // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
 //                listViewModel.updateGroupNameInContactBase()
 //                when (it) {
@@ -112,9 +95,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-        Log.i("보완", "정렬 및 recyclerView 위치")
-        Log.i("수정", "초기화 직후 group 반영되지 않음")
-        Log.i("수정", "adapter.submitList(it) 후에 작동됨...")
+        Log.i("수정", "bottomNavi 터치 시, 정렬 초기화 오류")
         listViewModel.listData.observe(viewLifecycleOwner, {
             adapter.submitList(it)
             Log.i("확인", "listViewModel.listData.observe 발동")
@@ -197,13 +178,13 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             listViewModel.clear()
             Snackbar.make(
                 requireView(),
-                "포맷 완료",
+                "삭제 완료",
                 Snackbar.LENGTH_SHORT
             ).show()
         }
         builder.setNegativeButton("No") { _, _ -> }
-        builder.setTitle("포맷")
-        builder.setMessage("전체 데이터를 삭제하시겠습니까?")
+        builder.setTitle("연락처 삭제")
+        builder.setMessage("연락처 정보를 삭제하시겠습니까?")
         builder.create().show()
     }
 
@@ -215,13 +196,13 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             Snackbar.make(requireView(), "접근 허용됨", Snackbar.LENGTH_SHORT).show()
             Toast.makeText(
                 requireContext(),
-                "데이터 초기화됨",
+                "연락처 업데이트 됨",
                 Toast.LENGTH_SHORT
             ).show()
         }
         builder.setNegativeButton("아니오") { _, _ -> }
-        builder.setTitle("데이터 초기화")
-        builder.setMessage("연락처 정보를 초기화하시겠습니까?")
+        builder.setTitle("연락처 업데이트")
+        builder.setMessage("연락처 정보를 업데이트하시겠습니까?")
         builder.create().show()
     }
 

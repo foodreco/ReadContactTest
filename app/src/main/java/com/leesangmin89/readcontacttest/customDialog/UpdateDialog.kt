@@ -46,6 +46,12 @@ class UpdateDialog : DialogFragment() {
         binding.contactNameUpdate.setText(args?.name)
         binding.contactNumberUpdate.setText(args?.number)
         binding.contactGroupUpdate.setText(args?.group)
+        groupViewModel.checkRecommendationState(args?.number!!)
+
+        // updateDialog 의 알람 버튼 상태 코드
+        groupViewModel.groupListForSwitch.observe(viewLifecycleOwner,{
+            binding.swtichAlarm.isChecked = it
+        })
 
         //그룹명 리스트 형태로 출력하는 함수
         groupViewModel.getOnlyGroupName()
@@ -153,6 +159,7 @@ class UpdateDialog : DialogFragment() {
         val contactName = binding.contactNameUpdate.text.toString()
         val contactNumber = binding.contactNumberUpdate.text.toString()
         val contactGroup = binding.contactGroupUpdate.text.toString()
+        val contactRecommendation = binding.swtichAlarm.isChecked
 
         val updateList = ContactBase(
             contactName,
@@ -174,6 +181,7 @@ class UpdateDialog : DialogFragment() {
                 args.image,
                 "0",
                 "0",
+                binding.swtichAlarm.isChecked,
                 0
             )
             // ContactAdapter 에서 넘어온 groupName 이 없을 때(지정된 Group 이 없을 때)
@@ -202,7 +210,7 @@ class UpdateDialog : DialogFragment() {
                 }
                 // 수정하여 Group 을 바꿀 때, 그룹 DB 에서 해당 List 업데이트
                 else -> {
-                    groupViewModel.findAndUpdate(contactName, contactNumber, contactGroup)
+                    groupViewModel.findAndUpdate(contactName, contactNumber, contactGroup, contactRecommendation)
                     Toast.makeText(requireContext(), "Group DB 수정", Toast.LENGTH_SHORT)
                         .show()
                 }

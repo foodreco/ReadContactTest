@@ -30,7 +30,6 @@ class GroupListAdapter(ctx: Context) :
     private val checkboxStatus = SparseBooleanArray()
     val checkBoxReturnList = mutableListOf<GroupList>()
 
-
     inner class GroupHolder constructor(private val binding: GroupListChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: GroupList, num: Int) {
@@ -57,7 +56,6 @@ class GroupListAdapter(ctx: Context) :
                 currentCallTimes.text =
                     convertLongToTimeString(item.recentContactCallTime!!.toLong())
             }
-
             //이미지 관련
             if (item.image != null)
                 profile.setImageBitmap(item.image)
@@ -68,6 +66,10 @@ class GroupListAdapter(ctx: Context) :
                         R.mipmap.ic_launcher_round
                     )
                 )
+            if (item.recommendation) {
+                binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+            }
+
 
             // 체크박스 on-off 코드
             if (checkBoxControlNumber == 1) {

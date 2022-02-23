@@ -34,6 +34,8 @@ class EditCallContent : DialogFragment() {
         val args = arguments?.getParcelable<CallLogData>("callLogData")
         binding.callContent.setText(args!!.callContent)
         binding.contentKeyword.setText(args.callKeyword)
+        binding.checkBoxImportance.isChecked = args.importance!!
+
         binding.btnContentSave.setOnClickListener {
             val updateText = binding.callContent.text.toString()
             val updateKeyword = binding.contentKeyword.text.toString()
@@ -45,6 +47,7 @@ class EditCallContent : DialogFragment() {
                 args.callType,
                 updateText,
                 updateKeyword,
+                binding.checkBoxImportance.isChecked,
                 args.id
             )
             callLogViewModel.updateCallContent(updateCallLogData)

@@ -108,7 +108,9 @@ class ListViewModel @Inject constructor(
     fun find(number: String) {
         viewModelScope.launch {
             val groupListForFind = dataGroup.getGroupByNumber(number)
-            groupListForFind.group
+            if (groupListForFind != null) {
+                groupListForFind.group
+            }
         }
     }
 

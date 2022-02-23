@@ -15,6 +15,7 @@ data class GroupList(
     var image: Bitmap?,
     var recentContact : String?,
     var recentContactCallTime : String?,
+    var recommendation : Boolean = false,
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 ) : Parcelable

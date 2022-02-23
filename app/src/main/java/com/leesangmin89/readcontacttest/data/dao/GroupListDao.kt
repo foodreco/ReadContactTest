@@ -37,8 +37,9 @@ interface GroupListDao {
     @Query("SELECT * FROM group_table ORDER BY number ASC")
     fun getAllDataByNumberASC(): LiveData<List<GroupList>>
 
-    @Query("SELECT * FROM group_table WHERE `number` =:number ORDER BY name ASC LIMIT 1")
-    suspend fun getGroupByNumber(number:String) : GroupList
+    // 번호를 받아, 해당 groupList 를 반환하는 함수
+    @Query("SELECT * FROM group_table WHERE `number` = :number ORDER BY name ASC LIMIT 1")
+    suspend fun getGroupByNumber(number:String) : GroupList?
 
     // 그룹명을 인자로 받아, 해당 그룹 리스트를 출력하는 함수
     @Query("SELECT * FROM group_table WHERE `group` =:group")

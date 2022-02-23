@@ -25,6 +25,6 @@ fun convertCallTypeToString(callType: Int): String {
         1 -> "수신"
         2 -> "발신"
         3 -> "부재중"
-        else -> ""
+        else -> "알수없음"
     }
 }

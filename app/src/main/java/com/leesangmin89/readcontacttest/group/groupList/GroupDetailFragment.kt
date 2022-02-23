@@ -39,7 +39,7 @@ class GroupDetailFragment : Fragment() {
         val adapter = GroupDetailAdapter(childFragmentManager)
         binding.groupDetailRecyclerView.adapter = adapter
 
-        Log.d("추가", "CallLogData 메모 기능 추가 / 간단하게는 키워드만 보이기")
+        Log.d("보완", "별 터치 시, CallLogData importance 직관 반영되게 -> Ondestroy 이용??")
 
         // 넘어온 number 에 해당하는 CallLogData 만 출력
         callLogViewModel.findAndReturnLive(args.phoneNumber)
