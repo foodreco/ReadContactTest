@@ -34,8 +34,9 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table WHERE `number` =:number LIMIT 1")
     suspend fun getContact(number: String): ContactBase
 
-    @Query("SELECT name FROM contact_table WHERE `number` =:key")
-    suspend fun getName(key: String): String
+    // 번호를 받아서, contactBase 에 해당 name 을 반환하는 함수
+    @Query("SELECT name FROM contact_table WHERE `number` =:number")
+    suspend fun getName(number: String): String?
 
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     suspend fun getAllDataByNameASCTest(): List<ContactBase>

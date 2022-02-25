@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.util.set
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -79,11 +80,11 @@ class GroupListAdapter(ctx: Context) :
                 checkBox.isChecked = checkboxStatus[num]
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        checkboxStatus.put(num, true)
+                        checkboxStatus[num] = true
                         checkBoxReturnList.add(item)
                     }
                     else {
-                        checkboxStatus.put(num, false)
+                        checkboxStatus[num] = false
                         checkBoxReturnList.remove(item)
                     }
                     notifyItemChanged(num)

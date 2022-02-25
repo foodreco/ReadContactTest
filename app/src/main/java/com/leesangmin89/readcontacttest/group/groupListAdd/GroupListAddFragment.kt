@@ -1,23 +1,16 @@
-package com.leesangmin89.readcontacttest.group.groupList
+package com.leesangmin89.readcontacttest.group.groupListAdd
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.room.PrimaryKey
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListAddBinding
-import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
-import com.leesangmin89.readcontacttest.list.ListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

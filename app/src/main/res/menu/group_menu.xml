@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_group_add"
+        android:title="추가"
+        android:icon="@drawable/ic_baseline_add_24"
+        app:showAsAction="always"
+        android:iconTint="@android:color/white"/>
+
+    <item
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:iconTint="@android:color/white"
+        android:title="삭제"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/delete_all"
+                android:title="전체 삭제" />
+            <item
+                android:id="@+id/delete_part"
+                android:title="선택 삭제" />
+        </menu>
+    </item>
+
+</menu>

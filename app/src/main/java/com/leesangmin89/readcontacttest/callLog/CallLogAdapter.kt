@@ -28,14 +28,16 @@ import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
 
-class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData, CallLogAdapter.CallHolder>(CallLogDiffCallback()) {
+class CallLogAdapter(fragmentManager: FragmentManager) :
+    ListAdapter<CallLogData, CallLogAdapter.CallHolder>(CallLogDiffCallback()) {
 
     private var mFragmentManager: FragmentManager = fragmentManager
     private val expandStatus = SparseBooleanArray()
+    private val importanceStatus = SparseBooleanArray()
 
     inner class CallHolder constructor(private val binding: FragmentCallLogChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager ) {
+        fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager) {
 
             binding.logName.text = item.name
             binding.logCallType.text = convertCallTypeToString(item.callType!!.toInt())
@@ -47,8 +49,16 @@ class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData
             } else {
                 binding.callLogContentText.text = item.callContent
             }
-            if (item.importance == true) {
+
+            when (item.importance) {
+                true -> importanceStatus[num] = true
+                false -> importanceStatus[num] = false
+                else -> {}
+            }
+            if (importanceStatus[num]) {
                 binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
+            } else {
+                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_border_50)
             }
 
             // expandable layout 코드
@@ -68,7 +78,7 @@ class CallLogAdapter(fragmentManager: FragmentManager) : ListAdapter<CallLogData
                 // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
                 // 해당 전화번호를 넘겨주는 코드
                 val bundle = bundleOf()
-                val list : CallLogData = item
+                val list: CallLogData = item
                 bundle.putParcelable("callLogData", list)
                 val dialog = EditCallContent()
                 dialog.arguments = bundle

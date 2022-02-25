@@ -19,7 +19,12 @@
         android:id="@+id/mainFragment"
         android:name="com.leesangmin89.readcontacttest.main.MainFragment"
         android:label="메인"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_mainProtoFragment"
+            app:destination="@id/mainProtoFragment"
+            app:popUpTo="@id/mainFragment" />
+    </fragment>
     <fragment
         android:id="@+id/groupFragment"
         android:name="com.leesangmin89.readcontacttest.group.GroupFragment"
@@ -33,6 +38,14 @@
             android:id="@+id/action_groupFragment_to_listFragment"
             app:destination="@id/listFragment"
             app:popUpTo="@id/mainFragment" />
+        <action
+            android:id="@+id/action_groupFragment_to_groupAddDialog"
+            app:destination="@id/groupAddDialog"
+            app:popUpTo="@id/groupFragment" />
+        <action
+            android:id="@+id/action_groupFragment_to_updateDialog"
+            app:destination="@id/updateDialog"
+            app:popUpTo="@id/groupFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupListFragment"
@@ -56,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupDetailFragment"
-        android:name="com.leesangmin89.readcontacttest.group.groupList.GroupDetailFragment"
+        android:name="com.leesangmin89.readcontacttest.group.groupDetail.GroupDetailFragment"
         android:label="세부정보"
         tools:layout="@layout/fragment_group_detail">
         <action
@@ -74,7 +87,7 @@
         tools:layout="@layout/fragment_call_log"/>
     <fragment
         android:id="@+id/groupListAddFragment"
-        android:name="com.leesangmin89.readcontacttest.group.groupList.GroupListAddFragment"
+        android:name="com.leesangmin89.readcontacttest.group.groupListAdd.GroupListAddFragment"
         android:label="그룹추가"
         tools:layout="@layout/fragment_group_list_add">
         <argument
@@ -84,5 +97,33 @@
             android:id="@+id/action_groupListAddFragment_to_groupListFragment"
             app:destination="@id/groupListFragment"
             app:popUpTo="@id/groupFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/groupAddDialog"
+        android:name="com.leesangmin89.readcontacttest.customDialog.GroupAddDialog"
+        android:label="GroupAddDialog">
+        <action
+            android:id="@+id/action_groupAddDialog_to_groupListAddFragment"
+            app:destination="@id/groupListAddFragment"
+            app:popUpTo="@id/groupFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/updateDialog"
+        android:name="com.leesangmin89.readcontacttest.customDialog.UpdateDialog"
+        android:label="UpdateDialog" >
+        <action
+            android:id="@+id/action_updateDialog_to_groupFragment"
+            app:destination="@id/groupFragment"
+            app:popUpTo="@id/groupFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/mainProtoFragment"
+        android:name="com.leesangmin89.readcontacttest.protomain.MainProtoFragment"
+        android:label="fragment_main_proto"
+        tools:layout="@layout/fragment_main_proto" >
+        <action
+            android:id="@+id/action_mainProtoFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainProtoFragment" />
     </fragment>
 </navigation>

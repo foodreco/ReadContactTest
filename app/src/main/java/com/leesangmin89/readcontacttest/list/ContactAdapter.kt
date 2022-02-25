@@ -64,6 +64,7 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
             update.setOnClickListener {
                 // updateDialog 띄우고, item 넘겨줌
                 // 해당 전화번호를 넘겨주는 코드
+                // RecyclerView 위치 고수하기 위해, show 형태로 출력한다.
                 val bundle = bundleOf()
                 val list : ContactBase = item
                 bundle.putParcelable("contactBase", list)

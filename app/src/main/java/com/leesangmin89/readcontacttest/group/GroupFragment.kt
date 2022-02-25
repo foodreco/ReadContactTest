@@ -2,16 +2,12 @@ package com.leesangmin89.readcontacttest.group
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.ui.state.ToggleableState
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
+import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,6 +21,8 @@ class GroupFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val args = arguments?.getString("groupName")
 
         val adapter = GroupAdapter(requireContext())
         binding.groupRecyclerView.adapter = adapter
@@ -41,16 +39,54 @@ class GroupFragment : Fragment() {
             if (it) {
                 // 그룹이 empty 인 경우, 확인창 띄우기
                 val builder = AlertDialog.Builder(requireContext())
-                builder.setPositiveButton("그룹추가") { _, _ ->
+                builder.setPositiveButton("그룹추가") { dialog, _ ->
                     groupViewModel.groupListEmptyChecked()
+                    dialog.dismiss()
                     val action = GroupFragmentDirections.actionGroupFragmentToListFragment()
                     findNavController().navigate(action)
+
+//                    // 최초, fragment 생성 전 해당 fragment 로 이동 시 IllegalStateException 발생 방지
+//                    view?.post {
+//                        findNavController().navigate(action)
+//                    }
+
                 }
                 builder.setTitle("그룹 없음")
                 builder.setMessage("연락처에 지정된 그룹이 없습니다. \n 그룹을 추가하세요!")
                 builder.create().show()
             }
         })
+
+        setHasOptionsMenu(true)
         return binding.root
     }
+
+    // 메뉴 활성화
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.group_menu, menu)
+    }
+
+    // 메뉴 터치 시 작동
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.delete_all -> deleteData()
+            R.id.delete_part -> deletePart()
+            R.id.menu_group_add -> addGroup()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun addGroup() {
+        // Dialog 를 거쳐서 GroupListAddFragment 까지 가야하므로, navigation 을 사용한다.
+        findNavController().navigate(GroupFragmentDirections.actionGroupFragmentToGroupAddDialog())
+    }
+
+    private fun deletePart() {
+        Toast.makeText(requireContext(), "부분 삭제 코드 미완성", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun deleteData() {
+        Toast.makeText(requireContext(), "전체 삭제 코드 미완성", Toast.LENGTH_SHORT).show()
+    }
+
 }

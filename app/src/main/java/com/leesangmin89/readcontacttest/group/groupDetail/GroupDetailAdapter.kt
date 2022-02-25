@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest.group.groupList
+package com.leesangmin89.readcontacttest.group.groupDetail
 
 import android.annotation.SuppressLint
 import android.util.SparseBooleanArray
@@ -24,6 +24,8 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
 
     private var mFragmentManager: FragmentManager = fragmentManager
     private val expandStatus = SparseBooleanArray()
+    private val importanceStatus = SparseBooleanArray()
+
 
     inner class CallHolder constructor(private val binding: GroupDetailChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -43,8 +45,15 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
             } else {
                 binding.callLogContentText.text = item.callContent
             }
-            if (item.importance == true) {
+            when (item.importance) {
+                true -> importanceStatus[num] = true
+                false -> importanceStatus[num] = false
+                else -> {}
+            }
+            if (importanceStatus[num]) {
                 binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
+            } else {
+                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_border_50)
             }
 
             // expandable layout 코드

@@ -1,6 +1,7 @@
 package com.leesangmin89.readcontacttest.customDialog
 
 import android.R
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -32,14 +33,19 @@ class UpdateDialog : DialogFragment() {
     private val spinnerGroupNameList = mutableListOf<String>()
     private var selectedGroupName = ""
 
+    // Dialog 배경 투명하게 하는 코드??
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        return dialog
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
         Log.i("확인", "UpdateDialog onCreateView")
-
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val args = arguments?.getParcelable<ContactBase>("contactBase")
 
@@ -49,7 +55,7 @@ class UpdateDialog : DialogFragment() {
         groupViewModel.checkRecommendationState(args?.number!!)
 
         // updateDialog 의 알람 버튼 상태 코드
-        groupViewModel.groupListForSwitch.observe(viewLifecycleOwner,{
+        groupViewModel.groupListForSwitch.observe(viewLifecycleOwner, {
             binding.swtichAlarm.isChecked = it
         })
 
@@ -142,8 +148,10 @@ class UpdateDialog : DialogFragment() {
         }
 
         setHasOptionsMenu(true)
+
         return binding.root
     }
+
     // SharedPreferences 로부터 groupList를 불러와서 spinnerGroupNameList에 추가하는 함수
     private fun spinnerAddListCall() {
         val lastList = MyApplication.prefs.getString("group", "None")
@@ -152,6 +160,7 @@ class UpdateDialog : DialogFragment() {
             spinnerGroupNameList.add(arrJson.optString(i))
         }
     }
+
     // 그룹을 추가하고(GroupList), 연락처 정보를 변경하는 함수
     private fun updateData() {
         val args = arguments?.getParcelable<ContactBase>("contactBase")
@@ -210,7 +219,12 @@ class UpdateDialog : DialogFragment() {
                 }
                 // 수정하여 Group 을 바꿀 때, 그룹 DB 에서 해당 List 업데이트
                 else -> {
-                    groupViewModel.findAndUpdate(contactName, contactNumber, contactGroup, contactRecommendation)
+                    groupViewModel.findAndUpdate(
+                        contactName,
+                        contactNumber,
+                        contactGroup,
+                        contactRecommendation
+                    )
                     Toast.makeText(requireContext(), "Group DB 수정", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -218,6 +232,5 @@ class UpdateDialog : DialogFragment() {
         }
         // dialog 종료
         dismiss()
-
     }
 }

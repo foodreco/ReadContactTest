@@ -1,4 +1,4 @@
-package com.leesangmin89.readcontacttest.group.groupList
+package com.leesangmin89.readcontacttest.group.groupListAdd
 
 import android.app.Application
 import android.util.Log

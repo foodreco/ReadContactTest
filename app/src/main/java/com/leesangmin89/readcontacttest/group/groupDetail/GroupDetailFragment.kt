@@ -1,6 +1,5 @@
-package com.leesangmin89.readcontacttest.group.groupList
+package com.leesangmin89.readcontacttest.group.groupDetail
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,18 +8,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.callLog.CallLogAdapter
 import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.customDialog.GroupDetailDialog
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupDetailBinding
-import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
-import com.leesangmin89.readcontacttest.group.GroupFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

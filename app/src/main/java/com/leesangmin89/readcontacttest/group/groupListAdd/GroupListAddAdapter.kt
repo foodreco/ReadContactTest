@@ -1,24 +1,18 @@
-package com.leesangmin89.readcontacttest.group.groupList
+package com.leesangmin89.readcontacttest.group.groupListAdd
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.DiffResult.NO_POSITION
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.databinding.ContactChildBinding
 import com.leesangmin89.readcontacttest.databinding.ContactGroupAddChildBinding
 
 class GroupListAddAdapter(ctx: Context) :

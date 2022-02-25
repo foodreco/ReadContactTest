@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
@@ -32,7 +33,7 @@ class MainFragment : Fragment() {
     private val callLogViewModel: CallLogViewModel by viewModels()
 
     // 권한 허용 리스트
-    val permissions = arrayOf(Manifest.permission.READ_CALL_LOG)
+    private val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG)
 
     // 권한 허용 코드
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
@@ -50,10 +51,10 @@ class MainFragment : Fragment() {
 
         Log.e("수정", "최초 앱 빌드 시, 리스트 업 의무화 필요")
 
-            checkAndStart()
+        checkAndStart()
 
-                    // 프로그래스바 노출 코드
-                    mainViewModel . progressBarEventFinished . observe (viewLifecycleOwner,
+        // 프로그래스바 노출 코드
+        mainViewModel.progressBarEventFinished.observe(viewLifecycleOwner,
             { progressBarFinish ->
                 if (progressBarFinish) {
                     showProgress(false)
@@ -68,20 +69,20 @@ class MainFragment : Fragment() {
 //                    textContactNumber.text = getString(R.string.contact_number, 0)
                     textContactActivated.text = getString(R.string.contact_activated, 0)
                     textRecentContact.text = getString(R.string.recent_contact, "해당없음")
-                    MostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
-                    MostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
+                    mostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
+                    mostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
                 } else {
 //                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
                     textContactActivated.text =
                         getString(R.string.contact_activated, it.activatedContact)
                     textRecentContact.text =
                         getString(R.string.recent_contact, it.mostRecentContact)
-                    MostContactNumber.text =
+                    mostContactNumber.text =
                         getString(R.string.most_contact_name, it.mostContactName)
 
                     val minutes = it.mostContactTimes!!.toLong() / 60
                     val seconds = it.mostContactTimes.toLong() % 60
-                    MostContactDuration.text =
+                    mostContactDuration.text =
                         getString(R.string.most_contact_duration, minutes, seconds)
                 }
             }
@@ -95,6 +96,12 @@ class MainFragment : Fragment() {
                 binding.textContactNumber.text = getString(R.string.contact_phone_numbers, it)
             }
         })
+
+
+        binding.btnToMain.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToMainProtoFragment()
+            findNavController().navigate(action)
+        }
 
         return binding.root
     }
@@ -160,6 +167,7 @@ class MainFragment : Fragment() {
     // 전화 통계, 통화기록을 불러오는 함수(ContactInfo,CallLogData)
     @SuppressLint("Range")
     fun getPhoneInfo() {
+        Log.d("수정", "최초 앱 빌드 시, The application may be doing too much work on its main thread.")
 
         showProgress(true)
 
@@ -249,9 +257,7 @@ class MainFragment : Fragment() {
             mapMaxKey,
             mapMaxValue
         )
-
         contacts.close()
-
     }
 
     // 전체 연락처 갯수를 알려주는 함수

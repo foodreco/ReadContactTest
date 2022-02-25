@@ -41,8 +41,25 @@ class MainViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val insertName = dataContact.getName(mostContactName)
-            val insertList = ContactInfo(contactNumber, activatedContact, mostRecentContact, insertName, mostContactTimes)
-            database.insert(insertList)
+            if (insertName != null) {
+                val insertList = ContactInfo(
+                    contactNumber,
+                    activatedContact,
+                    mostRecentContact,
+                    insertName,
+                    mostContactTimes
+                )
+                database.insert(insertList)
+            } else {
+                val insertList = ContactInfo(
+                    contactNumber,
+                    activatedContact,
+                    mostRecentContact,
+                    mostContactName,
+                    mostContactTimes
+                )
+                database.insert(insertList)
+            }
             _progressBarEventFinished.value = true
         }
     }
