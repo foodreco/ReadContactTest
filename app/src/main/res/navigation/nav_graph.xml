@@ -60,12 +60,12 @@
             android:name="groupName"
             app:argType="string" />
         <action
-            android:id="@+id/action_groupListFragment_to_groupDetailFragment"
-            app:destination="@id/groupDetailFragment"
-            app:popUpTo="@id/groupListFragment" />
-        <action
             android:id="@+id/action_groupListFragment_to_groupListAddFragment"
             app:destination="@id/groupListAddFragment" />
+        <action
+            android:id="@+id/action_groupListFragment_to_crossroadDialog"
+            app:destination="@id/crossroadDialog"
+            app:popUpTo="@id/groupListFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupDetailFragment"
@@ -126,4 +126,20 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainProtoFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/crossroadDialog"
+        android:name="com.leesangmin89.readcontacttest.customDialog.CrossroadDialog"
+        android:label="CrossroadDialog" >
+        <action
+            android:id="@+id/action_crossroadDialog_to_groupDetailFragment"
+            app:destination="@id/groupDetailFragment"
+            app:popUpTo="@id/groupListFragment" />
+        <argument
+            android:name="currentItem"
+            app:argType="com.leesangmin89.readcontacttest.data.entity.GroupList" />
+        <action
+            android:id="@+id/action_crossroadDialog_to_groupListFragment"
+            app:destination="@id/groupListFragment"
+            app:popUpTo="@id/groupFragment" />
+    </dialog>
 </navigation>

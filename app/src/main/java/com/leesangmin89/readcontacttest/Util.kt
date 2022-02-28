@@ -28,3 +28,21 @@ fun convertCallTypeToString(callType: Int): String {
         else -> "알수없음"
     }
 }
+
+// 전화 통계, 통화기록을 불러오는 함수(ContactInfo,CallLogData) 에 사용
+data class ContactSpl(
+    val id: String,
+    val name: String,
+    val number: String,
+    val duration: String
+)
+
+// CallLogCalls 데이터를 순회하며, Recommendation 정보를 가져오는 함수
+data class RecommendationSpl(
+    var name: String,
+    var number: String,
+    var group: String,
+    var recentContact: String?,
+    var totalCallTime: String?,
+    var numberOfCalling: String?,
+)

@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.util.set
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -18,22 +20,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.convertLongToTimeString
+import com.leesangmin89.readcontacttest.customDialog.CrossroadDialog
+import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.GroupListChildBinding
 
-class GroupListAdapter(ctx: Context) :
+class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
     ListAdapter<GroupList, GroupListAdapter.GroupHolder>(GroupDiffCallback()) {
 
+    private var mFragmentManager: FragmentManager = fragmentManager
     private var context: Context = ctx
 
     private var checkBoxControlNumber: Int = 0
     private val checkboxStatus = SparseBooleanArray()
+    private val alarmBtnStatus = SparseBooleanArray()
     val checkBoxReturnList = mutableListOf<GroupList>()
+    val alarmReturnList = mutableListOf<GroupList>()
 
     inner class GroupHolder constructor(private val binding: GroupListChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: GroupList, num: Int) {
+        fun bind(item: GroupList, num: Int, fragmentManager: FragmentManager) {
 
             val name = binding.contactName
             val number = binding.contactNumber
@@ -67,8 +74,12 @@ class GroupListAdapter(ctx: Context) :
                         R.mipmap.ic_launcher_round
                     )
                 )
-            if (item.recommendation) {
+            alarmBtnStatus[num] = item.recommendation
+
+            if (alarmBtnStatus[num]) {
                 binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+            } else {
+                binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
             }
 
 
@@ -104,11 +115,23 @@ class GroupListAdapter(ctx: Context) :
                     }
                 }
 
-                //리싸이클러 터치 시, GroupDetailFragment 로 이동
+                //리싸이클러 터치 시, CrossroadDialog 로 이동
                 detail.setOnClickListener {
-                    val action =
-                        GroupListFragmentDirections.actionGroupListFragmentToGroupDetailFragment(item.number)
-                    detail.findNavController().navigate(action)
+                    val action = GroupListFragmentDirections.actionGroupListFragmentToCrossroadDialog(item)
+                    it.findNavController().navigate(action)
+                }
+
+
+                //image_btn 터치 시, 작동 코드
+                binding.btnAlarm.setOnClickListener {
+                    alarmBtnStatus[num] = !alarmBtnStatus[num]
+                    if (alarmBtnStatus[num]) {
+                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+                    } else {
+                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+                    }
+//                    notifyDataSetChanged()
+                    notifyItemChanged(num)
                 }
             }
         }
@@ -133,7 +156,7 @@ class GroupListAdapter(ctx: Context) :
 
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: GroupHolder, position: Int) {
-        holder.bind(getItem(position), position)
+        holder.bind(getItem(position), position, mFragmentManager)
     }
 }
 

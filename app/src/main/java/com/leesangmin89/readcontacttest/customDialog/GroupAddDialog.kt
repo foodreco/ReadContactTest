@@ -1,12 +1,14 @@
 package com.leesangmin89.readcontacttest.customDialog
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -35,13 +37,28 @@ class GroupAddDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        // 포커스 지정
+        binding.addGroupName.requestFocus()
+        // 키보드 올리기
+        val mInputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        mInputMethodManager.showSoftInput(
+            binding.addGroupName,
+            InputMethodManager.SHOW_IMPLICIT
+        )
+
         binding.btnInput.setOnClickListener {
             val groupName = binding.addGroupName.text.toString()
             if (groupName == "") {
                 Toast.makeText(requireContext(), "그룹명을 입력하세요", Toast.LENGTH_SHORT).show()
             } else {
                 dismiss()
-                findNavController().navigate(GroupAddDialogDirections.actionGroupAddDialogToGroupListAddFragment(groupName))
+                findNavController().navigate(
+                    GroupAddDialogDirections.actionGroupAddDialogToGroupListAddFragment(
+                        groupName
+                    )
+                )
             }
         }
         return binding.root

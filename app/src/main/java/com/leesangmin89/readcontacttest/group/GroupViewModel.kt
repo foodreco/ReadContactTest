@@ -11,7 +11,9 @@ import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
+import com.leesangmin89.readcontacttest.data.dao.RecommendationDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
+import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -22,6 +24,7 @@ class GroupViewModel @Inject constructor(
     private val database: ContactDao,
     private val dataGroup: GroupListDao,
     private val dataCall: CallLogDao,
+    private val dataReco: RecommendationDao,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -37,6 +40,8 @@ class GroupViewModel @Inject constructor(
     private val _newGroupList = MutableLiveData<List<GroupList>>()
     val newGroupList: LiveData<List<GroupList>> = _newGroupList
 
+    lateinit var liveGroupLiveData : LiveData<List<GroupList>>
+
     private val _coroutineDoneEvent = MutableLiveData<Boolean>()
     val coroutineDoneEvent: LiveData<Boolean> = _coroutineDoneEvent
 
@@ -51,6 +56,9 @@ class GroupViewModel @Inject constructor(
 
     private val _groupListForSwitch = MutableLiveData<Boolean>()
     val groupListForSwitch: LiveData<Boolean> = _groupListForSwitch
+
+    private val _updateDialogDone = MutableLiveData<Boolean>()
+    val updateDialogDone: LiveData<Boolean> = _updateDialogDone
 
 
     init {
@@ -109,25 +117,14 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    // 그룹명을 매개변수로 하여, ContactBase에서 해당 그룹 리스트를 가져오는 함수
-    fun getGroupListFromContactBase(key: String) {
-        viewModelScope.launch {
-            _groupList.value = database.getGroupList(key)
-        }
-    }
-
-    // 그룹명을 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
-    fun getGroupListFromGroupList(group: String) {
-        viewModelScope.launch {
-            _newGroupList.value = dataGroup.getGroupList(group)
-            _groupListGetEvent.value = true
-        }
+    fun getGroupListFromGroupListByLive(group: String) {
+        liveGroupLiveData = dataGroup.getGroupListLive(group)
     }
 
     // 특정 그룹의 리스트를 반복하면서, 번호를 넘겨 가장 최근 통화일자, 시간, 유형을 받아오는 함수
     fun updateGroupRecentInfo(group: String) {
         viewModelScope.launch {
-            val groupList: List<GroupList>? = _newGroupList.value
+            val groupList: List<GroupList>? = dataGroup.getGroupList(group)
             if (groupList != null) {
                 for (item in groupList) {
                     val newInfo = dataCall.getDDC(item.number)
@@ -159,9 +156,6 @@ class GroupViewModel @Inject constructor(
                     }
                 }
             }
-            _newGroupList.value = dataGroup.getGroupList(group)
-            _groupListUpdateEvent.value = true
-            _groupListGetEvent.value = false
         }
     }
 
@@ -186,6 +180,21 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             dataGroup.delete(groupList)
         }
+    }
+
+    fun dataRecoDeleteByNumber(number: String) {
+        viewModelScope.launch {
+            dataReco.deleteByNumber(number)
+            updateDialogDone()
+        }
+    }
+
+    // 그룹명을 받아 해당 그룹에 해당하는 인자를 Reco DB 에서 모두 삭제
+    fun dataRecoDeleteByGroup(groupName: String) {
+        viewModelScope.launch {
+            dataReco.deleteByGroup(groupName)
+        }
+
     }
 
     fun clear() {
@@ -265,9 +274,12 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             val newGroupList = dataGroup.getGroupList(groupName)
             if (newGroupList.count() == testList.count()) {
+                //1. 전체 삭제
                 clearByGroupName(groupName)
                 clearGroupNameInContactBase(groupName)
+                dataRecoDeleteByGroup(groupName)
             } else {
+                //2. 부분 삭제
                 deleteGroupListPart(testList, groupName)
             }
         }
@@ -291,8 +303,10 @@ class GroupViewModel @Inject constructor(
 
                 // GroupList 에서 group 을 삭제하는 코드
                 dataGroup.delete(item)
+
+                // Reco DB 에서 해당 정보를 삭제하는 코드
+                dataReco.deleteByNumber(item.number)
             }
-            getGroupListFromGroupList(groupName)
         }
     }
 
@@ -305,7 +319,18 @@ class GroupViewModel @Inject constructor(
                 _groupListForSwitch.value = false
             }
         }
+    }
 
+    fun updateDialogDoneFinished() {
+        _updateDialogDone.value = false
+    }
+
+    fun updateDialogDone() {
+        _updateDialogDone.value = true
+    }
+
+    fun groupListUpdateEventDone() {
+        _groupListUpdateEvent.value = false
     }
 
 }

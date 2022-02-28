@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.leesangmin89.readcontacttest.ContactSpl
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
@@ -179,13 +180,6 @@ class MainFragment : Fragment() {
         var callCountNum = 0
         var activatedContact = 0
 
-        val proj = arrayOf(
-            CallLog.Calls.PHONE_ACCOUNT_ID,
-            CallLog.Calls.CACHED_NAME,
-            CallLog.Calls.NUMBER,
-            CallLog.Calls.DURATION
-        )
-
         val contacts = requireActivity().contentResolver.query(
             callLogUri,
             null,
@@ -282,10 +276,3 @@ class MainFragment : Fragment() {
         binding.progressBarMain.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
-
-data class ContactSpl(
-    val id: String,
-    val name: String,
-    val number: String,
-    val duration: String
-)

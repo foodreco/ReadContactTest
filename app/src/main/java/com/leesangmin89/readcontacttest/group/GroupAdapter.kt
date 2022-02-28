@@ -32,7 +32,7 @@ class GroupAdapter(ctx: Context) : ListAdapter<GroupData, GroupHolder>(GroupDiff
         holder.groupEachList.setOnClickListener {
             // 이동 시, 그룹명을 args 로 넘겨준다.
             val action = GroupFragmentDirections.actionGroupFragmentToGroupListFragment(item.groupName)
-            holder.groupEachList.findNavController().navigate(action)
+            it.findNavController().navigate(action)
         }
     }
 }

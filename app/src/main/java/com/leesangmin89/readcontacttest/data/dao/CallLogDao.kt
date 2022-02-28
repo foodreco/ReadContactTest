@@ -24,6 +24,10 @@ interface CallLogDao {
     @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC LIMIT 1")
     suspend fun getDDC(number: String): CallLogData?
 
+    // 전화번호를 인자로 넘겨받아, 해당 CallLog 정보를 다 가져오는 함수
+    @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC")
+    suspend fun getCallLogDataByNumber(number: String): List<CallLogData>?
+
     // 통화 기록 중, number, date, duration 이 동일한 기록을 하나 반환하는 함수
     @Query("SELECT * FROM call_history WHERE number LIKE :number AND date LIKE :date AND duration LIKE :duration LIMIT 1")
     suspend fun confirmAndInsert(number: String, date:String, duration:String) : CallLogData?

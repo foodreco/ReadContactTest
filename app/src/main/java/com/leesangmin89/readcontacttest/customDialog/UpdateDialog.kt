@@ -45,7 +45,6 @@ class UpdateDialog : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.i("확인", "UpdateDialog onCreateView")
 
         val args = arguments?.getParcelable<ContactBase>("contactBase")
 
@@ -54,6 +53,7 @@ class UpdateDialog : DialogFragment() {
         binding.contactGroupUpdate.setText(args?.group)
         groupViewModel.checkRecommendationState(args?.number!!)
 
+        Log.i("수정", "recommendation 기능 GroupListFragment 에서 변경하기")
         // updateDialog 의 알람 버튼 상태 코드
         groupViewModel.groupListForSwitch.observe(viewLifecycleOwner, {
             binding.swtichAlarm.isChecked = it
@@ -95,13 +95,13 @@ class UpdateDialog : DialogFragment() {
                                 // 0. 초기상태, 아무 변화 없음
                                 "" -> {
                                     binding.contactGroupUpdate.isEnabled = false
-                                    binding.contactGroupUpdate.setText(args?.group)
+                                    binding.contactGroupUpdate.setText(args.group)
                                 }
 
                                 // 1. "그룹명" 선택 시, 아무 변화 없음
                                 "그룹명 선택" -> {
                                     binding.contactGroupUpdate.isEnabled = false
-                                    binding.contactGroupUpdate.setText(args?.group)
+                                    binding.contactGroupUpdate.setText(args.group)
                                 }
 
                                 // 2. 직접입력 선택 시,
@@ -140,12 +140,21 @@ class UpdateDialog : DialogFragment() {
         binding.updateFragmentBackground.setOnClickListener {
             val mInputMethodManager =
                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            mInputMethodManager.hideSoftInputFromWindow(it.getWindowToken(), 0)
+            mInputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
         }
 
         binding.btnUpdate.setOnClickListener {
             updateData()
         }
+
+
+        // updateData() 작업이 완료되면, dialog 종료
+        groupViewModel.updateDialogDone.observe(viewLifecycleOwner,{
+            if (it) {
+                dismiss()
+                groupViewModel.updateDialogDoneFinished()
+            }
+        })
 
         setHasOptionsMenu(true)
 
@@ -230,7 +239,12 @@ class UpdateDialog : DialogFragment() {
                 }
             }
         }
-        // dialog 종료
-        dismiss()
+
+        // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
+        if (!contactRecommendation) {
+            groupViewModel.dataRecoDeleteByNumber(args.number)
+        } else {
+            groupViewModel.updateDialogDone()
+        }
     }
 }

@@ -39,4 +39,8 @@ object DataBaseModule {
     @Provides
     fun provideCallLogDao(database: ContactDatabase) = database.callLogDao
 
+    @Singleton
+    @Provides
+    fun provideRecommendationDao(database: ContactDatabase) = database.recommendationDao
+
 }
