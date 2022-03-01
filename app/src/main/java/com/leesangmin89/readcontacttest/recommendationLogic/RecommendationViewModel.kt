@@ -2,10 +2,12 @@ package com.leesangmin89.readcontacttest.recommendationLogic
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
@@ -42,13 +44,18 @@ class RecommendationViewModel @Inject constructor(
     val testList: LiveData<List<Recommendation>>
 
     init {
-        testList = dataReco.getAllDataByNameASC()
+        testList = dataReco.getAllDataByRecommended(true)
     }
 
-
-    // 통화를 추천할 대상 5명을 뽑는 함수
-    // 1. recommendation true 중 최근 통화가 없으면 추천
-    // 2. 연락빈도를 계산하여 초과하면 추천
+    // 통화를 추천할 대상을 뽑는 함수
+    // 실행 시 매번 업데이트 되어야 함
+    // GroupList recommendation true 에 한해서 추론
+    // 1. 통화횟수가 0회 일 때, 추천 (ref1)
+    // 2. 통화횟수가 1회 일 때, 해당 통화일자가 1년을 초과하면 추천(ref2)
+    // 3. 통화횟수가 2회 이상 일 때, 연락빈도를 계산하여 초과하면 추천(ref3)
+    // 기타 추가
+    // : 중요도 설정에 따라 추천 기준 달리한다?
+    // : 사용자 특성(ex.비즈니스 맨의 경우, 마지막 통화가 최근이다.)에 따라, 설정 달리...
     fun arrangeRecommendation() {
         viewModelScope.launch {
 
@@ -63,9 +70,12 @@ class RecommendationViewModel @Inject constructor(
                     var numberOfCalling = 0
                     var avgCallTime: Long = 0
                     var frequency: Long = 0
+                    var numberOfCallingBelow = false
+                    var recentCallExcess = false
                     var frequencyExcess = false
                     val callDateList = mutableListOf<Long>()
-                    val longNow = System.currentTimeMillis()
+
+                    val longNow : Long = System.currentTimeMillis()
 
                     //3. 해당 GroupList 에 해당하는 CallLogData 를 다 가져온다.
                     val callLogData: List<CallLogData>? =
@@ -80,26 +90,39 @@ class RecommendationViewModel @Inject constructor(
                             recoInfo.date?.let { callDateList.add(it.toLong()) }
                         }
                     }
+                    //4-1. 통화횟수에 따른 Reco DB 인자 설정
+                    when (numberOfCalling) {
+                        // 0회 일 때, Ref1 true
+                        0 -> {
+                            numberOfCallingBelow = true
+                        }
 
-                    // 통화 횟수가 1 이상일 때, 평균 통화시간 계산 코드
-                    if (numberOfCalling != 0) {
-                        avgCallTime = totalCallTime / numberOfCalling
-                    }
+                        // 통화 횟수가 1 이상일 때,
+                        // 해당 통화일자가 1년을 초과하면 추천(ref2)
+                        1 -> {
+                            avgCallTime = totalCallTime / numberOfCalling
+                            val recentTimeGap : Long = longNow - groupList.recentContact!!.toLong()
+                            val aYearToLong: Long = 31536000000
+                            recentCallExcess = recentTimeGap >= aYearToLong
+                        }
 
-                    // 통화 횟수 2 이상일 때, 통화 평균빈도 계산 코드
-                    if (numberOfCalling > 1) {
-                        var count = callDateList.size
-                        var rightCount: Long = (callDateList.size - 1).toLong()
-                        var gap = (callDateList[0] - callDateList[count - 1])
-                        frequency = gap / rightCount
-                    }
+                        // 통화 횟수가 2 이상일 때,
+                        // 연락빈도를 계산하여 초과하면 추천(ref3)
+                        else -> {
+                            avgCallTime = totalCallTime / numberOfCalling
+                            //frequency(평균빈도) 계산 코드
+                            val count = callDateList.size
+                            val rightCount: Long = (callDateList.size - 1).toLong()
+                            val gap = (callDateList[0] - callDateList[count - 1])
+                            frequency = gap / rightCount
+                            // 빈도 초과여부를 반환하는 코드
+                            val recentTimeGap = longNow - groupList.recentContact!!.toLong()
+                            frequencyExcess = recentTimeGap > frequency
 
-                    // 최근 연락일자가 있으면, 빈도 초과여부를 반환하는 코드
-                    if (groupList.recentContact != "") {
-                        val recentTimeGap = longNow - groupList.recentContact!!.toLong()
-                        val frequencyAVG = frequency.toLong()
-                        if (recentTimeGap > frequencyAVG) {
-                            frequencyExcess = true
+                            Log.i("확인","${groupList.name} recentTimeGap : $recentTimeGap")
+                            Log.i("확인","${groupList.name} frequency : $frequency")
+
+
                         }
                     }
 
@@ -112,14 +135,17 @@ class RecommendationViewModel @Inject constructor(
                         numberOfCalling.toString(),
                         avgCallTime.toString(),
                         frequency.toString(),
+                        numberOfCallingBelow,
+                        recentCallExcess,
                         frequencyExcess,
                         0
                     )
+                    Log.i("확인","${groupList.name} : $insertRecommendation")
 
-                    // Recommendation DB를 검색하여, 없으면 insert, 있으면 update 하는 코드
+                    // 5. Recommendation DB를 구성하는 코드
+                    // Recommendation DB를 검색하여, 없으면 insert, 있으면 update
                     if (dataReco.confirm(groupList.number) != null) {
                         dataReco.update(insertRecommendation)
-
                     } else {
                         dataReco.insert(insertRecommendation)
                     }

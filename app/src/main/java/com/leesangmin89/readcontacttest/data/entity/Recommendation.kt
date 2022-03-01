@@ -27,6 +27,8 @@ data class Recommendation(
     // 단위 : milliseconds
     var frequency: String?,
 
+    var numberOfCallingBelow: Boolean = false,
+    var recentCallExcess: Boolean = false,
     var frequencyExcess: Boolean = false,
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

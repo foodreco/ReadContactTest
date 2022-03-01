@@ -35,6 +35,11 @@ interface RecommendationDao {
 
 
 
-    @Query("SELECT * FROM recommendation_table ORDER BY name ASC")
-    fun getAllDataByNameASC(): LiveData<List<Recommendation>>
+    @Query("SELECT * FROM recommendation_table ORDER BY id ASC")
+    fun getAllDataByIdASC(): LiveData<List<Recommendation>>
+
+    // Recommendation DB 의 추천 항목 중 어느 하나가 true 인 것을 Live 로 반환하는 함수
+    @Query("SELECT * FROM recommendation_table WHERE numberOfCallingBelow LIKE :key OR recentCallExcess LIKE :key OR frequencyExcess LIKE :key")
+    fun getAllDataByRecommended(key: Boolean = true): LiveData<List<Recommendation>>
+
 }

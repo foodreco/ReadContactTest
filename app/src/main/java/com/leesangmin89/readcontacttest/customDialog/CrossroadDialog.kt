@@ -90,6 +90,8 @@ class CrossroadDialog : DialogFragment() {
             if (it) {
 //                val action = CrossroadDialogDirections.actionCrossroadDialogToGroupListFragment(args.currentItem.group)
 //                findNavController().navigate(action)
+
+                // 리싸이클러뷰 위치 유지를 위해 dismiss 로 종료한다.
                 dismiss()
                 groupViewModel.updateDialogDoneFinished()
             }
