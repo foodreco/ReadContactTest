@@ -3,6 +3,7 @@ package com.leesangmin89.readcontacttest.data
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
+import com.google.gson.Gson
 import java.io.ByteArrayOutputStream
 
 class Converters {
@@ -18,4 +19,10 @@ class Converters {
     fun toBitmap(byteArray: ByteArray?): Bitmap? {
         return byteArray?.size?.let { BitmapFactory.decodeByteArray(byteArray, 0, it) }
     }
+
+    @TypeConverter
+    fun listToJson(value: List<String>?) = Gson().toJson(value)
+
+    @TypeConverter
+    fun jsonToList(value: String) = Gson().fromJson(value, Array<String>::class.java).toList()
 }

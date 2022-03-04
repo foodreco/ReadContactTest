@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         Log.i("추가","통화별 메모기능으로 인한 보안 로그인 설정 추가 필요")
         Log.i("추가","각 Fragment back 버튼 시, 즉시 종료되야 함")
 
+        Log.i("수정","권한 체크 후에, Fragment 코드 작동하기")
         // 권한 허용 체크
         checkAndStart()
         

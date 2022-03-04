@@ -43,4 +43,8 @@ object DataBaseModule {
     @Provides
     fun provideRecommendationDao(database: ContactDatabase) = database.recommendationDao
 
+    @Singleton
+    @Provides
+    fun provideTendencyDao(database: ContactDatabase) = database.tendencyDao
+
 }

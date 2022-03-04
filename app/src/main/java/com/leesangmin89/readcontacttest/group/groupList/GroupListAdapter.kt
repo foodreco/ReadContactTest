@@ -124,14 +124,13 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
 
                 //image_btn 터치 시, 작동 코드
                 binding.btnAlarm.setOnClickListener {
-                    alarmBtnStatus[num] = !alarmBtnStatus[num]
-                    if (alarmBtnStatus[num]) {
-                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
-                    } else {
-                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
-                    }
-//                    notifyDataSetChanged()
-                    notifyItemChanged(num)
+//                    alarmBtnStatus[num] = !alarmBtnStatus[num]
+//                    if (alarmBtnStatus[num]) {
+//                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+//                    } else {
+//                        binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+//                    }
+//                    notifyItemChanged(num)
                 }
             }
         }

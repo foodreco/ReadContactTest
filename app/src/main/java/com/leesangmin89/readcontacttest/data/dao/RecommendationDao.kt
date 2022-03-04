@@ -30,6 +30,9 @@ interface RecommendationDao {
     @Query("DELETE FROM recommendation_table WHERE `number` LIKE :number")
     suspend fun deleteByNumber(number: String)
 
+    @Query("SELECT * FROM recommendation_table")
+    suspend fun getAllData(): List<Recommendation>
+
 
 
 

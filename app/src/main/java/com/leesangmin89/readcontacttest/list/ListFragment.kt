@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,7 +18,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.R
@@ -38,11 +36,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             childFragmentManager
         )
     }
-//    private val adapter: ContactAdapterTest by lazy {
-//        ContactAdapterTest(
-//            requireContext(),
-//            childFragmentManager
-//        )}
+
 
     // 권한 허용 리스트
     val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
@@ -56,7 +50,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i("확인", "ListFragment onCreateView")
 
         binding.recyclerViewList.adapter = adapter
 
@@ -96,17 +89,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
         Log.i("수정", "bottomNavi 터치 시, 정렬 초기화 오류")
-        listViewModel.listData.observe(viewLifecycleOwner, {
+        Log.i("보완", "통화기록이 있는 연락처만 불러오기 정렬 -> 그룹 추가 용이")
+        listViewModel.testData.observe(viewLifecycleOwner, {
             adapter.submitList(it)
             Log.i("확인", "listViewModel.listData.observe 발동")
         })
 
-        // 최초 데이터 불러오기 옵저버
+        // 연락처 업데이트 옵저버
         listViewModel.initializeContactEvent.observe(viewLifecycleOwner,
             {
                 if (it) {
-                    // 연락처 가져오기
-                    loadContact()
+                    updateContactBase()
                 }
             })
 
@@ -208,45 +201,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     // 초기 데이터 로드 함수(ContactBase)
     @SuppressLint("Range")
-    fun loadContact() {
-        // 기존 데이터 삭제
-        listViewModel.clear()
-
-        val contacts = requireActivity().contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
-        )
-
-        while (contacts!!.moveToNext()) {
-            val photo: Bitmap?
-            val name =
-                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-            // 번호 수집 시, - 일괄 제거하여 수집한다.
-            val number =
-                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                    .replace("-", "")
-            val photoUri =
-                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
-            val contactList = ContactBase(name, number, "", null, 0)
-
-            if (photoUri != null) {
-                Log.i("수정", "getBitmap -> ImageDecoder 변경시도 but 오류발생")
-                contactList.image = MediaStore.Images.Media.getBitmap(
-                    requireActivity().contentResolver,
-                    Uri.parse(photoUri)
-                )
-//                    val source = ImageDecoder.createSource(requireActivity().contentResolver, photoUri)
-//                    val bitmap = ImageDecoder.decodeBitmap(source)
-            }
-            listViewModel.insert(contactList)
-        }
-        contacts.close()
-
-        // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
-        listViewModel.syncWithGroupList()
+    fun updateContactBase() {
+        listViewModel.updateContactBase(requireActivity())
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

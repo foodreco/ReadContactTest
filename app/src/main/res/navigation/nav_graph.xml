@@ -16,13 +16,13 @@
             app:argType="integer" />
     </fragment>
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.leesangmin89.readcontacttest.main.MainFragment"
-        android:label="메인"
-        tools:layout="@layout/fragment_main">
+        android:id="@+id/mainSubFragment"
+        android:name="com.leesangmin89.readcontacttest.main.MainSubFragment"
+        android:label="메인상세"
+        tools:layout="@layout/fragment_main_sub">
         <action
-            android:id="@+id/action_mainFragment_to_mainProtoFragment"
-            app:destination="@id/mainProtoFragment"
+            android:id="@+id/action_mainSubFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment" />
     </fragment>
     <fragment
@@ -37,7 +37,7 @@
         <action
             android:id="@+id/action_groupFragment_to_listFragment"
             app:destination="@id/listFragment"
-            app:popUpTo="@id/mainFragment" />
+            app:popUpTo="@id/mainSubFragment" />
         <action
             android:id="@+id/action_groupFragment_to_groupAddDialog"
             app:destination="@id/groupAddDialog"
@@ -55,7 +55,7 @@
         <action
             android:id="@+id/action_groupListFragment_to_groupFragment"
             app:destination="@id/groupFragment"
-            app:popUpTo="@id/mainFragment" />
+            app:popUpTo="@id/mainSubFragment" />
         <argument
             android:name="groupName"
             app:argType="string" />
@@ -117,14 +117,13 @@
             app:popUpTo="@id/groupFragment" />
     </dialog>
     <fragment
-        android:id="@+id/mainProtoFragment"
-        android:name="com.leesangmin89.readcontacttest.protomain.MainProtoFragment"
-        android:label="fragment_main_proto"
-        tools:layout="@layout/fragment_main_proto" >
+        android:id="@+id/mainFragment"
+        android:name="com.leesangmin89.readcontacttest.main.MainFragment"
+        android:label="메인"
+        tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_mainProtoFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainProtoFragment" />
+            android:id="@+id/action_mainFragment_to_mainSubFragment"
+            app:destination="@id/mainSubFragment" />
     </fragment>
     <dialog
         android:id="@+id/crossroadDialog"

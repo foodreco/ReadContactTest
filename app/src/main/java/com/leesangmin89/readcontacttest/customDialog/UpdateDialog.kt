@@ -53,7 +53,6 @@ class UpdateDialog : DialogFragment() {
         binding.contactGroupUpdate.setText(args?.group)
         groupViewModel.checkRecommendationState(args?.number!!)
 
-        Log.i("수정", "recommendation 기능 GroupListFragment 에서 변경하기")
         // updateDialog 의 알람 버튼 상태 코드
         groupViewModel.groupListForSwitch.observe(viewLifecycleOwner, {
             binding.swtichAlarm.isChecked = it

@@ -5,8 +5,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.CallLog
-import android.provider.ContactsContract
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,32 +15,30 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import com.leesangmin89.readcontacttest.ContactSpl
-import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
-import com.leesangmin89.readcontacttest.data.entity.CallLogData
+import androidx.navigation.findNavController
+import androidx.viewpager2.widget.ViewPager2
+import com.leesangmin89.readcontacttest.data.entity.Recommendation
+import com.leesangmin89.readcontacttest.data.entity.Tendency
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
+import com.leesangmin89.readcontacttest.recommendationLogic.RecommendationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
 
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
+    private val recoViewModel: RecommendationViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
-    private val callLogViewModel: CallLogViewModel by viewModels()
+    private val adapter: CallRecommendAdapter by lazy { CallRecommendAdapter(requireContext()) }
 
     // 권한 허용 리스트
-    private val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG)
-
+    private val permissions = arrayOf(
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.CALL_PHONE,
+        Manifest.permission.READ_CALL_LOG
+    )
     // 권한 허용 코드
     private val CONTACT_AND_CALL_PERMISSION_CODE = 1
-
-    // 총 통화량 집계 변수(맵)
-    private val contactMap = mutableMapOf<String, Int>()
-
-    private var contactNumbers: Int = 0
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -50,61 +46,120 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.e("수정", "최초 앱 빌드 시, 리스트 업 의무화 필요")
+        showProgress(true)
 
+        // 기초 정보 구축하기
         checkAndStart()
 
-        // 프로그래스바 노출 코드
-        mainViewModel.progressBarEventFinished.observe(viewLifecycleOwner,
-            { progressBarFinish ->
-                if (progressBarFinish) {
-                    showProgress(false)
-                    mainViewModel.progressBarEventReset()
-                }
-            })
-
-        // 활성 통화 횟수 및 마지막 통화 표현 코드
-        mainViewModel.infoData.observe(viewLifecycleOwner, Observer {
-            binding.apply {
-                if (it == null) {
-//                    textContactNumber.text = getString(R.string.contact_number, 0)
-                    textContactActivated.text = getString(R.string.contact_activated, 0)
-                    textRecentContact.text = getString(R.string.recent_contact, "해당없음")
-                    mostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
-                    mostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
-                } else {
-//                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
-                    textContactActivated.text =
-                        getString(R.string.contact_activated, it.activatedContact)
-                    textRecentContact.text =
-                        getString(R.string.recent_contact, it.mostRecentContact)
-                    mostContactNumber.text =
-                        getString(R.string.most_contact_name, it.mostContactName)
-
-                    val minutes = it.mostContactTimes!!.toLong() / 60
-                    val seconds = it.mostContactTimes.toLong() % 60
-                    mostContactDuration.text =
-                        getString(R.string.most_contact_duration, minutes, seconds)
-                }
+        mainViewModel.makeRecommendationInfoEvent.observe(viewLifecycleOwner, { ready ->
+            if (ready) {
+                // 실행 시 매번 업데이트 되어야 함
+                makeRecommendationInfo()
+                mainViewModel.makeRecommendationInfoEventDone()
             }
         })
 
-        // 연락처 개수 표현 코드
-        mainViewModel.contactNumbers.observe(viewLifecycleOwner, {
-            if (it == null) {
-                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, 0)
+        // call 추천
+        // ViewPager2 적용
+        binding.recommendationViewPager.adapter = adapter
+        binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        recoViewModel.recommendationLiveList.observe(viewLifecycleOwner, {
+            if (it == emptyList<Recommendation>()) {
+                Log.d("보완", "testList null 일 때, '관계 유지가 잘 되고 있습니다.' view 띄우기")
+                Toast.makeText(requireContext(), "관계 유지가 잘 되고 있습니다. \n 알림친구가 없다면 설정하세요.", Toast.LENGTH_SHORT).show()
             } else {
-                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, it)
+                adapter.submitList(it)
             }
         })
 
+        // 경향
+        recoViewModel.tendencyLive?.observe(viewLifecycleOwner, { tendency ->
+            if (tendency != null) {
+                getBindTextView(tendency)
+            }
+        })
 
-        binding.btnToMain.setOnClickListener {
-            val action = MainFragmentDirections.actionMainFragmentToMainProtoFragment()
-            findNavController().navigate(action)
+        binding.btnToSub.setOnClickListener {
+            val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
+            it.findNavController().navigate(action)
         }
 
         return binding.root
+    }
+
+    // CallLogCalls 데이터를 순회하며, Recommendation 정보를 가져오는 함수
+    @SuppressLint("Range")
+    fun makeRecommendationInfo() {
+        Log.i("확인","makeRecommendationInfo 시작")
+        showProgress(true)
+        Log.d("수정", "최초 앱 빌드 시, The application may be doing too much work on its main thread.")
+        // contactInfo 전화 통계 데이터 갱신
+        // 실행 시 매번 업데이트 되어야 함
+        recoViewModel.arrangeRecommendation()
+        Log.i("확인","makeRecommendationInfo 종료")
+    }
+
+    private fun showProgress(show: Boolean) {
+        binding.progressBarMainProto.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun getBindTextView(tendency: Tendency) {
+        var callTypeIncomingRate = 0
+        var callTypeOutgoingRate = 0
+        var callTypeMissedRate = 0
+        var callDurationAvg = 0
+        var callDurationAvgGroup = 0
+        var callDurationAvgReco = 0
+
+        if (tendency.allCallCount != "0") {
+            callTypeIncomingRate = tendency.allCallIncoming.toInt() / tendency.allCallCount.toInt()
+            callTypeOutgoingRate = tendency.allCallOutgoing.toInt() / tendency.allCallCount.toInt()
+            callTypeMissedRate = tendency.allCallMissed.toInt() / tendency.allCallCount.toInt()
+            callDurationAvg = tendency.allCallDuration.toInt() / tendency.allCallCount.toInt()
+        }
+
+        if (tendency.groupListCallCount != "0") {
+            callDurationAvgGroup =
+                tendency.groupListCallDuration.toInt() / tendency.groupListCallCount.toInt()
+        }
+
+        if (tendency.recommendationCallCount != "0") {
+            callDurationAvgReco =
+                tendency.recommendationCallDuration.toInt() / tendency.recommendationCallCount.toInt()
+        }
+
+        val callPartnerNumber = tendency.allCallPartnerList.count()
+        var callTypeTendency = "발수신 성향"
+        var callTypeTendencyInReco = "알람 발수신 성향"
+        var callDurationTendency = "총 통화 시간 성향"
+
+        callTypeTendency = if (tendency.allCallIncoming >= tendency.allCallOutgoing) {
+            "일반적으로 거는 전화가 많아요."
+        } else {
+            "일반적으로 받는 전화가 많아요."
+        }
+        callTypeTendencyInReco =
+            if (tendency.recommendationCallIncoming >= tendency.recommendationCallOutgoing) {
+                "가까운 사람들에게 주로 전화를 먼저 거는 편이에요."
+            } else {
+                "가까운 사람들에게 주로 전화를 받는 편이에요."
+            }
+        callDurationTendency = "평균 통화시간은 \n" +
+                "전체 전화 ${callDurationAvg / 60} 분 \n" +
+                "그룹 전화 ${callDurationAvgGroup / 60} 분 \n" +
+                "추천 전화 ${callDurationAvgReco / 60} 분 입니다."
+
+        binding.textCallTypeTendency.text = callTypeTendency
+        binding.textCallTypeTendencyReco.text = callTypeTendencyInReco
+        binding.textCallDuration.text = callDurationTendency
+
+        showProgress(false)
+    }
+
+    // 초기 데이터 로드 함수(ContactBase)
+    @SuppressLint("Range")
+    fun appBuildLoadContact() {
+        mainViewModel.appBuildLoadContact(requireActivity())
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -112,8 +167,7 @@ class MainFragment : Fragment() {
         // 권한 허용 여부 확인
         if (checkNeedPermission()) {
             // 허용 시, 통화기록, 통계 가져오기
-            getPhoneInfo()
-            countContactNumbers()
+            appBuildLoadContact()
         } else {
             requestContactPermission()
         }
@@ -146,6 +200,7 @@ class MainFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        Log.d("수정", "onRequestPermissionsResult deprecated")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CONTACT_AND_CALL_PERMISSION_CODE) {
             var check = true
@@ -156,8 +211,6 @@ class MainFragment : Fragment() {
                 }
             }
             if (check) {
-                getPhoneInfo()
-                countContactNumbers()
                 Toast.makeText(context, "권한 지금 허용 됨", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "허용 거부되었습니다.", Toast.LENGTH_SHORT).show()
@@ -165,114 +218,4 @@ class MainFragment : Fragment() {
         }
     }
 
-    // 전화 통계, 통화기록을 불러오는 함수(ContactInfo,CallLogData)
-    @SuppressLint("Range")
-    fun getPhoneInfo() {
-        Log.d("수정", "최초 앱 빌드 시, The application may be doing too much work on its main thread.")
-
-        showProgress(true)
-
-        val list = mutableListOf<ContactSpl>()
-        // 전화 로그 가져오는 uri
-        val callLogUri = CallLog.Calls.CONTENT_URI
-
-        // 통화 총 횟수 카운드 변수
-        var callCountNum = 0
-        var activatedContact = 0
-
-        val contacts = requireActivity().contentResolver.query(
-            callLogUri,
-            null,
-            null,
-            null,
-            null
-        )
-
-        // 데이터 중첩을 막기 위해, 기존 데이터 삭제
-        mainViewModel.contactInfoDataClear()
-        contactMap.clear()
-
-        // 반복 작업 구간
-        while (contacts!!.moveToNext()) {
-            val id =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID))
-            var name =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.CACHED_NAME))
-            val number =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER))
-            val duration =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DURATION))
-            val date =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE))
-            val callType =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.TYPE))
-
-            if (name == null) {
-                name = number
-            }
-
-            // CallLogData 통화기록 데이터 갱신
-            // 없는 기록만 insert
-            callLogViewModel.confirmAndInsert(name, number, date, duration, callType)
-
-            // 59초 이상 통화 -> 유효 통화횟수 추가
-            if (duration.toInt() > 59) {
-                activatedContact++
-            }
-            callCountNum++
-
-            //
-            val listChild = ContactSpl(id, name, number, duration)
-            list.add(listChild)
-
-            // 번호와 누적 통화량을 기록하는 코드
-            if (number in contactMap) {
-                val preValue = contactMap[number]
-                if (preValue != null) {
-                    contactMap[number] = preValue + duration.toInt()
-                }
-            } else {
-                contactMap[number] = duration.toInt()
-            }
-        }
-
-        // 가장 최근 통화 대상(최근 대상부터 while 반복됨)
-        val mostRecentContact = list[0].name
-        // 가장 최장 통화시간
-        val mapMaxValue = contactMap.maxOf { it.value }
-        // 가장 최장 통화대상 번호
-        val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
-
-        // contactInfo 전화 통계 데이터 갱신
-        mainViewModel.insertInfo(
-            callCountNum,
-            activatedContact,
-            mostRecentContact,
-            mapMaxKey,
-            mapMaxValue
-        )
-        contacts.close()
-    }
-
-    // 전체 연락처 갯수를 알려주는 함수
-    @SuppressLint("Range")
-    fun countContactNumbers() {
-        contactNumbers = 0
-        val contacts = requireActivity().contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
-        )
-        while (contacts!!.moveToNext()) {
-            contactNumbers++
-        }
-        mainViewModel._contactNumbers.value = contactNumbers
-        contacts.close()
-    }
-
-    fun showProgress(show: Boolean) {
-        binding.progressBarMain.visibility = if (show) View.VISIBLE else View.GONE
-    }
 }

@@ -9,7 +9,7 @@ import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.*
 
 
-@Database(entities = [ContactBase::class, ContactInfo::class, GroupList::class, CallLogData::class, Recommendation::class], version = 1, exportSchema = false)
+@Database(entities = [ContactBase::class, ContactInfo::class, GroupList::class, CallLogData::class, Recommendation::class, Tendency::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ContactDatabase : RoomDatabase() {
 
@@ -18,6 +18,7 @@ abstract class ContactDatabase : RoomDatabase() {
     abstract val groupListDao : GroupListDao
     abstract val callLogDao : CallLogDao
     abstract val recommendationDao : RecommendationDao
+    abstract val tendencyDao : TendencyDao
 
 
 }

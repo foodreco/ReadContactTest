@@ -117,6 +117,9 @@ dependencies {
     //ViewPager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
+    //Gson (for Room list apply)
+    implementation 'com.google.code.gson:gson:2.9.0'
+
 
 }
 

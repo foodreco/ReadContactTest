@@ -10,6 +10,7 @@ data class ContactInfo(
     val mostRecentContact : String? = "",
     val mostContactName : String? = "",
     val mostContactTimes : Int? = 0,
-    @PrimaryKey(autoGenerate = true) val id : Int = 0
+    @PrimaryKey(autoGenerate = true)
+    val id : Int = 0
 )
 

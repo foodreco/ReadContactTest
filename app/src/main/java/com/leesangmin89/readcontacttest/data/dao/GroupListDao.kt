@@ -38,7 +38,7 @@ interface GroupListDao {
 
     // Recommendation = true 인 GroupList 를 출력하는 함수
     @Query("SELECT * FROM group_table WHERE recommendation is :key")
-    suspend fun getRecommendationGroupList(key:Boolean = true): List<GroupList>?
+    suspend fun getRecommendationGroupList(key:Boolean = true): List<GroupList>
 
 
 

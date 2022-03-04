@@ -23,9 +23,20 @@ class GroupListAddViewModel @Inject constructor(
     private val _navigateEvent = MutableLiveData<Boolean>()
     val navigateEvent : LiveData<Boolean> = _navigateEvent
 
+    private val _keyboardEvent = MutableLiveData<Boolean>()
+    val keyboardEvent : LiveData<Boolean> = _keyboardEvent
+
     lateinit var liveList: LiveData<List<ContactBase>>
 
     init {
+    }
+
+    fun activeKeyboard() {
+        _keyboardEvent.value = true
+    }
+
+    fun inActiveKeyboard() {
+        _keyboardEvent.value = false
     }
 
     fun initSort(groupName: String) {

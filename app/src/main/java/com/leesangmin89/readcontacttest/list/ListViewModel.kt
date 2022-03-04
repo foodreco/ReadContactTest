@@ -1,7 +1,11 @@
 package com.leesangmin89.readcontacttest.list
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Application
+import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
@@ -27,14 +31,14 @@ class ListViewModel @Inject constructor(
     private var _listData = MutableLiveData<List<ContactBase>>()
     var listData: LiveData<List<ContactBase>> = _listData
 
-    //    var listData: LiveData<List<ContactBase>>
+    var testData: LiveData<List<ContactBase>>
     var listDataNameDESC: LiveData<List<ContactBase>>
     var listDataNumberASC: LiveData<List<ContactBase>>
 
 
     init {
         initSort()
-//        listData = database.getAllDataByNameASC()
+        testData = database.getAllDataByNameASC()
         listDataNameDESC = database.getAllDataByNameDESC()
         listDataNumberASC = database.getAllDataByNumberASC()
 
@@ -58,7 +62,7 @@ class ListViewModel @Inject constructor(
     fun clear() {
         viewModelScope.launch {
             database.clear()
-            // DB clear 후 정렬 다시 초기화
+            // contactBase DB clear 후 정렬 다시 초기화
             initSort()
         }
     }
@@ -91,11 +95,6 @@ class ListViewModel @Inject constructor(
         }
     }
 
-    fun syncWithGroupList() {
-        // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
-        updateGroupNameInContactBase()
-    }
-
     fun contactActivate() {
         _initializeContactEvent.value = true
     }
@@ -104,17 +103,7 @@ class ListViewModel @Inject constructor(
         return database.searchDatabase(searchQuery).asLiveData()
     }
 
-    // 전화번호를 매개변수로 하여, GroupList 에서 해당 그룹 리스트를 가져오는 함수
-    fun find(number: String) {
-        viewModelScope.launch {
-            val groupListForFind = dataGroup.getGroupByNumber(number)
-            if (groupListForFind != null) {
-                groupListForFind.group
-            }
-        }
-    }
-
-    fun updateGroupNameInContactBase() {
+    private fun updateGroupNameInContactBase() {
         viewModelScope.launch {
             for (contact in database.getAllContactBaseList()) {
                 for (groupList in dataGroup.getAllDataFromGroupList()) {
@@ -136,9 +125,43 @@ class ListViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
+    @SuppressLint("Range")
+    fun updateContactBase(activity: Activity) {
+        // 기존 데이터 삭제
+        clear()
+        val contacts = activity.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
 
+        while (contacts!!.moveToNext()) {
+            val name =
+                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+            // 번호 수집 시, - 일괄 제거하여 수집한다.
+            val number =
+                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                    .replace("-", "")
+            val photoUri =
+                contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
+            val contactList = ContactBase(name, number, "", null, 0)
+            if (photoUri != null) {
+                Log.i("수정", "getBitmap -> ImageDecoder 변경시도 but 오류발생")
+                contactList.image = MediaStore.Images.Media.getBitmap(
+                    activity.contentResolver,
+                    Uri.parse(photoUri)
+                )
+//                    val source = ImageDecoder.createSource(requireActivity().contentResolver, photoUri)
+//                    val bitmap = ImageDecoder.decodeBitmap(source)
+            }
+            insert(contactList)
+        }
+        contacts.close()
+
+        // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
+        updateGroupNameInContactBase()
+    }
 
 }
