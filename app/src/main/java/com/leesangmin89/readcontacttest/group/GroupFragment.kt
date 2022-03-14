@@ -1,12 +1,17 @@
 package com.leesangmin89.readcontacttest.group
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.transition.MaterialFadeThrough
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,8 +27,6 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val args = arguments?.getString("groupName")
-
         val adapter = GroupAdapter(requireContext())
         binding.groupRecyclerView.adapter = adapter
 
@@ -31,42 +34,30 @@ class GroupFragment : Fragment() {
         groupViewModel.getGroupName()
 
         // 업데이트 리스트 recyclerView로 반환
-        groupViewModel.groupInfo.observe(viewLifecycleOwner, {
+        groupViewModel.groupInfo.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-        })
+        }
 
-        groupViewModel.groupListEmptyEvent.observe(viewLifecycleOwner, {
+        groupViewModel.groupListEmptyEvent.observe(viewLifecycleOwner) {
             if (it) {
                 // 그룹이 empty 인 경우, 확인창 띄우기
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setPositiveButton("그룹추가") { dialog, _ ->
+                    Log.i("확인", "다이아로그 ok")
                     dialog.dismiss()
-
-                    // BottomNavi -> BottomNavi 로 이동 시, 덮이는 오류발생??
-//                    goToListFragment()
-
-//                    // 최초, fragment 생성 전 해당 fragment 로 이동 시 IllegalStateException 발생 방지
-//                    view?.post {
-//                        findNavController().navigate(action)
-//                    }
-
+                    addGroup()
                 }
                 builder.setTitle("그룹 없음")
                 builder.setMessage("연락처에 지정된 그룹이 없습니다. \n 그룹을 추가하세요!")
                 builder.create().show()
+
                 groupViewModel.groupListEmptyChecked()
             }
-        })
-
+        }
         setHasOptionsMenu(true)
+
         return binding.root
     }
-
-    private fun goToListFragment() {
-        val action = GroupFragmentDirections.actionGroupFragmentToListFragment()
-        findNavController().navigate(action)
-    }
-
 
     // 메뉴 활성화
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

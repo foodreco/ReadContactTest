@@ -114,9 +114,7 @@ class MainViewModel @Inject constructor(
     // 앱 최초 빌드 시, 연락처를 불러오는 함수
     @SuppressLint("Range")
     fun appBuildLoadContact(activity: Activity) {
-        Log.i("확인", "appBuildLoadContact 시작")
         viewModelScope.launch {
-            Log.i("확인", "viewModelScope 시작")
             val checkList = dataBase.getAllContactBaseList()
             if (checkList == emptyList<ContactBase>()) {
                 // 1. ContactBase 가 empty 이면 ContactBase DB 생성
@@ -140,7 +138,6 @@ class MainViewModel @Inject constructor(
                     val contactList = ContactBase(name, number, "", null, 0)
 
                     if (photoUri != null) {
-                        Log.i("수정", "getBitmap -> ImageDecoder 변경시도 but 오류발생")
                         contactList.image = MediaStore.Images.Media.getBitmap(
                             activity.contentResolver,
                             Uri.parse(photoUri)
@@ -154,13 +151,10 @@ class MainViewModel @Inject constructor(
 
                 // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
                 updateGroupNameInContactBase()
-                Log.i("확인", "ContactBase 가 비었던 상태임")
             }
             // 2. 전화 통계, 통화기록 DB 생성
             getPhoneInfo(activity)
-            Log.i("확인", "viewModelScope 종료")
         }
-        Log.i("확인", "appBuildLoadContact 종료")
     }
 
     fun insertContactBase(contact: ContactBase) {
@@ -193,7 +187,6 @@ class MainViewModel @Inject constructor(
     @SuppressLint("Range")
     fun getPhoneInfo(activity: Activity) {
         viewModelScope.launch {
-            Log.i("확인", "getPhoneInfo 시작")
 
             // 전화 로그 가져오는 uri
             val callLogUri = CallLog.Calls.CONTENT_URI
@@ -293,7 +286,6 @@ class MainViewModel @Inject constructor(
             // 콜로그 데이터를 다 가져온 뒤, 확실히 넘어가야 함!!
             makeRecommendationInfoEvent()
         }
-        Log.i("확인", "getPhoneInfo 종료")
     }
 
     // contactInfo data 를 매번 업데이트 하는 함수
@@ -361,7 +353,6 @@ class MainViewModel @Inject constructor(
         val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
 
         // ContactBase 필요
-        Log.i("개선", "insertInfo 이게 맨날 늦어서 예비메인도 늦게 로딩됨")
         insertInfo(
             callCountNum,
             activatedContact,

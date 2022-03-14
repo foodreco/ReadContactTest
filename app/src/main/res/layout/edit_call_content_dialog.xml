@@ -50,6 +50,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="입력"
+            android:textColor="@color/hau_white_green"
+            android:backgroundTint="@color/hau_bright_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

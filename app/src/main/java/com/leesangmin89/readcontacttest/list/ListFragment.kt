@@ -4,22 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
+import com.google.android.material.transition.MaterialFadeThrough
+import com.hieupt.android.standalonescrollbar.attachTo
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,22 +26,21 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
+    // 요청 권한 리스트
+    companion object {
+        val PERMISSIONS = arrayOf(
+            Manifest.permission.READ_CONTACTS
+        )
+    }
+
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
     private val listViewModel: ListViewModel by viewModels()
-
     private val adapter: ContactAdapter by lazy {
         ContactAdapter(
             requireContext(),
             childFragmentManager
         )
     }
-
-
-    // 권한 허용 리스트
-    val permissions = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
-
-    // 권한 허용 코드
-    private val CONTACT_AND_CALL_PERMISSION_CODE = 1
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("Range")
@@ -55,68 +53,46 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
         // 초기화 버튼 클릭 시, 연락처 데이터를 다시 가져오는 코드
         binding.button.setOnClickListener {
-            checkAndStart()
+            checkPermissionsAndStart(PERMISSIONS)
         }
-
-//        // 리싸이클러뷰 옵저버
-//        // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-//        listViewModel.sortEvent.observe(viewLifecycleOwner,
-//            {
-//                // 연락처를 다시 가져올 때마다, 연락처-그룹 동기화 하는 코드
-//                listViewModel.updateGroupNameInContactBase()
-//                when (it) {
-//                    0 -> {
-//                        listViewModel.listData.observe(viewLifecycleOwner, {
-////                            adapter.submitList(it)
-//                            adapter.setData(it)
-//                        })
-//                    }
-//                    1 -> {
-//                        listViewModel.listDataNameDESC.observe(viewLifecycleOwner, {
-////                            adapter.submitList(it)
-//                            adapter.setData(it)
-//                        })
-//                    }
-//                    2 -> {
-//                        listViewModel.listDataNumberASC.observe(viewLifecycleOwner, {
-////                            adapter.submitList(it)
-//                            adapter.setData(it)
-//                        })
-//                    }
-//                }
-//            })
 
         // 리싸이클러뷰 옵저버
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-        Log.i("수정", "bottomNavi 터치 시, 정렬 초기화 오류")
         Log.i("보완", "통화기록이 있는 연락처만 불러오기 정렬 -> 그룹 추가 용이")
-        listViewModel.testData.observe(viewLifecycleOwner, {
+        Log.i("보완", "recyclerView 헤더 추가하기")
+        Log.i("보완", "recyclerView 정렬 시, 맨 윗 리스트 중심으로 고정되버린다??")
+
+        listViewModel.testData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            Log.i("확인", "listViewModel.listData.observe 발동")
-        })
-
-        // 연락처 업데이트 옵저버
-        listViewModel.initializeContactEvent.observe(viewLifecycleOwner,
-            {
-                if (it) {
-                    updateContactBase()
-                }
-            })
-
-        // 리싸이클러뷰 스크롤을 최상단으로 하는 버튼
-        binding.btnScrollUp.setOnClickListener {
-            binding.recyclerViewList.scrollToPosition(0)
         }
 
+        // 연락처 업데이트 옵저버
+        listViewModel.initializeContactEvent.observe(
+            viewLifecycleOwner
+        ) {
+            if (it) {
+                updateContactBase()
+            }
+        }
+
+        // scroll bar
+        val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
+        val colorTrack = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        with(binding) {
+            scrollBar.attachTo(binding.recyclerViewList)
+            scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
+            scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
+        }
         setHasOptionsMenu(true)
+
         return binding.root
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.list_menu, menu)
 
-        val search = menu?.findItem(R.id.menu_search)
+        val search = menu.findItem(R.id.menu_search)
         val searchView = search?.actionView as? SearchView
         searchView?.isSubmitButtonEnabled = true
         searchView?.setOnQueryTextListener(this)
@@ -135,11 +111,11 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
-        listViewModel.searchDatabase(searchQuery).observe(this, { list ->
+        listViewModel.searchDatabase(searchQuery).observe(this) { list ->
             list.let {
                 adapter.submitList(it)
             }
-        })
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -148,16 +124,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 deleteData()
                 true
             }
-            R.id.sort_by_name_asc -> {
-                listViewModel.getAllDataByASC()
-                true
-            }
-            R.id.sort_by_name_desc -> {
-                listViewModel.getAllDataByDESC()
-                true
-            }
-            R.id.sory_by_number -> {
-                listViewModel.getAllDataByNumberASC()
+            R.id.sort_by_call -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -186,7 +153,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("예") { _, _ ->
             listViewModel.contactActivate()
-            Snackbar.make(requireView(), "접근 허용됨", Snackbar.LENGTH_SHORT).show()
             Toast.makeText(
                 requireContext(),
                 "연락처 업데이트 됨",
@@ -208,17 +174,20 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 권한 요청 관련 함수
 
-    private fun checkAndStart() {
-        // 권한 허용 여부 확인
-        if (checkNeedPermission()) {
-            // 허용 시
-            activatingContact()
+    private fun checkPermissionsAndStart(permissions: Array<out String>) {
+        if (!checkNeedPermissionBoolean(permissions)) {
+            // 허용 안되어 있는 경우, 요청
+            requestMultiplePermissions.launch(
+                permissions
+            )
         } else {
-            requestContactPermission()
+            // 허용 되어있는 경우, 통화기록, 통계 가져오기
+            activatingContact()
         }
     }
 
-    private fun checkNeedPermission(): Boolean {
+    // 허용 여부에 따른 Boolean 반환
+    private fun checkNeedPermissionBoolean(permissions: Array<out String>): Boolean {
         for (perm in permissions) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -231,34 +200,22 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         return true
     }
 
-    private fun requestContactPermission() {
-        // READ_CONTACT 허용 요청 함수
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            permissions,
-            CONTACT_AND_CALL_PERMISSION_CODE
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == CONTACT_AND_CALL_PERMISSION_CODE) {
-            var check = true
-
-            for (grant in grantResults) {
-                if (grant != PackageManager.PERMISSION_GRANTED) {
-                    check = false
-                    break
-                }
+    // 허용 요청 코드
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all {
+                it.value == true
             }
-            if (check) activatingContact()
-            else {
-                Toast.makeText(requireContext(), "허용 거부되었습니다.", Toast.LENGTH_SHORT).show()
+            if (granted) {
+                // 허용된, 경우
+                Toast.makeText(context, "권한 허용", Toast.LENGTH_SHORT).show()
+                activatingContact()
+            } else {
+                // 허용안된 경우,
+                Toast.makeText(
+                    context, "연락처 접근 권한이 거부되었으므로, \n" +
+                            "불러올 수 없습니다.", Toast.LENGTH_SHORT
+                ).show()
             }
         }
-    }
-
 }

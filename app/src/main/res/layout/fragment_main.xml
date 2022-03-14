@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="~~~님께 전화하세요!!"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -56,7 +56,7 @@
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/recommendation_viewPager"
                         android:layout_width="match_parent"
-                        android:layout_height="152dp"/>
+                        android:layout_height="152dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -78,6 +78,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:textSize="16dp"
                     android:text="자세히 보기" />
 
                 <ImageButton
@@ -93,21 +94,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_to_open_detail">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="center"
-                    android:text="상세정보"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="visible" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintTop_toBottomOf="@+id/layout_to_open_detail" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -117,7 +104,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_cardView">
@@ -125,10 +112,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="14dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            android:padding="14dp">
+            app:layout_constraintTop_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/text_tendency"
@@ -136,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="사용자님의 성향"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -146,7 +133,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="주로 전화를 거는 편이에요."
+                android:text="송수신 성향"
+                android:textSize="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_tendency" />
@@ -156,10 +144,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="자주 가볍게 다양한 사람들과 통화해요"
+                android:text="전화 유형"
+                android:textSize="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_callType_tendency"/>
+                app:layout_constraintTop_toBottomOf="@id/text_callType_tendency" />
 
             <TextView
                 android:id="@+id/text_call_duration"
@@ -167,7 +156,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:lines="4"
-                android:text="자주 가볍게 다양한 사람들과 통화해요"
+                android:text="평균 통화 시간"
+                android:textSize="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_callType_tendency_reco" />
@@ -181,6 +171,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="toSub"
+        android:textColor="@color/hau_white_green"
+        android:backgroundTint="@color/hau_bright_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

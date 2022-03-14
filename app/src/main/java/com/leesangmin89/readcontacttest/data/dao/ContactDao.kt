@@ -49,11 +49,11 @@ interface ContactDao {
 
 
 
-    @Query("SELECT * FROM contact_table ORDER BY name ASC")
-    fun getAllDataByNameASC(): LiveData<List<ContactBase>>
+    @Query("SELECT * FROM contact_table ORDER BY id ASC")
+    fun getAllDataByIdASCLive(): LiveData<List<ContactBase>>
 
-    @Query("SELECT * FROM contact_table ORDER BY name DESC")
-    fun getAllDataByNameDESC(): LiveData<List<ContactBase>>
+    @Query("SELECT * FROM contact_table ORDER BY name ASC")
+    fun getAllDataByNameASCLive(): LiveData<List<ContactBase>>
 
     @Query("SELECT * FROM contact_table ORDER BY number ASC")
     fun getAllDataByNumberASC(): LiveData<List<ContactBase>>

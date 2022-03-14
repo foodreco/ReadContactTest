@@ -60,12 +60,12 @@
 
             <ImageButton
                 android:id="@+id/btn_call_direct"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:outlineAmbientShadowColor="@android:color/holo_green_light"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/hau_bright_green"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

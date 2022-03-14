@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.fragment.app.viewModels
+import com.google.android.material.transition.MaterialFadeThrough
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogBinding
@@ -30,15 +31,17 @@ class CallLogFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.i("보완", "중요 통화기록 모아보기")
+
         val adapter = CallLogAdapter(childFragmentManager)
         binding.callLogRecyclerView.adapter = adapter
 
         showProgress(true)
 
-        callLogViewModel.callLogList.observe(viewLifecycleOwner, {
+        callLogViewModel.callLogList.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             showProgress(false)
-        })
+        }
 
         return binding.root
     }

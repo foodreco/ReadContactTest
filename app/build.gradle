@@ -111,14 +111,20 @@ dependencies {
     //CardView
     implementation "androidx.cardview:cardview:1.0.0"
 
-    //TextInputLayout
-    implementation 'com.google.android.material:material:1.2.1'
+    // material design package
+    implementation 'com.google.android.material:material:1.6.0-alpha03'
 
     //ViewPager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
     //Gson (for Room list apply)
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    // fast scroll bar
+    implementation 'com.dev.hieupt:android-standalone-scroll-bar:1.1.2'
+
+    // Lottie for Splash
+    implementation "com.airbnb.android:lottie:4.2.2"
 
 
 }

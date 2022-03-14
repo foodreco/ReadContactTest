@@ -10,4 +10,17 @@
     <color name="gray">#818080</color>
     <color name="callContentColor">#ABEAAB</color>
     <color name="yellow">#FFEB3B</color>
+    <color name="actionbar_title_color">#00CD3E</color>
+
+    <color name="hau_white_green">#F9FFF9</color>
+    <color name="hau_green">#00CD3E</color>
+    <color name="hau_text_color">#00a263</color>
+    <color name="hau_status_bar_color">#007040</color>
+    <color name="hau_bright_green">#91e295</color>
+    <color name="hau_emerald">#00cda4</color>
+    <color name="hau_blue">#3d00cd</color>
+    <color name="hau_bright_blue">#0090cd</color>
+    <color name="hau_dark_green">#4A6572</color>
+    <color name="hau_black">#232F34</color>
+
 </resources>

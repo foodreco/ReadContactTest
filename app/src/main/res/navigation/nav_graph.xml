@@ -35,16 +35,12 @@
             app:destination="@id/groupListFragment"
             app:popUpTo="@id/groupFragment" />
         <action
-            android:id="@+id/action_groupFragment_to_listFragment"
-            app:destination="@id/listFragment"
-            app:popUpTo="@id/mainSubFragment" />
+            android:id="@+id/action_groupFragment_to_updateDialog"
+            app:destination="@id/updateDialog"
+            app:popUpTo="@id/groupFragment" />
         <action
             android:id="@+id/action_groupFragment_to_groupAddDialog"
             app:destination="@id/groupAddDialog"
-            app:popUpTo="@id/groupFragment" />
-        <action
-            android:id="@+id/action_groupFragment_to_updateDialog"
-            app:destination="@id/updateDialog"
             app:popUpTo="@id/groupFragment" />
     </fragment>
     <fragment
@@ -99,15 +95,6 @@
             app:popUpTo="@id/groupFragment" />
     </fragment>
     <dialog
-        android:id="@+id/groupAddDialog"
-        android:name="com.leesangmin89.readcontacttest.customDialog.GroupAddDialog"
-        android:label="GroupAddDialog">
-        <action
-            android:id="@+id/action_groupAddDialog_to_groupListAddFragment"
-            app:destination="@id/groupListAddFragment"
-            app:popUpTo="@id/groupFragment" />
-    </dialog>
-    <dialog
         android:id="@+id/updateDialog"
         android:name="com.leesangmin89.readcontacttest.customDialog.UpdateDialog"
         android:label="UpdateDialog" >
@@ -140,5 +127,19 @@
             android:id="@+id/action_crossroadDialog_to_groupListFragment"
             app:destination="@id/groupListFragment"
             app:popUpTo="@id/groupFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/groupAddDialog"
+        android:name="com.leesangmin89.readcontacttest.customDialog.GroupAddDialog"
+        android:label="GroupAddDialog"
+        tools:layout="@layout/group_add_dialog">
+        <action
+            android:id="@+id/action_groupAddDialog_to_groupListAddFragment"
+            app:destination="@id/groupListAddFragment"
+            app:popUpTo="@id/groupFragment" />
+        <action
+            android:id="@+id/action_groupAddDialog_to_groupFragment"
+            app:destination="@id/groupFragment"
+            app:popUpTo="@id/mainFragment" />
     </dialog>
 </navigation>

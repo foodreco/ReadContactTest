@@ -1,6 +1,10 @@
 package com.leesangmin89.readcontacttest
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import java.text.SimpleDateFormat
 
 
@@ -28,6 +32,29 @@ fun convertCallTypeToString(callType: Int): String {
         else -> "알수없음"
     }
 }
+
+fun EditText.setFocusAndShowKeyboard(context: Context) {
+    this.requestFocus()
+    setSelection(this.text.length)
+    this.postDelayed({
+        val inputMethodManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(this, InputMethodManager.SHOW_FORCED)
+    }, 100)
+}
+
+fun EditText.clearFocusAndHideKeyboard(context: Context) {
+    this.clearFocus()
+        this.postDelayed({
+            val inputMethodManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+        }, 30)
+//    val inputMethodManager =
+//        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//    inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+}
+
 
 // 전화 통계, 통화기록을 불러오는 함수(ContactInfo,CallLogData) 에 사용
 data class ContactSpl(

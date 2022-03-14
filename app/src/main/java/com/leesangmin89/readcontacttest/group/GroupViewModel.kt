@@ -1,7 +1,6 @@
 package com.leesangmin89.readcontacttest.group
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +12,6 @@ import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.dao.RecommendationDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
-import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -37,9 +35,6 @@ class GroupViewModel @Inject constructor(
     private val _groupListEmptyEvent = MutableLiveData<Boolean>()
     val groupListEmptyEvent: LiveData<Boolean> = _groupListEmptyEvent
 
-    private val _newGroupList = MutableLiveData<List<GroupList>>()
-    val newGroupList: LiveData<List<GroupList>> = _newGroupList
-
     lateinit var liveGroupLiveData : LiveData<List<GroupList>>
 
     private val _coroutineDoneEvent = MutableLiveData<Boolean>()
@@ -47,12 +42,6 @@ class GroupViewModel @Inject constructor(
 
     private val _getOnlyGroupNameDoneEvent = MutableLiveData<Boolean>()
     val getOnlyGroupNameDoneEvent: LiveData<Boolean> = _getOnlyGroupNameDoneEvent
-
-    private val _groupListGetEvent = MutableLiveData<Boolean>()
-    val groupListGetEvent: LiveData<Boolean> = _groupListGetEvent
-
-    private val _groupListUpdateEvent = MutableLiveData<Boolean>()
-    val groupListUpdateEvent: LiveData<Boolean> = _groupListUpdateEvent
 
     private val _groupListForSwitch = MutableLiveData<Boolean>()
     val groupListForSwitch: LiveData<Boolean> = _groupListForSwitch
@@ -68,9 +57,8 @@ class GroupViewModel @Inject constructor(
     fun getGroupName() {
         viewModelScope.launch {
             // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
-//            val data = database.getGroupName()
             val data = dataGroup.getGroupName()
-            val emptyData = emptyList<ContactBase>()
+
             // GroupData 를 넣을 빈 리스트 변수
             val groupData = mutableListOf<GroupData>()
 
@@ -78,7 +66,7 @@ class GroupViewModel @Inject constructor(
 
             // 그룹명을 리스트 형태로 모아서, 그룹당 사람 수를 출력하는 코드
             // 만약 data 가 empty 상태라면
-            if (data == emptyData) {
+            if (data == emptyList<String>()) {
                 _groupListEmptyEvent.value = true
             } else {
                 // data 가 empty 가 아니라면
@@ -327,10 +315,6 @@ class GroupViewModel @Inject constructor(
 
     fun updateDialogDone() {
         _updateDialogDone.value = true
-    }
-
-    fun groupListUpdateEventDone() {
-        _groupListUpdateEvent.value = false
     }
 
 }

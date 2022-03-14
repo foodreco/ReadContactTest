@@ -16,19 +16,25 @@
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_sort_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_star_50.xml" value="0.3764102564102564" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_star_border_50.xml" value="0.2535" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_star_yellow_50.xml" value="0.2535" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_sync_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_launcher_background.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_search_black_24dp.xml" value="0.38229166666666664" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/font-v26/font_custom.xml" value="0.3902564102564103" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/font/custom_font_family.xml" value="0.3902564102564103" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/font/font_custom.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/activity_splash.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/call_recommend_adapter_child.xml" value="0.36614583333333334" />
-        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/contact_child.xml" value="0.42362204724409447" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/contact_child.xml" value="0.33" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/contact_group_add_child.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/crossroad_dialog.xml" value="0.4" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/edit_call_content_dialog.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_add.xml" value="0.33" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_call_log.xml" value="0.3515625" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_call_log_child.xml" value="0.36614583333333334" />
-        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_group.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_group.xml" value="0.25" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_group_detail.xml" value="0.25" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_group_list.xml" value="0.264" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/fragment_group_list_add.xml" value="0.36614583333333334" />
@@ -50,6 +56,7 @@
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/group_list_add_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/group_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/grouplist_menu.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/list_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/main_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/mipmap-anydpi-v26/ic_kotlin.xml" value="0.33425925925925926" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.33425925925925926" />

@@ -25,33 +25,15 @@ class ListViewModel @Inject constructor(
     private var _initializeContactEvent = MutableLiveData<Boolean>()
     val initializeContactEvent: LiveData<Boolean> = _initializeContactEvent
 
-    private var _sortEvent = MutableLiveData<Int>()
-    var sortEvent: LiveData<Int> = _sortEvent
-
-    private var _listData = MutableLiveData<List<ContactBase>>()
-    var listData: LiveData<List<ContactBase>> = _listData
-
-    var testData: LiveData<List<ContactBase>>
-    var listDataNameDESC: LiveData<List<ContactBase>>
-    var listDataNumberASC: LiveData<List<ContactBase>>
-
+    lateinit var testData: LiveData<List<ContactBase>>
 
     init {
-        initSort()
-        testData = database.getAllDataByNameASC()
-        listDataNameDESC = database.getAllDataByNameDESC()
-        listDataNumberASC = database.getAllDataByNumberASC()
-
-        // 최초 정렬 기본값(0) 주기
-        _sortEvent.value = 0
+        initSortId()
     }
 
-    fun initSort() {
-        viewModelScope.launch {
-            _listData.value = database.getAllDataByNameASCTest()
-        }
+    fun initSortId() {
+        testData = database.getAllDataByIdASCLive()
     }
-
 
     fun insert(contact: ContactBase) {
         viewModelScope.launch {
@@ -62,8 +44,6 @@ class ListViewModel @Inject constructor(
     fun clear() {
         viewModelScope.launch {
             database.clear()
-            // contactBase DB clear 후 정렬 다시 초기화
-            initSort()
         }
     }
 
@@ -76,22 +56,6 @@ class ListViewModel @Inject constructor(
     fun update(contact: ContactBase) {
         viewModelScope.launch {
             database.update(contact)
-        }
-    }
-
-    fun getAllDataByASC() {
-        initSort()
-    }
-
-    fun getAllDataByDESC() {
-        viewModelScope.launch {
-            _listData.value = database.getAllDataByNameDESCTest()
-        }
-    }
-
-    fun getAllDataByNumberASC() {
-        viewModelScope.launch {
-            _listData.value = database.getAllDataByNumberASCTest()
         }
     }
 
@@ -119,8 +83,6 @@ class ListViewModel @Inject constructor(
                     }
                 }
             }
-            // 처음 불러오고 다시 초기화해줌
-            initSort()
             _initializeContactEvent.value = false
         }
     }

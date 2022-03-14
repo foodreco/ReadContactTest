@@ -15,6 +15,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFade
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
@@ -30,14 +32,12 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ContactBase,fragmentManager: FragmentManager) {
             val name = binding.tvName
-            val number = binding.tvNumber
             val profile = binding.ivProfile
             val update = binding.contactChildEachList
             val call = binding.btnCall
             val group = binding.textGroup
 
             name.text = item.name
-            number.text = item.number
             group.text = item.group
 
             // 이미지 관련
@@ -89,6 +89,7 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
 }
 
 class ContactDiffCallback : DiffUtil.ItemCallback<ContactBase>() {
+
     override fun areItemsTheSame(oldItem: ContactBase, newItem: ContactBase): Boolean {
         return oldItem.number == newItem.number
     }

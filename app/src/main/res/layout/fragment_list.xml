@@ -22,6 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="업데이트"
+            android:textColor="@color/hau_white_green"
+            android:backgroundTint="@color/hau_bright_blue"
             app:layout_constraintBottom_toTopOf="@+id/recyclerView_list"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,19 +41,15 @@
             app:layout_constraintTop_toBottomOf="@+id/button"
             app:layout_constraintVertical_bias="1.0" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_scroll_up"
+        <com.hieupt.android.standalonescrollbar.StandaloneScrollBar
+            android:id="@+id/scroll_bar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:tint="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="52dp"
+            app:layout_constraintBottom_toBottomOf="@+id/recyclerView_list"
+            app:layout_constraintEnd_toEndOf="@+id/recyclerView_list"
             app:layout_constraintTop_toTopOf="@+id/recyclerView_list"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_up_24" />
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

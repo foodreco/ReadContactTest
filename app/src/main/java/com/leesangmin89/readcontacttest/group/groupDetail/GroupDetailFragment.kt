@@ -28,11 +28,11 @@ class GroupDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.i("보완", "중요 통화기록 모아보기")
+
         //CallLogAdapter 사용하여 해당 User 기록만 출력
         val adapter = GroupDetailAdapter(childFragmentManager)
         binding.groupDetailRecyclerView.adapter = adapter
-
-        Log.d("보완", "별 터치 시, CallLogData importance 직관 반영되게 -> Ondestroy 이용??")
 
         // 넘어온 number 에 해당하는 CallLogData 만 출력
         callLogViewModel.findAndReturnLive(args.phoneNumber)

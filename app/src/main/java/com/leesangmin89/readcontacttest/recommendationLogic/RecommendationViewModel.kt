@@ -46,7 +46,6 @@ class RecommendationViewModel @Inject constructor(
     // : 중요도 설정에 따라 추천 기준 달리한다?
     // : 사용자 특성(ex.비즈니스 맨의 경우, 마지막 통화가 최근이다.)에 따라, 설정 달리...
     fun arrangeRecommendation() {
-        Log.i("확인","arrangeRecommendation 시작")
         viewModelScope.launch {
 
             //1. Recommendation = true 인 GroupList 를 불러온다.
@@ -146,7 +145,6 @@ class RecommendationViewModel @Inject constructor(
             }
             callTendencyForAllCall()
         }
-        Log.i("확인","arrangeRecommendation 종료")
     }
 
     fun progressBarEventDone() {
@@ -160,7 +158,6 @@ class RecommendationViewModel @Inject constructor(
     // 2. groupList 관계에서 정의
     // 3. recommendation 관계에서 정의
     fun callTendencyForAllCall() {
-        Log.i("확인","callTendencyForAllCall 시작")
         viewModelScope.launch {
             val allTendency: Tendency? = dataTen.getRecentTendency()
 
@@ -231,17 +228,14 @@ class RecommendationViewModel @Inject constructor(
                     0
                 )
                 dataTen.insert(insertList)
-                Log.i("확인","insertList : $insertList")
             }
             callTendencyForGroupAndRecoCall()
         }
-        Log.i("확인","callTendencyForAllCall 종료")
     }
 
     // 2. groupList 관계에서 정의
     // 3. recommendation 관계에서 정의
     private fun callTendencyForGroupAndRecoCall() {
-        Log.i("확인","callTendencyForGroupAndRecoCall 시작")
         viewModelScope.launch {
             var groupListCallCount = 0
             var groupListCallDuration = 0
@@ -326,9 +320,7 @@ class RecommendationViewModel @Inject constructor(
                     allTendency.id
                 )
                 dataTen.update(updateList)
-                Log.i("확인","updateList : $updateList")
             }
         }
-        Log.i("확인","callTendencyForGroupAndRecoCall 종료")
     }
 }
