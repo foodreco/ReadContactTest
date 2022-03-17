@@ -3,8 +3,16 @@ package com.leesangmin89.readcontacttest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import java.text.SimpleDateFormat
 
 
@@ -45,11 +53,11 @@ fun EditText.setFocusAndShowKeyboard(context: Context) {
 
 fun EditText.clearFocusAndHideKeyboard(context: Context) {
     this.clearFocus()
-        this.postDelayed({
-            val inputMethodManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
-        }, 30)
+    this.postDelayed({
+        val inputMethodManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+    }, 30)
 //    val inputMethodManager =
 //        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 //    inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
@@ -73,3 +81,83 @@ data class RecommendationSpl(
     var totalCallTime: String?,
     var numberOfCalling: String?,
 )
+
+
+// windowSoftInputMode 를 제어하는 코드
+// manifest 지정 모드 : adjustPan
+
+fun Window?.getSoftInputMode(): Int {
+    return this?.attributes?.softInputMode ?: SOFT_INPUT_ADJUST_PAN
+}
+
+class InputModeLifecycleHelper(
+    private var window: Window?,
+    private val mode: Mode = Mode.ADJUST_RESIZE
+) : LifecycleObserver {
+
+    private var originalMode: Int = SOFT_INPUT_ADJUST_PAN
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun setNewSoftInputMode() {
+        window?.let {
+            originalMode = it.getSoftInputMode()
+
+            it.setSoftInputMode(
+                when (mode) {
+                    Mode.ADJUST_RESIZE -> WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                    Mode.ADJUST_PAN -> WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                }
+            )
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun restoreOriginalSoftInputMode() {
+        if (originalMode != SOFT_INPUT_ADJUST_UNSPECIFIED) {
+            window?.setSoftInputMode(originalMode)
+        }
+        window = null
+    }
+
+    enum class Mode {
+        ADJUST_RESIZE, ADJUST_PAN
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// // windowSoftInputMode 를 제어하는 코드 deprecated 대비형
+//fun Window?.getSoftInputMode(): Int {
+//    return this?.attributes?.softInputMode ?: SOFT_INPUT_ADJUST_PAN
+//}
+//
+//class InputModeLifecycleHelper(
+//    private var window: Window?,
+//    private val mode: Mode = Mode.ADJUST_RESIZE
+//) : LifecycleObserver {
+//
+//    private var originalMode: Int = SOFT_INPUT_ADJUST_PAN
+//
+//    private val lifecycleEventObserver = LifecycleEventObserver { source, event ->
+//        if (event == Lifecycle.Event.ON_START) {
+//                window?.let {
+//                    originalMode = it.getSoftInputMode()
+//
+//                    it.setSoftInputMode(
+//                        when (mode) {
+//                            Mode.ADJUST_RESIZE -> WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+//                            Mode.ADJUST_PAN -> WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+//                        }
+//                    )
+//                }
+//        } else if (event == Lifecycle.Event.ON_STOP) {
+//                if (originalMode != SOFT_INPUT_ADJUST_PAN) {
+//                    window?.setSoftInputMode(originalMode)
+//                }
+//                window = null
+//        }
+//    }
+//
+//    enum class Mode {
+//        ADJUST_RESIZE, ADJUST_PAN
+//    }
+//}

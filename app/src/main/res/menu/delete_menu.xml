@@ -5,6 +5,6 @@
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_baseline_delete_24"
         app:showAsAction="always"
-        android:iconTint="@android:color/white"/>
+        android:iconTint="@color/menu_icon_tint_color"/>
 
 </menu>

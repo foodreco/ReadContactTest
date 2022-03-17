@@ -34,7 +34,7 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
             val name = binding.tvName
             val profile = binding.ivProfile
             val update = binding.contactChildEachList
-            val call = binding.btnCall
+//            val call = binding.btnCall
             val group = binding.textGroup
 
             name.text = item.name
@@ -52,13 +52,13 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
                 )
 
             // 전화버튼 클릭 시, 전화걸기
-            call.setOnClickListener {
-                item.number.let { phoneNumber ->
-                    val uri = Uri.parse("tel:${phoneNumber.toString()}")
-                    val intent = Intent(Intent.ACTION_CALL, uri)
-                    context.startActivity(intent)
-                }
-            }
+//            call.setOnClickListener {
+//                item.number.let { phoneNumber ->
+//                    val uri = Uri.parse("tel:${phoneNumber.toString()}")
+//                    val intent = Intent(Intent.ACTION_CALL, uri)
+//                    context.startActivity(intent)
+//                }
+//            }
 
             //리싸이클러 터치 시, 해당 ContactBase 정보를 bundle 로 넘기고 updateDialog show
             update.setOnClickListener {

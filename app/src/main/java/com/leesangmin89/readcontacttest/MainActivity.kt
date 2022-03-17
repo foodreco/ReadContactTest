@@ -8,18 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import android.widget.Toolbar
-import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -8,6 +8,7 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.util.set
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +33,7 @@ class GroupListAddAdapter(ctx: Context) :
             val number = binding.tvNumber
             val profile = binding.ivProfile
             val update = binding.contactChildEachList
-            val call = binding.btnCall
+//            val call = binding.btnCall
             val group = binding.textGroup
             val checkBox = binding.checkBoxListRecycler
 
@@ -53,14 +54,15 @@ class GroupListAddAdapter(ctx: Context) :
 
             // 체크박스 유지 코드
             checkBox.isChecked = checkboxStatus[num]
+
+            if (checkBox.isChecked) {
+                checkBoxReturnList.add(item)
+            } else {
+                checkBoxReturnList.remove(item)
+            }
+
             checkBox.setOnClickListener {
-                if (checkBox.isChecked) {
-                    checkboxStatus.put(num, true)
-                    checkBoxReturnList.add(item)
-                } else {
-                    checkboxStatus.put(num, false)
-                    checkBoxReturnList.remove(item)
-                }
+                checkboxStatus[num] = !checkboxStatus[num]
                 notifyItemChanged(num)
             }
 
@@ -69,16 +71,18 @@ class GroupListAddAdapter(ctx: Context) :
             }
 
             // 전화버튼 클릭 시, 전화걸기
-            call.setOnClickListener {
-                item.number.let { phoneNumber ->
-                    val uri = Uri.parse("tel:${phoneNumber.toString()}")
-                    val intent = Intent(Intent.ACTION_CALL, uri)
-                    context.startActivity(intent)
-                }
-            }
+//            call.setOnClickListener {
+//                item.number.let { phoneNumber ->
+//                    val uri = Uri.parse("tel:${phoneNumber.toString()}")
+//                    val intent = Intent(Intent.ACTION_CALL, uri)
+//                    context.startActivity(intent)
+//                }
+//            }
 
             //리싸이클러 터치 시, update 이동
             update.setOnClickListener {
+                checkboxStatus[num] = !checkboxStatus[num]
+                notifyItemChanged(num)
             }
         }
     }

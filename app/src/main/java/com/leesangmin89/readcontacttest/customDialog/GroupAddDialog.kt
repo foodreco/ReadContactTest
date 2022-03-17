@@ -12,9 +12,10 @@ import com.leesangmin89.readcontacttest.clearFocusAndHideKeyboard
 import com.leesangmin89.readcontacttest.setFocusAndShowKeyboard
 
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 
 @AndroidEntryPoint
-class GroupAddDialog() : DialogFragment() {
+class GroupAddDialog : DialogFragment() {
 
     private val binding by lazy { GroupAddDialogBinding.inflate(layoutInflater) }
 
@@ -60,25 +61,40 @@ class GroupAddDialog() : DialogFragment() {
             }, 50)
         }
 
+        // 확인 버튼 터치 시,
         binding.btnInput.setOnClickListener {
-            val groupName = binding.addGroupName.text.toString()
-            if (groupName == "") {
-                Toast.makeText(requireContext(), "그룹명을 입력하세요", Toast.LENGTH_SHORT).show()
-            } else {
-                // addGroupName 에 지정된 포커스 제거 및 키보드 내리기
-                binding.addGroupName.clearFocusAndHideKeyboard(requireContext())
-                // 시간을 두고 dismiss 후 Fragment 이동
-                binding.btnInput.postDelayed({
-                    dismiss()
-                    findNavController().navigate(
-                        GroupAddDialogDirections.actionGroupAddDialogToGroupListAddFragment(
-                            groupName
-                        )
-                    )
-                }, 50)
-            }
+            addGroupTask()
         }
+
+        // 키보드 완료 버튼 시, 확인 버튼 터치와 동일 효과
+        binding.addGroupName.setOnEditorActionListener{ textView, action, event ->
+            var handled = false
+            if (action == EditorInfo.IME_ACTION_DONE) {
+                addGroupTask()
+                handled = true
+            }
+            handled
+        }
+
         return binding.root
     }
 
+    private fun addGroupTask() {
+        val groupName = binding.addGroupName.text.toString()
+        if (groupName == "") {
+            Toast.makeText(requireContext(), "그룹명을 입력하세요", Toast.LENGTH_SHORT).show()
+        } else {
+            // addGroupName 에 지정된 포커스 제거 및 키보드 내리기
+            binding.addGroupName.clearFocusAndHideKeyboard(requireContext())
+            // 시간을 두고 dismiss 후 Fragment 이동
+            binding.btnInput.postDelayed({
+                dismiss()
+                findNavController().navigate(
+                    GroupAddDialogDirections.actionGroupAddDialogToGroupListAddFragment(
+                        groupName
+                    )
+                )
+            }, 50)
+        }
+    }
 }

@@ -21,14 +21,8 @@ interface ContactDao {
     @Query("DELETE FROM contact_table")
     suspend fun clear()
 
-    @Query("SELECT `group` FROM contact_table WHERE `group`is not '' ")
-    suspend fun getGroupName(): List<String>
-
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     suspend fun getAllContactBaseList(): List<ContactBase>
-
-    @Query("SELECT * FROM contact_table WHERE `group` =:key")
-    suspend fun getGroupList(key: String): List<ContactBase>
 
     // 번호를 받아서, 해당 ContactBase 를 불러오는 함수
     @Query("SELECT * FROM contact_table WHERE `number` =:number LIMIT 1")
@@ -37,15 +31,6 @@ interface ContactDao {
     // 번호를 받아서, contactBase 에 해당 name 을 반환하는 함수
     @Query("SELECT name FROM contact_table WHERE `number` =:number")
     suspend fun getName(number: String): String?
-
-    @Query("SELECT * FROM contact_table ORDER BY name ASC")
-    suspend fun getAllDataByNameASCTest(): List<ContactBase>
-
-    @Query("SELECT * FROM contact_table ORDER BY name DESC")
-    suspend fun getAllDataByNameDESCTest(): List<ContactBase>
-
-    @Query("SELECT * FROM contact_table ORDER BY number ASC")
-    suspend fun getAllDataByNumberASCTest(): List<ContactBase>
 
 
 

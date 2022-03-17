@@ -13,7 +13,7 @@ import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.dao.RecommendationDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class GroupViewModel @Inject constructor(
     private val _groupListEmptyEvent = MutableLiveData<Boolean>()
     val groupListEmptyEvent: LiveData<Boolean> = _groupListEmptyEvent
 
-    lateinit var liveGroupLiveData : LiveData<List<GroupList>>
+    lateinit var liveGroupLiveData: LiveData<List<GroupList>>
 
     private val _coroutineDoneEvent = MutableLiveData<Boolean>()
     val coroutineDoneEvent: LiveData<Boolean> = _coroutineDoneEvent
@@ -48,6 +48,12 @@ class GroupViewModel @Inject constructor(
 
     private val _updateDialogDone = MutableLiveData<Boolean>()
     val updateDialogDone: LiveData<Boolean> = _updateDialogDone
+
+    // updateDialog dismiss 를 위한 코드
+    private var _updateDataEventNumber = 0
+    private var _updateDataEvent = MutableLiveData<Int>(0)
+    val updateDataEvent: LiveData<Int> = _updateDataEvent
+
 
 
     init {
@@ -155,6 +161,8 @@ class GroupViewModel @Inject constructor(
     fun insert(groupList: GroupList) {
         viewModelScope.launch {
             dataGroup.insert(groupList)
+            _updateDataEventNumber ++
+            _updateDataEvent.value = _updateDataEventNumber
         }
     }
 
@@ -217,7 +225,10 @@ class GroupViewModel @Inject constructor(
     fun findAndDelete(number: String) {
         viewModelScope.launch {
             val groupListForDelete = dataGroup.getGroupByNumber(number)!!
-                dataGroup.delete(groupListForDelete)
+            dataGroup.delete(groupListForDelete)
+            _updateDataEventNumber ++
+            _updateDataEvent.value = _updateDataEventNumber
+
         }
     }
 
@@ -235,6 +246,8 @@ class GroupViewModel @Inject constructor(
                 groupListForUpdate.id
             )
             dataGroup.update(updateList)
+            _updateDataEventNumber ++
+            _updateDataEvent.value = _updateDataEventNumber
         }
     }
 
@@ -257,29 +270,31 @@ class GroupViewModel @Inject constructor(
         }
     }
 
+
     // 선택 삭제 시 조건부(1.전체삭제 2.부분삭제)로 데이터를 정리하는 함수
-    fun arrangeGroupList(testList: List<GroupList>, groupName: String) {
+    fun arrangeGroupList(testList: List<String>, groupName: String) {
         viewModelScope.launch {
+            val newList = mutableListOf<String>()
+            newList.addAll(testList)
             val newGroupList = dataGroup.getGroupList(groupName)
-            if (newGroupList.count() == testList.count()) {
+            if (newGroupList.count() == newList.count()) {
                 //1. 전체 삭제
                 clearByGroupName(groupName)
                 clearGroupNameInContactBase(groupName)
                 dataRecoDeleteByGroup(groupName)
             } else {
                 //2. 부분 삭제
-                deleteGroupListPart(testList, groupName)
+                deleteGroupListPart(newList)
             }
         }
     }
 
     // 선택 삭제 시, 2.부분삭제 시 발동될 코드
-    fun deleteGroupListPart(testList: List<GroupList>, groupName: String) {
+    private fun deleteGroupListPart(testList: List<String>) {
         viewModelScope.launch {
-            for (item in testList) {
+            for (number in testList) {
                 // 번호를 받아서, ContactBase 정보를 불러와
-                // group 을 삭제하는 코드
-                val preContactBase = database.getContact(item.number)
+                val preContactBase = database.getContact(number)
                 val updateContactBase = ContactBase(
                     preContactBase.name,
                     preContactBase.number,
@@ -287,18 +302,39 @@ class GroupViewModel @Inject constructor(
                     preContactBase.image,
                     preContactBase.id
                 )
-                database.update(updateContactBase)
+
+                // ContactBase DB group 을 공백으로 업데이트 하는 코드
+                deleteGroupInContactBase(updateContactBase)
 
                 // GroupList 에서 group 을 삭제하는 코드
-                dataGroup.delete(item)
+                deleteDataInGroupList(number)
 
                 // Reco DB 에서 해당 정보를 삭제하는 코드
-                dataReco.deleteByNumber(item.number)
+                deleteDataInReco(number)
             }
         }
     }
 
-    fun checkRecommendationState(number: String) {
+    private fun deleteGroupInContactBase(contactBase: ContactBase) {
+        viewModelScope.launch {
+            database.update(contactBase)
+        }
+    }
+
+    private fun deleteDataInGroupList(number: String) {
+        viewModelScope.launch {
+            dataGroup.deleteGroupByNumber(number)
+        }
+    }
+
+    private fun deleteDataInReco(number: String) {
+        viewModelScope.launch {
+            dataReco.deleteByNumber(number)
+        }
+    }
+
+
+    fun checkAlarmState(number: String) {
         viewModelScope.launch {
             val groupList = dataGroup.getGroupByNumber(number)
             if (groupList != null) {
@@ -311,10 +347,94 @@ class GroupViewModel @Inject constructor(
 
     fun updateDialogDoneFinished() {
         _updateDialogDone.value = false
+        _updateDataEventNumber = 0
+        _updateDataEvent.value = _updateDataEventNumber
     }
 
     fun updateDialogDone() {
         _updateDialogDone.value = true
+        _updateDataEventNumber ++
+        _updateDataEvent.value = _updateDataEventNumber
+    }
+
+    fun update(contact: ContactBase) {
+        viewModelScope.launch {
+            database.update(contact)
+            _updateDataEventNumber ++
+            _updateDataEvent.value = _updateDataEventNumber
+        }
+    }
+
+    // UpdateDialog 에서 적용
+    fun updateGroupListDB(argsContactBase: ContactBase, newGroup: String, alarmChecked: Boolean) {
+        viewModelScope.launch {
+            // 넘어온 Group 이 없을 때,
+            if (argsContactBase.group == "") {
+                when (newGroup) {
+                    // 신규 지정 Group 도 없다면
+                    "" -> {
+                        _updateDataEventNumber ++
+                        _updateDataEvent.value = _updateDataEventNumber
+                    }
+                    // 넘어온 건 없는데, 신규 지정 Group 은 있다면, 그룹 DB 에 신규 추가
+                    else -> {
+                        val insertList = GroupList(
+                            argsContactBase.name,
+                            argsContactBase.number,
+                            newGroup,
+                            argsContactBase.image,
+                            "0",
+                            "0",
+                            alarmChecked,
+                            0
+                        )
+                        insert(insertList)
+                    }
+                }
+            }
+            // 넘어온 groupName 이 있을 때(지정된 Group 존재할 때)
+            else {
+                when (newGroup) {
+                    // 수정하여 Group 을 없앨 때, 그룹 DB 에서 해당 List 제거
+                    "" -> {
+                        findAndDelete(argsContactBase.number)
+                    }
+                    // 수정하여 Group 을 없애는 것이 아닐 때, 그룹 DB 에서 해당 List 업데이트
+                    else -> {
+                        findAndUpdate(
+                            argsContactBase.name,
+                            argsContactBase.number,
+                            newGroup,
+                            alarmChecked
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+
+    fun updateData(
+        newContactBase: ContactBase,
+        preContactBase: ContactBase,
+        newGroup: String,
+        newRecommendation: Boolean
+    ) {
+        viewModelScope.launch {
+            // 업데이트 data to ContactBase DB
+            update(newContactBase)
+
+            // 업데이트 data to GroupList DB
+            updateGroupListDB(preContactBase, newGroup, newRecommendation)
+
+            // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
+
+            if (!newRecommendation) {
+                dataRecoDeleteByNumber(preContactBase.number)
+            } else {
+                updateDialogDone()
+            }
+        }
     }
 
 }

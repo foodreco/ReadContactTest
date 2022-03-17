@@ -16,6 +16,7 @@
     <color name="hau_green">#00CD3E</color>
     <color name="hau_text_color">#00a263</color>
     <color name="hau_status_bar_color">#007040</color>
+    <color name="menu_icon_tint_color">#007040</color>
     <color name="hau_bright_green">#91e295</color>
     <color name="hau_emerald">#00cda4</color>
     <color name="hau_blue">#3d00cd</color>

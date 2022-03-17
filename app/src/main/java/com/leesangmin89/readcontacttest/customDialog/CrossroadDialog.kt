@@ -1,30 +1,16 @@
 package com.leesangmin89.readcontacttest.customDialog
 
 import android.app.Dialog
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
-import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.CrossroadDialogBinding
-import com.leesangmin89.readcontacttest.databinding.EditCallContentDialogBinding
-import com.leesangmin89.readcontacttest.databinding.GroupAddDialogBinding
-import com.leesangmin89.readcontacttest.group.GroupFragment
 import com.leesangmin89.readcontacttest.group.GroupViewModel
-import com.leesangmin89.readcontacttest.group.groupDetail.GroupDetailFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -86,7 +72,7 @@ class CrossroadDialog : DialogFragment() {
         }
 
         // 알람설정 작업이 완료되면, dialog 종료
-        groupViewModel.updateDialogDone.observe(viewLifecycleOwner, {
+        groupViewModel.updateDialogDone.observe(viewLifecycleOwner) {
             if (it) {
 //                val action = CrossroadDialogDirections.actionCrossroadDialogToGroupListFragment(args.currentItem.group)
 //                findNavController().navigate(action)
@@ -95,7 +81,7 @@ class CrossroadDialog : DialogFragment() {
                 dismiss()
                 groupViewModel.updateDialogDoneFinished()
             }
-        })
+        }
         return binding.root
     }
 

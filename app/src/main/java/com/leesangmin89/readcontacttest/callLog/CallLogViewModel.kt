@@ -1,14 +1,11 @@
 package com.leesangmin89.readcontacttest.callLog
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.dao.TendencyDao
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.Tendency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,12 +13,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CallLogViewModel @Inject constructor(
-    private val database: CallLogDao,
+    private val dataCallLog: CallLogDao,
     private val dataTen: TendencyDao,
     application: Application
 ) : AndroidViewModel(application) {
-
-    val callLogList: LiveData<List<CallLogData>>
 
     private val _dialogDismissEvent = MutableLiveData<Boolean>()
     val dialogDismissEvent : LiveData<Boolean> = _dialogDismissEvent
@@ -30,23 +25,41 @@ class CallLogViewModel @Inject constructor(
 
 
     init {
-        callLogList = database.getAllDataByDate()
     }
 
-    fun findAndReturnLive(phoneNumber : String) {
-        groupDetailList = database.findAndReturnLive(phoneNumber)
-    }
+//    fun findAndReturnLive(phoneNumber : String) {
+//        groupDetailList = dataCallLog.findAndReturnLive(phoneNumber)
+//    }
 
     fun callLogClear() {
         viewModelScope.launch {
-            database.clear()
+            dataCallLog.clear()
         }
     }
 
     fun insert(callLogData: CallLogData) {
         viewModelScope.launch {
-            database.insert(callLogData)
+            dataCallLog.insert(callLogData)
         }
+    }
+
+    fun groupDetailList(number: String) : LiveData<List<CallLogData>> {
+        return dataCallLog.groupDetailList(number).asLiveData()
+    }
+    fun groupDetailImportanceList(number: String) : LiveData<List<CallLogData>> {
+        return dataCallLog.groupDetailImportanceList(number).asLiveData()
+    }
+
+    fun sortByNormal(): LiveData<List<CallLogData>> {
+        return dataCallLog.sortByNormal().asLiveData()
+    }
+
+    fun sortByContact(): LiveData<List<CallLogData>> {
+        return dataCallLog.sortByContact().asLiveData()
+    }
+
+    fun sortByImportance(): LiveData<List<CallLogData>> {
+        return dataCallLog.sortByImportance().asLiveData()
     }
 
     fun confirmAndInsert(
@@ -57,11 +70,11 @@ class CallLogViewModel @Inject constructor(
         callType: String
     ) {
         viewModelScope.launch {
-            val check = database.confirmAndInsert(number, date, duration)
+            val check = dataCallLog.confirmAndInsert(number, date, duration)
             if (check == null) {
                 // 기존에 없는 CallLog 가 발생하면 insert
                 val callLogListChild = CallLogData(name, number, date, duration, callType)
-                database.insert(callLogListChild)
+                dataCallLog.insert(callLogListChild)
 
                 // 추가로 Tendency AllCall 관련 데이터도 업데이트,
                 val preTendency = dataTen.getRecentTendency()
@@ -122,7 +135,7 @@ class CallLogViewModel @Inject constructor(
 
     fun updateCallContent(callLogData: CallLogData) {
         viewModelScope.launch {
-            database.update(callLogData)
+            dataCallLog.update(callLogData)
             _dialogDismissEvent.value = true
         }
     }
@@ -130,5 +143,6 @@ class CallLogViewModel @Inject constructor(
     fun diaLogDismissDone() {
         _dialogDismissEvent.value = false
     }
+
 
 }

@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,10 +28,15 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
     private val expandStatus = SparseBooleanArray()
     private val importanceStatus = SparseBooleanArray()
 
+    private val _callLogImportanceSetting = MutableLiveData<CallLogData?>()
+    val callLogImportanceSetting : LiveData<CallLogData?> = _callLogImportanceSetting
+
+    private val _callLogImportanceRemoving = MutableLiveData<CallLogData?>()
+    val callLogImportanceRemoving : LiveData<CallLogData?> = _callLogImportanceRemoving
+
 
     inner class CallHolder constructor(private val binding: GroupDetailChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("SetTextI18n")
         fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager) {
 
             binding.logCallType.text = convertCallTypeToString(item.callType!!.toInt())
@@ -45,11 +52,9 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
             } else {
                 binding.callLogContentText.text = item.callContent
             }
-            when (item.importance) {
-                true -> importanceStatus[num] = true
-                false -> importanceStatus[num] = false
-                else -> {}
-            }
+
+            importanceStatus[num] = item.importance == true
+
             if (importanceStatus[num]) {
                 binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
             } else {
@@ -68,6 +73,15 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
                 notifyDataSetChanged()
             }
 
+            // 별 터치 시 작동 코드
+            binding.btnImportance.setOnClickListener {
+                if (item.importance == true) {
+                    _callLogImportanceSetting.value = item
+                } else {
+                    _callLogImportanceRemoving.value = item
+                }
+            }
+
             // layoutExpand 터치 시, EditCallContent Dialog show
             binding.layoutExpand.setOnClickListener {
                 // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
@@ -80,6 +94,11 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
                 dialog.show(fragmentManager, "EditCallContentDialog")
             }
         }
+    }
+
+    fun importanceReset() {
+        _callLogImportanceSetting.value = null
+        _callLogImportanceRemoving.value = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallHolder {

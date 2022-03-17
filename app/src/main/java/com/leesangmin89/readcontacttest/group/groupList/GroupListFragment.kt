@@ -1,25 +1,30 @@
 package com.leesangmin89.readcontacttest.group.groupList
 
 import android.app.AlertDialog
-import android.graphics.Bitmap
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.room.PrimaryKey
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class GroupListFragment : Fragment() {
+
+    // 뒤로 가기 처리를 위한 콜백 변수
+    private lateinit var callback: OnBackPressedCallback
+
+    // 뒤로 가기 처리를 위한 Live 변수
+    private val backEventCheckLive = MutableLiveData<Boolean>()
 
     private val binding by lazy { FragmentGroupListBinding.inflate(layoutInflater) }
     private val groupViewModel: GroupViewModel by viewModels()
@@ -30,7 +35,6 @@ class GroupListFragment : Fragment() {
             childFragmentManager
         )
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,44 +51,100 @@ class GroupListFragment : Fragment() {
         groupViewModel.getGroupListFromGroupListByLive(args.groupName)
 
         // groupList LiveData 출력
-        groupViewModel.liveGroupLiveData.observe(viewLifecycleOwner, {
+        groupViewModel.liveGroupLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             showProgress(false)
-        })
+        }
 
         // deleteData() 작업이 완료되면 GroupFragment 로 이동
-        groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner, {
+        groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner) {
             if (it) {
                 findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupFragment())
                 groupViewModel.coroutineDoneEventFinished()
             }
-        })
+        }
 
         // 삭제 버튼 터치 시 작동 코드
         binding.btnGroupDelete.setOnClickListener {
+            backEventCheckLive.value = false
             // 버튼 숨기고 체크박스 비활성화
             binding.btnGroupDelete.visibility = View.GONE
-            binding.btnCancel.visibility = View.GONE
-            adapter.onCheckBox(0)
 
             // checkBox 된 GroupList 반환
-            val testList: List<GroupList> = adapter.getCheckBoxReturnList()
+            val numberList: List<String> = adapter.getCheckBoxReturnList()
 
             // 만약 목록 전체를 선택해 제거한다면, 전체삭제와 똑같이 작동해야 한다.
-            arrangeGroupList(testList, args.groupName)
+            arrangeGroupList(numberList, args.groupName)
+
+            adapter.onCheckBox(0)
+            adapter.clearCheckBoxReturnList()
         }
 
-        // 삭제 취소 버튼 터치 시 작동 코드
-        binding.btnCancel.setOnClickListener {
-            cancelDeletePart()
+
+        // 어뎁터 터치 알람 해제
+        adapter.alarmNumberSetting.observe(viewLifecycleOwner) { groupList ->
+            if (groupList != null) {
+                // GroupList DB 업데이트
+                groupViewModel.findAndUpdate(
+                    groupList.name,
+                    groupList.number,
+                    groupList.group,
+                    false
+                )
+                // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
+                // recommendation 이 해체되면, Recommendation DB 에서도 삭제되어야 함
+                groupViewModel.dataRecoDeleteByNumber(groupList.number)
+                adapter.alarmNumberReset()
+            }
+        }
+        // 어뎁터 터치 알람 설정
+        adapter.alarmNumberRemoving.observe(viewLifecycleOwner) { groupList ->
+            if (groupList != null) {
+                // GroupList DB 업데이트
+                groupViewModel.findAndUpdate(
+                    groupList.name,
+                    groupList.number,
+                    groupList.group,
+                    true
+                )
+                groupViewModel.updateDialogDone()
+                adapter.alarmNumberReset()
+            }
+        }
+
+        // 어뎁터 롱터치 삭제 설정
+        adapter.deleteEventActive.observe(viewLifecycleOwner) { activate ->
+            if (activate == true) {
+                deletePart()
+                adapter.deleteEventReset()
+            }
+        }
+
+        // 백버튼 조건부 작동 코드
+        backEventCheckLive.observe(viewLifecycleOwner) { backEvent ->
+            if (backEvent) {
+                // backEventCheckLive true 일 때, 백버튼 콜백 생성
+                callback = object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        // 삭제 상태가 활성화 되었다면, 뒤로 가기 시 특정 코드 작동
+                        cancelDeletePart()
+                        adapter.clearCheckBoxReturnList()
+                    }
+                }
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+            }
+            if (!backEvent) {
+                // backEventCheckLive false 일 때, 백버튼 콜백 제거
+                // 제거하지 않으면 기존 Fragment 뒤로가기 버튼이 작동하지 않는다.
+                callback.remove()
+            }
         }
 
         setHasOptionsMenu(true)
         return binding.root
     }
 
-
-    private fun arrangeGroupList(testList: List<GroupList>, groupName: String) {
+    private fun arrangeGroupList(testList: List<String>, groupName: String) {
         groupViewModel.arrangeGroupList(testList, groupName)
     }
 
@@ -114,18 +174,18 @@ class GroupListFragment : Fragment() {
 
     // 선택 삭제 함수
     private fun deletePart() {
+        backEventCheckLive.value = true
         // 체크박스 활성화
         adapter.onCheckBox(1)
         // 뷰모델 방식으로 visibility 제어하자??
         binding.btnGroupDelete.visibility = View.VISIBLE
-        binding.btnCancel.visibility = View.VISIBLE
     }
 
     private fun cancelDeletePart() {
+        backEventCheckLive.value = false
         // 체크박스 비활성화
         adapter.onCheckBox(0)
         binding.btnGroupDelete.visibility = View.GONE
-        binding.btnCancel.visibility = View.GONE
     }
 
     // 전체 삭제 함수

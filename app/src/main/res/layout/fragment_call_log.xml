@@ -61,5 +61,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/callLog_recyclerView"
         app:layout_constraintEnd_toEndOf="@+id/callLog_recyclerView"
         app:layout_constraintStart_toStartOf="@+id/callLog_recyclerView"
-        app:layout_constraintTop_toTopOf="@+id/callLog_recyclerView" />
+        app:layout_constraintTop_toTopOf="@+id/callLog_recyclerView"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

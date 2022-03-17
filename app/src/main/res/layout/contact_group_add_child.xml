@@ -43,7 +43,7 @@
             android:id="@+id/tv_name"
             android:layout_width="200dp"
             android:layout_height="24dp"
-            app:layout_constraintEnd_toStartOf="@+id/btn_call"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_profile"
             app:layout_constraintTop_toTopOf="@+id/iv_profile" />
 
@@ -52,20 +52,20 @@
             android:layout_width="200dp"
             android:layout_height="24dp"
             android:layout_marginTop="5dp"
-            app:layout_constraintEnd_toStartOf="@+id/btn_call"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_profile"
             app:layout_constraintTop_toBottomOf="@+id/tv_name" />
 
-        <ImageButton
-            android:id="@+id/btn_call"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/hau_bright_green"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_name"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_phone_24" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/btn_call"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:backgroundTint="@color/hau_bright_green"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/tv_name"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:srcCompat="@drawable/ic_baseline_phone_24" />-->
 
         <TextView
             android:id="@+id/text_group"

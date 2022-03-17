@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_baseline_search_24"
-        android:iconTint="@color/white"
+        android:iconTint="@color/menu_icon_tint_color"
         android:title="검색"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />

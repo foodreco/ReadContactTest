@@ -1,20 +1,15 @@
 package com.leesangmin89.readcontacttest.callLog
 
 import android.annotation.SuppressLint
-import android.icu.text.SimpleDateFormat
-import android.os.Build
-import android.provider.CallLog
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -23,9 +18,7 @@ import com.leesangmin89.readcontacttest.convertCallTypeToString
 import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.convertLongToTimeString
 import com.leesangmin89.readcontacttest.customDialog.EditCallContent
-import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
 
 class CallLogAdapter(fragmentManager: FragmentManager) :
@@ -34,6 +27,13 @@ class CallLogAdapter(fragmentManager: FragmentManager) :
     private var mFragmentManager: FragmentManager = fragmentManager
     private val expandStatus = SparseBooleanArray()
     private val importanceStatus = SparseBooleanArray()
+
+    private val _callLogImportanceSetting = MutableLiveData<CallLogData?>()
+    val callLogImportanceSetting : LiveData<CallLogData?> = _callLogImportanceSetting
+
+    private val _callLogImportanceRemoving = MutableLiveData<CallLogData?>()
+    val callLogImportanceRemoving : LiveData<CallLogData?> = _callLogImportanceRemoving
+
 
     inner class CallHolder constructor(private val binding: FragmentCallLogChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -50,11 +50,8 @@ class CallLogAdapter(fragmentManager: FragmentManager) :
                 binding.callLogContentText.text = item.callContent
             }
 
-            when (item.importance) {
-                true -> importanceStatus[num] = true
-                false -> importanceStatus[num] = false
-                else -> {}
-            }
+            importanceStatus[num] = item.importance == true
+
             if (importanceStatus[num]) {
                 binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
             } else {
@@ -73,6 +70,15 @@ class CallLogAdapter(fragmentManager: FragmentManager) :
                 notifyDataSetChanged()
             }
 
+            // 별 터치 시 작동 코드
+            binding.btnImportance.setOnClickListener {
+                if (item.importance == true) {
+                    _callLogImportanceSetting.value = item
+                } else {
+                    _callLogImportanceRemoving.value = item
+                }
+            }
+
             // layoutExpand 터치 시, EditCallContent Dialog show
             binding.layoutExpand.setOnClickListener {
                 // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
@@ -85,6 +91,11 @@ class CallLogAdapter(fragmentManager: FragmentManager) :
                 dialog.show(fragmentManager, "EditCallContentDialog")
             }
         }
+    }
+
+    fun importanceReset() {
+        _callLogImportanceSetting.value = null
+        _callLogImportanceRemoving.value = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallHolder {

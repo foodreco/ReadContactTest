@@ -55,12 +55,12 @@ class EditCallContent : DialogFragment() {
         }
 
         // updateCallContent(updateCallLogData) 작업 완료되면 dialog 를 종료하는 코드
-        callLogViewModel.dialogDismissEvent.observe(viewLifecycleOwner, { finished ->
+        callLogViewModel.dialogDismissEvent.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 dismiss()
                 callLogViewModel.diaLogDismissDone()
             }
-        })
+        }
         return binding.root
     }
 

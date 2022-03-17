@@ -10,6 +10,7 @@
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_group_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_keyboard_arrow_up_24.xml" value="0.38229166666666664" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_notifications_active_24.xml" value="0.235" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_people_alt_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_phone_24.xml" value="0.38229166666666664" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/drawable/ic_baseline_phone_android_24.xml" value="0.38229166666666664" />
@@ -52,7 +53,9 @@
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/groupdetail_dialog.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/layout/update_dialog.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/bottom_menu.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/call_log_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/delete_menu.xml" value="0.264" />
+        <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/group_detail_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/group_list_add_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/group_menu.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/menu/grouplist_menu.xml" value="0.25364583333333335" />

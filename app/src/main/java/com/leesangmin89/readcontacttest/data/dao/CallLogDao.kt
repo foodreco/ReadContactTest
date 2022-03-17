@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CallLogDao {
@@ -34,8 +35,7 @@ interface CallLogDao {
 
     // 통화 기록 중, number, date, duration 이 동일한 기록을 하나 반환하는 함수
     @Query("SELECT * FROM call_history WHERE number LIKE :number AND date LIKE :date AND duration LIKE :duration LIMIT 1")
-    suspend fun confirmAndInsert(number: String, date:String, duration:String) : CallLogData?
-
+    suspend fun confirmAndInsert(number: String, date: String, duration: String): CallLogData?
 
 
     @Query("SELECT * FROM call_history ORDER BY date DESC")
@@ -45,6 +45,28 @@ interface CallLogDao {
     @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC")
     fun findAndReturnLive(number: String): LiveData<List<CallLogData>>
 
+    // 연락처가 저장된 callLogData 만 불러오는 함수 (정렬)
+    @Query("SELECT * FROM call_history ORDER BY date DESC")
+    fun sortByNormal(): Flow<List<CallLogData>>
+
+    // 연락처가 저장된 callLogData 만 불러오는 함수 (정렬)
+    @Query("SELECT * FROM call_history WHERE name NOT LIKE number ORDER BY date DESC")
+    fun sortByContact(): Flow<List<CallLogData>>
+
+    // 중요 표시된 callLogData 만 불러오는 함수 (정렬)
+    @Query("SELECT * FROM call_history WHERE importance LIKE :importance ORDER BY date DESC")
+    fun sortByImportance(importance: Boolean = true): Flow<List<CallLogData>>
+
+    // 특정 number 의 통화기록만 불러오는 함수 (정렬)
+    @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC")
+    fun groupDetailList(number: String): Flow<List<CallLogData>>
+
+    // 특정 number 의 통화기록 중 중요 기록만 불러오는 함수 (정렬)
+    @Query("SELECT * FROM call_history WHERE number LIKE :number AND importance LIKE :importance ORDER BY date DESC")
+    fun groupDetailImportanceList(
+        number: String,
+        importance: Boolean = true
+    ): Flow<List<CallLogData>>
 
 
 }
