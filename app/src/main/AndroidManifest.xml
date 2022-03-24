@@ -9,11 +9,11 @@
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_kotlin"
+        android:icon="@mipmap/ic_phone"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/CustomAppTheme">
+        android:theme="@style/NewCustomAppTheme">
         <activity
             android:name=".MainActivity"
             android:exported="true"

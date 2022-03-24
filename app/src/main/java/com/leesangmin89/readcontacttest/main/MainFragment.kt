@@ -13,12 +13,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.transition.MaterialFadeThrough
 import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import com.leesangmin89.readcontacttest.data.entity.Tendency
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
@@ -39,8 +37,7 @@ class MainFragment : Fragment() {
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
     private val recoViewModel: RecommendationViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
-    private val adapter: CallRecommendAdapter by lazy { CallRecommendAdapter(requireContext()) }
-
+    private val adapter: CallRecommendAdapter by lazy { CallRecommendAdapter(requireContext(), childFragmentManager) }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -48,7 +45,13 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        showProgress(true)
+        Log.d("보완", "ClickablePieChart 그룹 비율 보여주기 - https://android-arsenal.com/details/1/8168")
+        Log.d("개선", "가끔 MainFragment 먹통 - 함수가 무거워서??")
+
+//        그룹 비율 보여주기?
+
+        showProgressInRecommendation(true)
+        showProgressInTendency(true)
 
         // 허용 체크 후, 기초 정보 구축하기
         checkPermissionsAndStart(PERMISSIONS)
@@ -61,11 +64,14 @@ class MainFragment : Fragment() {
             }
         }
 
-        // call 추천
-        // ViewPager2 적용
-        binding.recommendationViewPager.adapter = adapter
-        binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        recoViewModel.recommendationLiveList.observe(viewLifecycleOwner) {
+//        // call 추천
+//        // ViewPager2 적용
+//        binding.recommendationViewPager.adapter = adapter
+//        binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+//        // spring indicator 실시간 적용
+//        binding.dotsIndicator.setViewPager2(binding.recommendationViewPager)
+
+        recoViewModel.getRecommendationLiveList().observe(viewLifecycleOwner) {
             if (it == emptyList<Recommendation>()) {
                 Log.d("보완", "testList null 일 때, '관계 유지가 잘 되고 있습니다.' view 띄우기")
                 Toast.makeText(
@@ -73,19 +79,28 @@ class MainFragment : Fragment() {
                     "관계 유지가 잘 되고 있습니다. \n 알림친구가 없다면 설정하세요.",
                     Toast.LENGTH_SHORT
                 ).show()
+                showProgressInRecommendation(false)
             } else {
+                // call 추천
+                // indicator 실시간 반영 때문에 옵저버 적용
+                // ViewPager2 사용
+                binding.recommendationViewPager.adapter = adapter
+                binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                // spring indicator 실시간 적용
+                binding.dotsIndicator.setViewPager2(binding.recommendationViewPager)
                 adapter.submitList(it)
+                showProgressInRecommendation(false)
             }
         }
 
-        // 경향
-        recoViewModel.tendencyLive?.observe(viewLifecycleOwner) { tendency ->
+        // 경향 text 대입
+        recoViewModel.getTendencyLive()?.observe(viewLifecycleOwner) { tendency ->
             if (tendency != null) {
                 getBindTextView(tendency)
             }
         }
 
-        binding.btnToSub.setOnClickListener {
+        binding.tendencyLayout.setOnClickListener {
             val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
             it.findNavController().navigate(action)
         }
@@ -96,16 +111,23 @@ class MainFragment : Fragment() {
     // CallLogCalls 데이터를 순회하며, Recommendation 정보를 가져오는 함수
     @SuppressLint("Range")
     fun makeRecommendationInfo() {
-        showProgress(true)
+        showProgressInRecommendation(true)
         Log.d("수정", "최초 앱 빌드 시, The application may be doing too much work on its main thread.")
+        Log.d("수정", "매번 업데이트 해야 하는 함수를 가볍게 개선 -> 세부사항 눌렀을 때만 로드 걸리도록")
         // contactInfo 전화 통계 데이터 갱신
         // 실행 시 매번 업데이트 되어야 함
         recoViewModel.arrangeRecommendation()
     }
 
-    private fun showProgress(show: Boolean) {
-        binding.progressBarMainProto.visibility = if (show) View.VISIBLE else View.GONE
+    private fun showProgressInRecommendation(show: Boolean) {
+        binding.progressBarReco.visibility = if (show) View.VISIBLE else View.INVISIBLE
     }
+
+    private fun showProgressInTendency(show: Boolean) {
+        binding.progressBarTendency.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+
 
     private fun getBindTextView(tendency: Tendency) {
         var callTypeIncomingRate = 0
@@ -138,9 +160,9 @@ class MainFragment : Fragment() {
         var callDurationTendency = "총 통화 시간 성향"
 
         callTypeTendency = if (tendency.allCallIncoming >= tendency.allCallOutgoing) {
-            "일반적으로 거는 전화가 많아요."
+            "거는 전화가 많아요."
         } else {
-            "일반적으로 받는 전화가 많아요."
+            "받는 전화가 많아요."
         }
         callTypeTendencyInReco =
             if (tendency.recommendationCallIncoming >= tendency.recommendationCallOutgoing) {
@@ -157,7 +179,7 @@ class MainFragment : Fragment() {
         binding.textCallTypeTendencyReco.text = callTypeTendencyInReco
         binding.textCallDuration.text = callDurationTendency
 
-        showProgress(false)
+        showProgressInTendency(false)
     }
 
     // 초기 데이터 로드 함수(ContactBase)

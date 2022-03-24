@@ -1,25 +1,33 @@
 package com.leesangmin89.readcontacttest.callLog
 
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
+import com.hieupt.android.standalonescrollbar.attachTo
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CallLogFragment : Fragment() {
 
     private val binding by lazy { FragmentCallLogBinding.inflate(layoutInflater) }
     private val callLogViewModel: CallLogViewModel by viewModels()
-    private val adapter by lazy { CallLogAdapter(childFragmentManager) }
+    private val adapter by lazy { CallLogAdapter(requireContext() ,childFragmentManager) }
+
 
     private val sortNumber = MutableLiveData<Int>(0)
 
@@ -34,10 +42,16 @@ class CallLogFragment : Fragment() {
     ): View {
 
         Log.i("보완", "중요 통화기록 정렬 위치 조정하기(최상단으로??)")
+        Log.i("보완", "스크롤 바 넣기")
 
         binding.callLogRecyclerView.adapter = adapter
 
         showProgress(true)
+
+        callLogViewModel.callLogItemData.observe(viewLifecycleOwner){
+            adapter.submitList(it)
+            showProgress(false)
+        }
 
         sortNumber.observe(viewLifecycleOwner) { number ->
             when (number) {
@@ -51,8 +65,7 @@ class CallLogFragment : Fragment() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                            adapter.submitList(it)
-                            showProgress(false)
+                            callLogViewModel.makeList(it)
                         }
                     }
                 }
@@ -67,8 +80,7 @@ class CallLogFragment : Fragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                                adapter.submitList(it)
-                                showProgress(false)
+                                callLogViewModel.makeList(it)
                             }
                         }
                     }
@@ -84,15 +96,13 @@ class CallLogFragment : Fragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                                adapter.submitList(it)
-                                showProgress(false)
+                                callLogViewModel.makeList(it)
                             }
                         }
                     }
                 }
             }
         }
-
 
         // 어뎁터 별(importance) 터치 작동
         adapter.callLogImportanceSetting.observe(viewLifecycleOwner) { callLog ->
@@ -128,6 +138,15 @@ class CallLogFragment : Fragment() {
                 callLogViewModel.updateCallContent(updateCallLogData)
                 adapter.importanceReset()
             }
+        }
+
+        // scroll bar
+        val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
+        val colorTrack = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        with(binding) {
+            scrollBar.attachTo(binding.callLogRecyclerView)
+            scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
+            scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
         }
 
         setHasOptionsMenu(true)

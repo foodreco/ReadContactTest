@@ -49,6 +49,9 @@ class GroupViewModel @Inject constructor(
     private val _updateDialogDone = MutableLiveData<Boolean>()
     val updateDialogDone: LiveData<Boolean> = _updateDialogDone
 
+    private val _groupNameEditDone = MutableLiveData<Boolean>()
+    val groupNameEditDone: LiveData<Boolean> = _groupNameEditDone
+
     // updateDialog dismiss 를 위한 코드
     private var _updateDataEventNumber = 0
     private var _updateDataEvent = MutableLiveData<Int>(0)
@@ -304,7 +307,7 @@ class GroupViewModel @Inject constructor(
                 )
 
                 // ContactBase DB group 을 공백으로 업데이트 하는 코드
-                deleteGroupInContactBase(updateContactBase)
+                updateInContactBase(updateContactBase)
 
                 // GroupList 에서 group 을 삭제하는 코드
                 deleteDataInGroupList(number)
@@ -315,7 +318,7 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-    private fun deleteGroupInContactBase(contactBase: ContactBase) {
+    private fun updateInContactBase(contactBase: ContactBase) {
         viewModelScope.launch {
             database.update(contactBase)
         }
@@ -428,13 +431,58 @@ class GroupViewModel @Inject constructor(
             updateGroupListDB(preContactBase, newGroup, newRecommendation)
 
             // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
-
             if (!newRecommendation) {
                 dataRecoDeleteByNumber(preContactBase.number)
             } else {
                 updateDialogDone()
             }
         }
+    }
+
+    // GroupFragment 에서 그룹명 변경에 사용되는 함수
+    fun groupNameEdit(preGroupName : String, newGroupName : String) {
+        viewModelScope.launch {
+            val preGroupList = dataGroup.getGroupList(preGroupName)
+            for (each in preGroupList) {
+                val newGroupList = GroupList(
+                    each.name,
+                    each.number,
+                    newGroupName,
+                    each.image,
+                    each.recentContact,
+                    each.recentContactCallTime,
+                    each.recommendation,
+                    each.id
+                )
+                updateInGroupList(newGroupList)
+            }
+            val preContactBase = database.getContactBaseByGroup(preGroupName)
+            for (each in preContactBase) {
+                val newContactBase = ContactBase(
+                    each.name,
+                    each.number,
+                    newGroupName,
+                    each.image,
+                    each.id
+                )
+                updateInContactBase(newContactBase)
+            }
+            groupNameEditFinished()
+        }
+    }
+
+    private fun updateInGroupList(newGroupList: GroupList) {
+        viewModelScope.launch {
+            dataGroup.update(newGroupList)
+        }
+    }
+
+    fun groupNameEditFinished() {
+        _groupNameEditDone.value = true
+    }
+
+    fun groupNameEditReset() {
+        _groupNameEditDone.value = false
     }
 
 }

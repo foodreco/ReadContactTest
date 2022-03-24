@@ -25,54 +25,57 @@
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center"
-                android:text="TextView"
+                android:maxLength="15"
+                android:text="키워드"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/log_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:layout_marginEnd="32dp"
+                android:text="통화일자"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@+id/call_keyword"
-                app:layout_constraintEnd_toStartOf="@+id/log_call_type"
-                app:layout_constraintStart_toEndOf="@+id/call_keyword" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_importance"
+                app:layout_constraintTop_toBottomOf="@+id/log_duration" />
 
             <TextView
                 android:id="@+id/log_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:layout_marginEnd="32dp"
+                android:text="통화시간"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@+id/log_call_type"
-                app:layout_constraintStart_toEndOf="@+id/call_keyword"
-                app:layout_constraintTop_toTopOf="@+id/call_keyword" />
-
-            <TextView
-                android:id="@+id/log_call_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/btn_importance"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/log_date"
+                app:layout_constraintEnd_toStartOf="@+id/btn_importance"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/btn_importance"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="2dp"
                 android:backgroundTint="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/log_call_type"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_star_border_50" />
+
+            <ImageView
+                android:id="@+id/img_callType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/call_keyword"
+                app:layout_constraintTop_toBottomOf="@+id/call_keyword"
+                app:srcCompat="@drawable/ic_round_phone_callback_12" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -83,7 +86,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
-        android:background="@color/callContentColor"
+        android:background="?attr/selectableItemBackground"
+        android:backgroundTint="@color/hau_white_green"
         android:orientation="horizontal"
         android:visibility="gone"
         tools:layout_editor_absoluteX="-8dp"

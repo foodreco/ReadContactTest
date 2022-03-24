@@ -52,7 +52,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         binding.recyclerViewList.adapter = adapter
 
         // 초기화 버튼 클릭 시, 연락처 데이터를 다시 가져오는 코드
-        binding.button.setOnClickListener {
+        binding.btnUpdateList.setOnClickListener {
             checkPermissionsAndStart(PERMISSIONS)
         }
 
@@ -60,7 +60,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
         Log.i("보완", "통화기록이 있는 연락처만 불러오기 정렬 -> 그룹 추가 용이")
         Log.i("보완", "recyclerView 헤더 추가하기")
-        Log.i("보완", "recyclerView 정렬 시, 맨 윗 리스트 중심으로 고정되버린다??")
 
         listViewModel.testData.observe(viewLifecycleOwner) {
             adapter.submitList(it)

@@ -126,6 +126,13 @@ dependencies {
     // Lottie for Splash
     implementation "com.airbnb.android:lottie:4.2.2"
 
+    // ViewPager Indicator
+    implementation 'com.tbuonomo:dotsindicator:4.2'
+
+    // ExtendedFloatingActionButton
+    implementation 'com.google.android.material:material:1.6.0-beta01'
+
+
 
 }
 

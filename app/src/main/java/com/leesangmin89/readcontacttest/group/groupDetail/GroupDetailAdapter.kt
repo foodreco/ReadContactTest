@@ -1,10 +1,13 @@
 package com.leesangmin89.readcontacttest.group.groupDetail
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
@@ -13,20 +16,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.convertCallTypeToString
-import com.leesangmin89.readcontacttest.convertLongToDateString
-import com.leesangmin89.readcontacttest.convertLongToTimeString
+import com.leesangmin89.readcontacttest.*
 import com.leesangmin89.readcontacttest.customDialog.EditCallContent
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.GroupDetailChildBinding
 
-class GroupDetailAdapter(fragmentManager: FragmentManager) :
+class GroupDetailAdapter(context: Context, fragmentManager: FragmentManager) :
     ListAdapter<CallLogData, GroupDetailAdapter.CallHolder>(CallLogDiffCallback()) {
 
     private var mFragmentManager: FragmentManager = fragmentManager
     private val expandStatus = SparseBooleanArray()
     private val importanceStatus = SparseBooleanArray()
+    private val mContext = context
 
     private val _callLogImportanceSetting = MutableLiveData<CallLogData?>()
     val callLogImportanceSetting : LiveData<CallLogData?> = _callLogImportanceSetting
@@ -39,7 +40,11 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager) {
 
-            binding.logCallType.text = convertCallTypeToString(item.callType!!.toInt())
+            Log.i("수정", "통화 메모 UI 개선")
+//            통화일자 헤더로 넣기
+//            메모표시로 expandable?
+
+            setUpImageWithConvertCallType(binding.imgCallType, item.callType!!.toInt(), mContext)
             binding.logDuration.text = convertLongToTimeString(item.duration!!.toLong())
             binding.logDate.text = convertLongToDateString(item.date!!.toLong())
             if (item.callKeyword == "") {
@@ -57,8 +62,10 @@ class GroupDetailAdapter(fragmentManager: FragmentManager) :
 
             if (importanceStatus[num]) {
                 binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
+                binding.btnImportance.setColorFilter(ContextCompat.getColor(mContext, R.color.yellow))
             } else {
-                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_border_50)
+                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
+                binding.btnImportance.setColorFilter(ContextCompat.getColor(mContext, R.color.light_gray))
             }
 
             // expandable layout 코드

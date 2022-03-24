@@ -13,17 +13,22 @@ data class Recommendation(
     var number: String,
     var group: String,
 
+    // 최근 통화 일자
     // 단위 : milliseconds
     var recentContact: String?,
 
+    // 총 통화시간
     // 단위 : seconds
     var totalCallTime: String?,
 
+    // 총 통화횟수
     var numberOfCalling: String?,
 
+    // 평균 통화 시간
     // 단위 : seconds
     var avgCallTime : String,
 
+    // 통화 빈도
     // 단위 : milliseconds
     var frequency: String?,
 

@@ -2,11 +2,11 @@ package com.leesangmin89.readcontacttest.callLog
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.leesangmin89.readcontacttest.CallLogItem
+import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.dao.TendencyDao
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
-import com.leesangmin89.readcontacttest.data.entity.Tendency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,20 +21,10 @@ class CallLogViewModel @Inject constructor(
     private val _dialogDismissEvent = MutableLiveData<Boolean>()
     val dialogDismissEvent : LiveData<Boolean> = _dialogDismissEvent
 
-    lateinit var groupDetailList : LiveData<List<CallLogData>>
-
+    private val _callLogItemData = MutableLiveData<List<CallLogItem>>()
+    val callLogItemData : LiveData<List<CallLogItem>> = _callLogItemData
 
     init {
-    }
-
-//    fun findAndReturnLive(phoneNumber : String) {
-//        groupDetailList = dataCallLog.findAndReturnLive(phoneNumber)
-//    }
-
-    fun callLogClear() {
-        viewModelScope.launch {
-            dataCallLog.clear()
-        }
     }
 
     fun insert(callLogData: CallLogData) {
@@ -62,76 +52,6 @@ class CallLogViewModel @Inject constructor(
         return dataCallLog.sortByImportance().asLiveData()
     }
 
-    fun confirmAndInsert(
-        name: String,
-        number: String,
-        date: String,
-        duration: String,
-        callType: String
-    ) {
-        viewModelScope.launch {
-            val check = dataCallLog.confirmAndInsert(number, date, duration)
-            if (check == null) {
-                // 기존에 없는 CallLog 가 발생하면 insert
-                val callLogListChild = CallLogData(name, number, date, duration, callType)
-                dataCallLog.insert(callLogListChild)
-
-                // 추가로 Tendency AllCall 관련 데이터도 업데이트,
-                val preTendency = dataTen.getRecentTendency()
-                if (preTendency != null) {
-
-                    var allCallIncoming = 0
-                    var allCallOutgoing = 0
-                    var allCallMissed = 0
-                    var allCallCount = 0
-                    var allCallDuration = 0
-                    var allCallPartnerList = mutableListOf<String>()
-
-                    allCallCount += 1
-                    allCallDuration += duration.toInt()
-                    allCallPartnerList.add(number)
-
-                    // 통화 유형
-                    when (callType.toInt()) {
-                        1 -> allCallIncoming += 1
-                        2 -> allCallOutgoing += 1
-                        3 -> allCallMissed += 1
-                        else -> {}
-                    }
-
-                    allCallIncoming  +=  preTendency.allCallIncoming.toInt()
-                    allCallOutgoing  +=  preTendency.allCallOutgoing.toInt()
-                    allCallMissed  +=  preTendency.allCallMissed.toInt()
-                    allCallCount  +=  preTendency.allCallCount.toInt()
-                    allCallDuration  +=  preTendency.allCallDuration.toInt()
-                    allCallPartnerList = (preTendency.allCallPartnerList + allCallPartnerList) as MutableList<String>
-
-                    val updateList = Tendency(
-                        allCallIncoming.toString(),
-                        allCallOutgoing.toString(),
-                        allCallMissed.toString(),
-                        allCallCount.toString(),
-                        allCallDuration.toString(),
-                        allCallPartnerList.distinct(),
-                        preTendency.groupListCallIncoming,
-                        preTendency.groupListCallOutgoing,
-                        preTendency.groupListCallMissed,
-                        preTendency.groupListCallCount,
-                        preTendency.groupListCallDuration,
-                        preTendency.groupListCallPartnerList,
-                        preTendency.recommendationCallIncoming,
-                        preTendency.recommendationCallOutgoing,
-                        preTendency.recommendationCallMissed,
-                        preTendency.recommendationCallCount,
-                        preTendency.recommendationCallDuration,
-                        preTendency.recommendationCallPartnerList,
-                        preTendency.id
-                    )
-                    dataTen.update(updateList)
-                }
-            }
-        }
-    }
 
     fun updateCallContent(callLogData: CallLogData) {
         viewModelScope.launch {
@@ -143,6 +63,31 @@ class CallLogViewModel @Inject constructor(
     fun diaLogDismissDone() {
         _dialogDismissEvent.value = false
     }
+
+    // DB 에서 가져온 리스트 가공 (미리 날짜별로 정렬한 리스트를 가져와야 함)
+    private fun List<CallLogData>.toListItems(): List<CallLogItem> {
+        val result = arrayListOf<CallLogItem>() // 결과를 리턴할 리스트
+        var groupHeaderDate = "" // 그룹날짜
+        this.forEach { callLog ->
+            // 날짜가 달라지면 그룹헤더를 추가.
+            if (groupHeaderDate != callLog.date?.let { convertLongToDateString(it.toLong()) }) {
+                result.add(CallLogItem.Header(callLog))
+            }
+
+            // 그때의 CallLogData 추가.
+            result.add(CallLogItem.Item(callLog))
+
+            // 그룹날짜를 바로 이전 날짜로 설정.
+            groupHeaderDate = callLog.date?.let { convertLongToDateString(it.toLong()) }.toString()
+        }
+        return result
+    }
+
+    fun makeList(callLogData: List<CallLogData>) {
+        val listItems = callLogData.toListItems()
+        _callLogItemData.postValue(listItems)
+    }
+
 
 
 }

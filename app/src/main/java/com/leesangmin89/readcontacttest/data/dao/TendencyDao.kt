@@ -6,6 +6,7 @@ import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import com.leesangmin89.readcontacttest.data.entity.Tendency
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -24,5 +25,5 @@ interface TendencyDao {
 
 
     @Query("SELECT * FROM tendency_table ORDER BY id DESC LIMIT 1")
-    fun getRecentTendencyDataLive(): LiveData<Tendency>?
+    fun getRecentTendencyDataLive(): Flow<Tendency>?
 }

@@ -79,7 +79,8 @@ class ListViewModel @Inject constructor(
                             contact.image,
                             contact.id
                         )
-                        database.update(updateList)
+                        update(updateList)
+                        Log.i("listFragment","동기화 중.. : ${contact.name}")
                     }
                 }
             }
@@ -91,6 +92,7 @@ class ListViewModel @Inject constructor(
     fun updateContactBase(activity: Activity) {
         // 기존 데이터 삭제
         clear()
+
         val contacts = activity.contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,

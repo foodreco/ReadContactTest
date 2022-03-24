@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ReadContactTest</string>
+    <string name="app_name">Call 시제품</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -12,5 +12,18 @@
     <string name="group_list_numbers">등록인원 수 : %1$d명</string>
     <string name="group_list_rate">등록비율 : %1$d%      (%1$d/2000)</string>
     <string name="contact_phone_numbers"> 등록 연락처 수 : %1$d 개</string>
+
+    <!--MainSub Text-->
+    <string name="all_in_count">총 수신 횟수 : %1$s 회</string>
+    <string name="all_out_count">총 발신 횟수 : %1$s 회</string>
+    <string name="group_in_count">그룹 수신 횟수 : %1$s 회</string>
+    <string name="group_out_count">그룹 발신 횟수 : %1$s 회</string>
+    <string name="reco_in_count">알람 수신 횟수 : %1$s 회</string>
+    <string name="reco_out_count">알람 발신 횟수 : %1$s 회</string>
+    <string name="all_duration">총 통화 시간 : %1$d 분</string>
+    <string name="group_duration">그룹 통화 시간 : %1$d 분</string>
+    <string name="reco_duration">알람 통화 시간 : %1$d 분</string>
+    <string name="update_btn_text">업데이트</string>
+
 
 </resources>

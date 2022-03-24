@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.databinding.GroupChildBinding
 
-class GroupAdapter(ctx: Context) : ListAdapter<GroupData, GroupHolder>(GroupDiffCallback()) {
-
-    private var context: Context = ctx
-
+class GroupAdapter() : ListAdapter<GroupData, GroupHolder>(GroupDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHolder {
         val binding =
             GroupChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,6 +30,14 @@ class GroupAdapter(ctx: Context) : ListAdapter<GroupData, GroupHolder>(GroupDiff
             // 이동 시, 그룹명을 args 로 넘겨준다.
             val action = GroupFragmentDirections.actionGroupFragmentToGroupListFragment(item.groupName)
             it.findNavController().navigate(action)
+        }
+
+        //리싸이클러 길게 터치 시, 그룹명 변경하기
+        holder.groupEachList.setOnLongClickListener {
+            // 그룹명 argument 로 넘겨주기
+            val action = GroupFragmentDirections.actionGroupFragmentToGroupNameEditDialog(item.groupName)
+            it.findNavController().navigate(action)
+            return@setOnLongClickListener true
         }
     }
 }

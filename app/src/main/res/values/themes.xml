@@ -13,18 +13,6 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
     </style>
 
-
-    <style name="CustomAppTheme" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/hau_white_green</item>
-        <item name="colorPrimaryDark">@color/hau_status_bar_color</item>
-        <item name="colorAccent">@color/hau_green</item>
-
-        <item name="android:textColorPrimary">@color/hau_status_bar_color</item>
-        <item name="android:windowBackground">@color/hau_white_green</item>
-
-        <item name="android:statusBarColor" tools:targetApi="l">@color/hau_status_bar_color</item>
-    </style>
-
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/hau_green</item>
@@ -38,17 +26,27 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/hau_status_bar_color</item>
     </style>
 
+    <style name="NewCustomAppTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/hau_dark_green</item>
+        <item name="colorPrimaryDark">@color/hau_status_bar_color</item>
+        <item name="colorAccent">@color/hau_green</item>
 
-<!--    <style name="TextAppearance.AppCompat.Widget.ActionBar.Title." parent="@style/TextAppearance.AppCompat">-->
-<!--        <item name="android:textSize">30dp</item>-->
-<!--        <item name="android:textColor">@color/hau_green</item>-->
-<!--    </style>-->
+        <item name="android:textColorPrimary">@color/hau_status_bar_color</item>
 
-    <!-- Customize your theme here. -->
-    <!--    <item name="android:textViewStyle">@style/customTextViewFontStyle</item>-->
-    <!--    <item name="android:buttonStyle">@style/customButtonFontStyle</item>-->
-    <!--    <item name="android:editTextStyle">@style/customEditTextFontStyle</item>-->
-    <!--    <item name="android:radioButtonStyle">@style/customRadioButtonFontStyle</item>-->
-    <!--    <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>-->
+        <!--메뉴, 뒤로가기 색상-->
+        <item name="colorControlNormal">@color/hau_status_bar_color</item>
+        <!--기본 배경 색상-->
+        <item name="android:windowBackground">@color/hau_white_green</item>
+        <!--상태바 색상-->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/hau_status_bar_color</item>
+        <!--터치 효과 색상-->
+        <item name="colorControlHighlight">@color/hau_bright_green</item>
+        <!--액션바 색상-->
+        <item name="actionBarTheme">@style/ThemeOverlay.ActionBar</item>
+    </style>
+
+    <style name="ThemeOverlay.ActionBar" parent="">
+        <item name="colorPrimary">@color/hau_white_green</item>
+    </style>
 
 </resources>

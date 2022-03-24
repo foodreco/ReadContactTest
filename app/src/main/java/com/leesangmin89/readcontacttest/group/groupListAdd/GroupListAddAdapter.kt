@@ -2,13 +2,14 @@ package com.leesangmin89.readcontacttest.group.groupListAdd
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.util.set
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +23,6 @@ class GroupListAddAdapter(ctx: Context) :
     private var context: Context = ctx
     private val checkboxStatus = SparseBooleanArray()
     private var checkboxClearEvent = 0
-    var btnAddClickableEvent = 0
     val checkBoxReturnList = mutableListOf<ContactBase>()
 
     inner class Holder constructor(private val binding: ContactGroupAddChildBinding) :
@@ -33,7 +33,6 @@ class GroupListAddAdapter(ctx: Context) :
             val number = binding.tvNumber
             val profile = binding.ivProfile
             val update = binding.contactChildEachList
-//            val call = binding.btnCall
             val group = binding.textGroup
             val checkBox = binding.checkBoxListRecycler
 
@@ -52,38 +51,34 @@ class GroupListAddAdapter(ctx: Context) :
                     )
                 )
 
-            // 체크박스 유지 코드
-            checkBox.isChecked = checkboxStatus[num]
+            // 그룹이 없는 view 만 체크기능 작동
+            if (item.group == "") {
+                // 체크박스 유지 코드
+                checkBox.visibility = View.VISIBLE
+                checkBox.isChecked = checkboxStatus[num]
 
-            if (checkBox.isChecked) {
-                checkBoxReturnList.add(item)
+                if (checkBox.isChecked) {
+                    checkBoxReturnList.add(item)
+                } else {
+                    checkBoxReturnList.remove(item)
+                }
+                if (checkboxClearEvent == 1) {
+                    checkboxStatus.clear()
+                }
+
+                checkBox.setOnClickListener {
+                    checkboxStatus[num] = !checkboxStatus[num]
+                    notifyItemChanged(num)
+                }
+                update.setOnClickListener {
+                    checkboxStatus[num] = !checkboxStatus[num]
+                    notifyItemChanged(num)
+                }
             } else {
-                checkBoxReturnList.remove(item)
+                checkBox.visibility = View.GONE
+
             }
 
-            checkBox.setOnClickListener {
-                checkboxStatus[num] = !checkboxStatus[num]
-                notifyItemChanged(num)
-            }
-
-            if (checkboxClearEvent == 1) {
-                checkboxStatus.clear()
-            }
-
-            // 전화버튼 클릭 시, 전화걸기
-//            call.setOnClickListener {
-//                item.number.let { phoneNumber ->
-//                    val uri = Uri.parse("tel:${phoneNumber.toString()}")
-//                    val intent = Intent(Intent.ACTION_CALL, uri)
-//                    context.startActivity(intent)
-//                }
-//            }
-
-            //리싸이클러 터치 시, update 이동
-            update.setOnClickListener {
-                checkboxStatus[num] = !checkboxStatus[num]
-                notifyItemChanged(num)
-            }
         }
     }
 
@@ -103,10 +98,11 @@ class GroupListAddAdapter(ctx: Context) :
     }
 
     @JvmName("getCheckBoxReturnList1")
-    fun getCheckBoxReturnList() : List<ContactBase> {
+    fun getCheckBoxReturnList(): List<ContactBase> {
         return checkBoxReturnList
     }
 }
+
 
 class ContactDiffCallback : DiffUtil.ItemCallback<ContactBase>() {
     override fun areItemsTheSame(oldItem: ContactBase, newItem: ContactBase): Boolean {

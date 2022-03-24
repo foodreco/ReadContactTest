@@ -5,42 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".group.groupDetail.GroupDetailFragment"
-    android:padding="8dp">
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="통화키워드" />
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="시간-일시" />
-
-        <TextView
-            android:id="@+id/textView12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="유형 및 중요도" />
-    </LinearLayout>
+    android:padding="4dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/group_detail_recyclerView"
@@ -52,7 +17,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.hieupt.android.standalonescrollbar.StandaloneScrollBar
+        android:id="@+id/scroll_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="@+id/group_detail_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/group_detail_recyclerView"
+        app:layout_constraintTop_toTopOf="@+id/group_detail_recyclerView" />
 
     <ProgressBar
         android:id="@+id/group_detail_progressBar"

@@ -42,6 +42,10 @@
             android:id="@+id/action_groupFragment_to_groupAddDialog"
             app:destination="@id/groupAddDialog"
             app:popUpTo="@id/groupFragment" />
+        <action
+            android:id="@+id/action_groupFragment_to_groupNameEditDialog"
+            app:destination="@id/groupNameEditDialog"
+            app:popUpTo="@id/groupFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupListFragment"
@@ -62,11 +66,15 @@
             android:id="@+id/action_groupListFragment_to_crossroadDialog"
             app:destination="@id/crossroadDialog"
             app:popUpTo="@id/groupListFragment" />
+        <action
+            android:id="@+id/action_groupListFragment_to_groupDetailFragment"
+            app:destination="@id/groupDetailFragment"
+            app:popUpTo="@id/groupListFragment" />
     </fragment>
     <fragment
         android:id="@+id/groupDetailFragment"
         android:name="com.leesangmin89.readcontacttest.group.groupDetail.GroupDetailFragment"
-        android:label="세부정보"
+        android:label="통화기록"
         tools:layout="@layout/fragment_group_detail">
         <action
             android:id="@+id/action_groupDetailFragment_to_groupListFragment"
@@ -141,5 +149,17 @@
             android:id="@+id/action_groupAddDialog_to_groupFragment"
             app:destination="@id/groupFragment"
             app:popUpTo="@id/mainFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/groupNameEditDialog"
+        android:name="com.leesangmin89.readcontacttest.customDialog.GroupNameEditDialog"
+        android:label="GroupNameEditDialog" >
+        <action
+            android:id="@+id/action_groupNameEditDialog_to_groupFragment"
+            app:destination="@id/groupFragment"
+            app:popUpTo="@id/mainFragment" />
+        <argument
+            android:name="groupName"
+            app:argType="string" />
     </dialog>
 </navigation>

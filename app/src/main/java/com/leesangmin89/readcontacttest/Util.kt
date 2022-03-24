@@ -2,23 +2,28 @@ package com.leesangmin89.readcontacttest
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PorterDuff
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import java.text.SimpleDateFormat
 
 
 @SuppressLint("SimpleDateFormat")
 fun convertLongToDateString(systemTime: Long): String {
-    val simpleDateFormat = SimpleDateFormat("yyyy년MM월dd일")
+    val simpleDateFormat = SimpleDateFormat("yyyy년 MM월 dd일")
     return simpleDateFormat.format(systemTime)
 }
 
@@ -37,9 +42,31 @@ fun convertCallTypeToString(callType: Int): String {
         1 -> "수신"
         2 -> "발신"
         3 -> "부재중"
-        else -> "알수없음"
+        else -> "미상"
     }
 }
+
+fun setUpImageWithConvertCallType(imageView: ImageView, callType: Int, context: Context) {
+    when (callType) {
+        1 -> {
+            imageView.setImageResource(R.drawable.ic_round_phone_callback_12)
+            imageView.setColorFilter(ContextCompat.getColor(context, R.color.hau_bright_blue))
+        }
+        2 -> {
+            imageView.setImageResource(R.drawable.ic_round_phone_forwarded_12)
+            imageView.setColorFilter(ContextCompat.getColor(context, R.color.hau_green))
+        }
+        3 -> {
+            imageView.setImageResource(R.drawable.ic_round_phone_missed_12)
+            imageView.setColorFilter(ContextCompat.getColor(context, R.color.red))
+        }
+        else -> {
+            imageView.setImageResource(R.drawable.ic_baseline_block_12)
+            imageView.setColorFilter(ContextCompat.getColor(context, R.color.black))
+        }
+    }
+}
+
 
 fun EditText.setFocusAndShowKeyboard(context: Context) {
     this.requestFocus()
@@ -81,6 +108,34 @@ data class RecommendationSpl(
     var totalCallTime: String?,
     var numberOfCalling: String?,
 )
+
+// CallLog, GroupDetail Adapter 에서 헤더용으로 사용된 sealed class
+sealed class CallLogItem {
+    abstract val callLog: CallLogData
+    abstract val layoutId: Int
+
+    // 헤더
+    data class Header(
+        override val callLog: CallLogData,
+        override val layoutId: Int = VIEW_TYPE
+    ) : CallLogItem() {
+
+        companion object {
+            const val VIEW_TYPE = R.layout.call_log_header
+        }
+    }
+
+    // view
+    data class Item(
+        override val callLog: CallLogData,
+        override val layoutId: Int = VIEW_TYPE
+    ) : CallLogItem() {
+
+        companion object {
+            const val VIEW_TYPE = R.layout.fragment_call_log_child
+        }
+    }
+}
 
 
 // windowSoftInputMode 를 제어하는 코드

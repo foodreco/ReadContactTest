@@ -18,58 +18,56 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/recommend_data"
+            android:id="@+id/recommend_layout"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackground">
 
             <TextView
                 android:id="@+id/contact_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/contact_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="TextView"
-                android:textSize="14sp"
+                android:text="이름"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/contact_group"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact_name" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/contact_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="TextView"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/contact_number"
+                android:text="그룹"
+                android:textSize="16sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/contact_name"
                 app:layout_constraintEnd_toStartOf="@+id/btn_call_direct"
-                app:layout_constraintStart_toEndOf="@+id/contact_number" />
+                app:layout_constraintStart_toEndOf="@+id/contact_name" />
 
             <ImageButton
                 android:id="@+id/btn_call_direct"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:backgroundTint="@color/hau_bright_green"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/shape_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_phone_forwarded_50" />
+                app:srcCompat="@drawable/ic_round_phone_forwarded_32"
+                app:tint="@color/hau_green" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="전화하기"
+                app:layout_constraintEnd_toEndOf="@+id/btn_call_direct"
+                app:layout_constraintStart_toStartOf="@+id/btn_call_direct"
+                app:layout_constraintTop_toBottomOf="@+id/btn_call_direct" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

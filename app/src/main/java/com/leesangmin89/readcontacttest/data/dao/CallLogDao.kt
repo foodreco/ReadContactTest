@@ -3,7 +3,6 @@ package com.leesangmin89.readcontacttest.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import kotlinx.coroutines.flow.Flow
 
 @Dao

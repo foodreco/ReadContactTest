@@ -5,6 +5,7 @@ import androidx.room.*
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.data.entity.Recommendation
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -43,6 +44,6 @@ interface RecommendationDao {
 
     // Recommendation DB 의 추천 항목 중 어느 하나가 true 인 것을 Live 로 반환하는 함수
     @Query("SELECT * FROM recommendation_table WHERE numberOfCallingBelow LIKE :key OR recentCallExcess LIKE :key OR frequencyExcess LIKE :key")
-    fun getAllDataByRecommended(key: Boolean = true): LiveData<List<Recommendation>>
+    fun getAllDataByRecommended(key: Boolean = true): Flow<List<Recommendation>>
 
 }

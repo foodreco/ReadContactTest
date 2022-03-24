@@ -163,8 +163,6 @@ class UpdateDialog : DialogFragment() {
             binding.swtichAlarm.isEnabled = it
         }
 
-        setHasOptionsMenu(true)
-
         return binding.root
     }
 

@@ -1,15 +1,18 @@
 package com.leesangmin89.readcontacttest.group.groupDetail
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.navArgs
+import com.hieupt.android.standalonescrollbar.attachTo
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.callLog.CallLogViewModel
 import com.leesangmin89.readcontacttest.customDialog.GroupDetailDialog
@@ -23,7 +26,7 @@ class GroupDetailFragment : Fragment() {
     private val binding by lazy { FragmentGroupDetailBinding.inflate(layoutInflater) }
     private val args by navArgs<GroupDetailFragmentArgs>()
     private val callLogViewModel: CallLogViewModel by viewModels()
-    private val adapter by lazy { GroupDetailAdapter(childFragmentManager) }
+    private val adapter by lazy { GroupDetailAdapter(requireContext() ,childFragmentManager) }
 
     private val sortNumber = MutableLiveData<Int>(0)
 
@@ -36,38 +39,16 @@ class GroupDetailFragment : Fragment() {
     ): View? {
 
         Log.i("보완", "중요 통화기록 정렬 위치 조정하기(최상단으로??)")
+        Log.i("수정", "통화일자 헤더로 넣고, recyclerView 심플하게 개선")
+        Log.i("수정", "recommendation 정보")
+//        세련되게
+//        recommendation 정보넣어주기?
+//                main reco dialog는 제거? 다른정보?
+
 
         binding.groupDetailRecyclerView.adapter = adapter
 
         showProgress(true)
-
-//        // 넘어온 number 에 해당하는 CallLogData 만 출력
-//        callLogViewModel.findAndReturnLive(args.phoneNumber)
-//
-//        callLogViewModel.groupDetailList.observe(viewLifecycleOwner) {
-//            adapter.submitList(it)
-//            if (it == emptyList<CallLogData>()) {
-//
-//                // 통화기록이 없는 경우, 확인창 띄우기
-//                val dialog = GroupDetailDialog()
-//                dialog.setButtonClickListener(object : GroupDetailDialog.OnButtonClickListener {
-//                    // diaBtnCall 클릭 시,
-//                    override fun onDiaBtnCallClicked() {
-//                        // 전화걸기
-//                        val uri = Uri.parse("tel:${args.phoneNumber}")
-//                        val intent = Intent(Intent.ACTION_CALL, uri)
-//                        requireContext().startActivity(intent)
-//                    }
-//                    // diaBtnCancel 클릭 시,
-//                    override fun onDiaBtnCancelClicked() {
-//                        // nothing
-//                    }
-//                })
-//                // 확인창 띄우기
-//                dialog.show(childFragmentManager, "CustomDialog")
-//            }
-//        }
-
 
         sortNumber.observe(viewLifecycleOwner) { number ->
             when (number) {
@@ -155,6 +136,15 @@ class GroupDetailFragment : Fragment() {
                 callLogViewModel.updateCallContent(updateCallLogData)
                 adapter.importanceReset()
             }
+        }
+
+        // scroll bar
+        val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
+        val colorTrack = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        with(binding) {
+            scrollBar.attachTo(binding.groupDetailRecyclerView)
+            scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
+            scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
         }
 
         setHasOptionsMenu(true)

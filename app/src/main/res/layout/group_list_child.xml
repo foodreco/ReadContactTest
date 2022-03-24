@@ -13,12 +13,13 @@
             android:id="@+id/group_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="?attr/selectableItemBackground">
 
             <ImageView
                 android:id="@+id/contact_image"
-                android:layout_width="80dp"
-                android:layout_height="100dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_group_list_child"
@@ -30,54 +31,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="TextView"
+                android:layout_marginBottom="4dp"
+                android:maxLength="10"
+                android:text="어머니:김미미"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/contact_number"
-                app:layout_constraintStart_toEndOf="@+id/contact_image"
-                app:layout_constraintTop_toTopOf="@+id/contact_image" />
+                app:layout_constraintStart_toEndOf="@+id/contact_image" />
 
             <TextView
                 android:id="@+id/contact_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="TextView"
+                android:text="01023004124"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/current_contact"
-                app:layout_constraintStart_toEndOf="@+id/contact_image"
-                app:layout_constraintTop_toBottomOf="@+id/contact_name" />
-
-            <TextView
-                android:id="@+id/current_contact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="TextView"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/contact_time"
-                app:layout_constraintStart_toEndOf="@+id/contact_image"
-                app:layout_constraintTop_toBottomOf="@+id/contact_number" />
-
-            <TextView
-                android:id="@+id/contact_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="TextView"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/contact_image"
-                app:layout_constraintStart_toEndOf="@+id/contact_image"
-                app:layout_constraintTop_toBottomOf="@+id/current_contact" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/contact_image" />
 
             <ImageButton
                 android:id="@+id/btn_call_direct"
-                android:layout_width="50dp"
-                android:layout_height="100dp"
-                android:backgroundTint="@color/hau_bright_green"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_phone_24" />
+                app:tint="@color/hau_green"
+                android:background="@drawable/shape_button"
+                app:srcCompat="@drawable/ic_round_phone_forwarded_32"/>
 
             <CheckBox
                 android:id="@+id/checkBox_group_list_child"
@@ -94,11 +74,13 @@
                 android:id="@+id/btn_alarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:backgroundTint="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_call_direct"
                 app:layout_constraintEnd_toStartOf="@+id/btn_call_direct"
                 app:layout_constraintTop_toTopOf="@+id/btn_call_direct"
-                app:srcCompat="@drawable/ic_baseline_notifications_off_24" />
+                app:srcCompat="@drawable/ic_baseline_notifications_off_24"
+                app:tint="@color/hau_dark_green" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

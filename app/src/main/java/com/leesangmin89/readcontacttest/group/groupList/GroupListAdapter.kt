@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
@@ -19,9 +17,8 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.convertLongToDateString
-import com.leesangmin89.readcontacttest.convertLongToTimeString
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.GroupListChildBinding
 
@@ -34,7 +31,6 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
     private val checkboxStatus = SparseBooleanArray()
     private val alarmBtnStatus = SparseBooleanArray()
     val checkBoxReturnList = mutableListOf<String>()
-    val alarmReturnList = mutableListOf<GroupList>()
 
     private val _alarmNumberSetting = MutableLiveData<GroupList?>()
     val alarmNumberSetting : LiveData<GroupList?> = _alarmNumberSetting
@@ -49,33 +45,13 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: GroupList, num: Int, fragmentManager: FragmentManager) {
 
-            val name = binding.contactName
-            val number = binding.contactNumber
-            val profile = binding.contactImage
-            val detail = binding.groupDetail
-            val call = binding.btnCallDirect
-            val currentCall = binding.currentContact
-            val currentCallTimes = binding.contactTime
-            val checkBox = binding.checkBoxGroupListChild
-
-            name.text = item.name
-            number.text = item.number
-            if (item.recentContact == "") {
-                currentCall.text = "최근 통화 없음"
-            } else {
-                currentCall.text = convertLongToDateString(item.recentContact!!.toLong())
-            }
-            if (item.recentContactCallTime == "") {
-                currentCallTimes.text = ""
-            } else {
-                currentCallTimes.text =
-                    convertLongToTimeString(item.recentContactCallTime!!.toLong())
-            }
+            binding.contactName.text = item.name
+            binding.contactNumber.text = item.number
             //이미지 관련
             if (item.image != null)
-                profile.setImageBitmap(item.image)
+                binding.contactImage.setImageBitmap(item.image)
             else
-                profile.setImageDrawable(
+                binding.contactImage.setImageDrawable(
                     ContextCompat.getDrawable(
                         context,
                         R.mipmap.ic_launcher_round
@@ -87,6 +63,7 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
                 binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
             } else {
                 binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+                binding.btnAlarm.setColorFilter(ContextCompat.getColor(context, R.color.light_gray))
             }
 
             binding.checkBoxGroupListChild.isChecked = checkboxStatus[num]
@@ -105,33 +82,41 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
                 // 체크박스 off 상태인 경우 발동
                 // 체크박스 초기화
                 checkboxStatus.clear()
-                checkBox.visibility = View.GONE
+                binding.checkBoxGroupListChild.visibility = View.GONE
                 binding.btnAlarm.visibility = View.VISIBLE
                 binding.btnCallDirect.visibility = View.VISIBLE
 
-                // 전화버튼 클릭 시, 전화걸기
-                call.setOnClickListener {
+                // 전화버튼 클릭 시, 스낵바 메세지 띄우기
+                binding.btnCallDirect.setOnClickListener {
+                    val callSnackBar = Snackbar.make(it, "전화하려면 길게 터치하세요.", Snackbar.LENGTH_SHORT)
+                    callSnackBar.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    callSnackBar.setBackgroundTint(ContextCompat.getColor(context, R.color.hau_emerald))
+                    callSnackBar.show()
+                }
+
+                // 전화버튼 롱클릭 시, 전화걸기
+                binding.btnCallDirect.setOnLongClickListener {
                     item.number.let { phoneNumber ->
                         val uri = Uri.parse("tel:${phoneNumber.toString()}")
                         val intent = Intent(Intent.ACTION_CALL, uri)
                         context.startActivity(intent)
                     }
+                    return@setOnLongClickListener true
                 }
 
                 //리싸이클러 터치 시, CrossroadDialog 로 이동
-                detail.setOnClickListener {
+                binding.groupDetail.setOnClickListener {
                     val action =
-                        GroupListFragmentDirections.actionGroupListFragmentToCrossroadDialog(item)
+                        GroupListFragmentDirections.actionGroupListFragmentToGroupDetailFragment(item.number)
                     it.findNavController().navigate(action)
                 }
 
                 //리싸이클러 길게 터치 시, 삭제 작동
-                detail.setOnLongClickListener {
+                binding.groupDetail.setOnLongClickListener {
                     checkboxStatus[num] = true
                     _deleteEventActive.value = true
                     return@setOnLongClickListener true
                 }
-
 
                 //image_btn 터치 시, 알람 설정 작동 코드
                 binding.btnAlarm.setOnClickListener {
@@ -150,13 +135,7 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
             binding.btnCallDirect.visibility = View.GONE
             // checkBox 를 표시하고 코드 진행
             binding.checkBoxGroupListChild.visibility = View.VISIBLE
-//            // 체크박스 유지 코드
-//            binding.checkBoxGroupListChild.isChecked = checkboxStatus[num]
-//            if (binding.checkBoxGroupListChild.isChecked) {
-//                checkBoxReturnList.add(item)
-//            } else {
-//                checkBoxReturnList.remove(item)
-//            }
+
             // 체크 박스 터치 시,
             binding.checkBoxGroupListChild.setOnClickListener {
                 checkboxStatus[num] = !checkboxStatus[num]

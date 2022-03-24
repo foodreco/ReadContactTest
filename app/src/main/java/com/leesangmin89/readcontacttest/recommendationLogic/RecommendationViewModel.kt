@@ -1,11 +1,7 @@
 package com.leesangmin89.readcontacttest.recommendationLogic
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,13 +24,17 @@ class RecommendationViewModel @Inject constructor(
     private val _progressBarEventFinished = MutableLiveData<Boolean>()
     val progressBarEventFinished: LiveData<Boolean> = _progressBarEventFinished
 
-    val recommendationLiveList: LiveData<List<Recommendation>>
-    var tendencyLive: LiveData<Tendency>?
-
     init {
-        recommendationLiveList = dataReco.getAllDataByRecommended(true)
-        tendencyLive = dataTen.getRecentTendencyDataLive()
     }
+
+    fun getRecommendationLiveList(): LiveData<List<Recommendation>> {
+        return dataReco.getAllDataByRecommended().asLiveData()
+    }
+
+    fun getTendencyLive(): LiveData<Tendency>? {
+        return dataTen.getRecentTendencyDataLive()?.asLiveData()
+    }
+
 
     // 통화를 추천할 대상을 뽑는 함수
     // 실행 시 매번 업데이트 되어야 함
@@ -85,6 +85,7 @@ class RecommendationViewModel @Inject constructor(
 
                     // 통화 횟수가 1 이상일 때,
                     // 해당 통화일자가 1년을 초과하면 추천(ref2)
+                    // 1년 = 31536000000 밀리초(단위, Long)
                     1 -> {
                         avgCallTime = totalCallTime / numberOfCalling
                         val recentTimeGap: Long = longNow - groupList.recentContact!!.toLong()
@@ -183,13 +184,13 @@ class RecommendationViewModel @Inject constructor(
             var recommendationCallMissed = 0
 
             // Tendency 인자 수정
+            // 메모리 부하가 크므로, 최초 발동시에만 작업
             if (allTendency == null) {
                 // 최초 앱 빌드 후(CallLogData 구축 후) 발동 시,
                 // 1. 전체 call 기준
                 val allCallLogData: List<CallLogData> = dataCallLog.getAllCallLogData()
                 // 전체 call 순회
                 for (item in allCallLogData) {
-                    // 메모리 부하가 크므로, 최초 발동시에만 작업
                     // 기존 없던 통화기록 데이터만, 작업 진행
                     // 총 전화 횟수
                     allCallCount += 1
@@ -251,6 +252,7 @@ class RecommendationViewModel @Inject constructor(
             var recommendationCallOutgoing = 0
             var recommendationCallMissed = 0
 
+            // 매번 업데이트(GroupList 가 변할 수 있으므로)
             // 2. GroupList 순회 방식
             val allGroupList: List<GroupList> = dataGroup.getAllDataFromGroupList()
             for (groupList in allGroupList) {
@@ -273,6 +275,7 @@ class RecommendationViewModel @Inject constructor(
                 }
             }
 
+            // 매번 업데이트(Recommendation 이 변할 수 있으므로)
             // 3. Recommendation 순회 방식
             val allRecommendationList: List<Recommendation> = dataReco.getAllData()
             for (recommendation in allRecommendationList) {

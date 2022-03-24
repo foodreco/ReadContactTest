@@ -32,6 +32,10 @@ interface ContactDao {
     @Query("SELECT name FROM contact_table WHERE `number` =:number")
     suspend fun getName(number: String): String?
 
+    // 그룹을 받아서, 해당 리스트를 가져오는 함수
+    @Query("SELECT * FROM contact_table WHERE `group` =:group")
+    suspend fun getContactBaseByGroup(group:String): List<ContactBase>
+
 
 
     @Query("SELECT * FROM contact_table ORDER BY id ASC")
@@ -48,5 +52,6 @@ interface ContactDao {
 
     @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
     fun searchDatabase(searchQuery: String): Flow<List<ContactBase>>
+
 
 }

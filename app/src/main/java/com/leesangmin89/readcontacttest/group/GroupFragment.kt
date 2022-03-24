@@ -27,7 +27,9 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val adapter = GroupAdapter(requireContext())
+        Log.i("수정", "검색 후 알맞은 라이브러리 적용")
+
+        val adapter = GroupAdapter()
         binding.groupRecyclerView.adapter = adapter
 
         // onCreateView 와 함께 리스트 업데이트

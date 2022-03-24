@@ -23,7 +23,6 @@ class GroupAddDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         return dialog
     }
 
@@ -43,9 +42,6 @@ class GroupAddDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        //강제 dismiss 금지
-        isCancelable = false
 
         // 키보드 show
         binding.addGroupName.setFocusAndShowKeyboard(requireContext())
@@ -67,7 +63,7 @@ class GroupAddDialog : DialogFragment() {
         }
 
         // 키보드 완료 버튼 시, 확인 버튼 터치와 동일 효과
-        binding.addGroupName.setOnEditorActionListener{ textView, action, event ->
+        binding.addGroupName.setOnEditorActionListener { textView, action, event ->
             var handled = false
             if (action == EditorInfo.IME_ACTION_DONE) {
                 addGroupTask()
