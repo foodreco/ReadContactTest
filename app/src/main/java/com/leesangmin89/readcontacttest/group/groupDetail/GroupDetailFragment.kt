@@ -50,6 +50,12 @@ class GroupDetailFragment : Fragment() {
 
         showProgress(true)
 
+        // 헤더뷰홀더 리싸이클러뷰 코드
+        callLogViewModel.callLogItemData.observe(viewLifecycleOwner){
+            adapter.submitList(it)
+            showProgress(false)
+        }
+
         sortNumber.observe(viewLifecycleOwner) { number ->
             when (number) {
                 SORT_NORMAL_STATE -> {
@@ -76,8 +82,7 @@ class GroupDetailFragment : Fragment() {
                                 // 확인창 띄우기
                                 dialog.show(childFragmentManager, "CustomDialog")
                             }
-                            adapter.submitList(it)
-                            showProgress(false)
+                            callLogViewModel.makeList(it)
                         }
                     }
                 }
@@ -93,8 +98,7 @@ class GroupDetailFragment : Fragment() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                    adapter.submitList(it)
-                                    showProgress(false)
+                                    callLogViewModel.makeList(it)
                                 }
                             }
                         }
@@ -182,7 +186,7 @@ class GroupDetailFragment : Fragment() {
         sortNumber.value = SORT_BY_IMPORTANCE
     }
 
-    fun showProgress(show: Boolean) {
+    private fun showProgress(show: Boolean) {
         binding.groupDetailProgressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 

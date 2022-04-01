@@ -1,8 +1,6 @@
 package com.leesangmin89.readcontacttest.group.groupDetail
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -13,92 +11,147 @@ import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.*
+import com.leesangmin89.readcontacttest.callLog.CallLogItemDiffCallback
 import com.leesangmin89.readcontacttest.customDialog.EditCallContent
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
+import com.leesangmin89.readcontacttest.databinding.CallLogHeaderBinding
 import com.leesangmin89.readcontacttest.databinding.GroupDetailChildBinding
 
 class GroupDetailAdapter(context: Context, fragmentManager: FragmentManager) :
-    ListAdapter<CallLogData, GroupDetailAdapter.CallHolder>(CallLogDiffCallback()) {
+    ListAdapter<CallLogItem, RecyclerView.ViewHolder>(CallLogItemDiffCallback()) {
 
-    private var mFragmentManager: FragmentManager = fragmentManager
-    private val expandStatus = SparseBooleanArray()
-    private val importanceStatus = SparseBooleanArray()
+    var mFragmentManager: FragmentManager = fragmentManager
     private val mContext = context
 
+    private val importanceStatus = SparseBooleanArray()
     private val _callLogImportanceSetting = MutableLiveData<CallLogData?>()
-    val callLogImportanceSetting : LiveData<CallLogData?> = _callLogImportanceSetting
-
+    val callLogImportanceSetting: LiveData<CallLogData?> = _callLogImportanceSetting
     private val _callLogImportanceRemoving = MutableLiveData<CallLogData?>()
-    val callLogImportanceRemoving : LiveData<CallLogData?> = _callLogImportanceRemoving
+    val callLogImportanceRemoving: LiveData<CallLogData?> = _callLogImportanceRemoving
 
+    override fun getItemViewType(position: Int): Int = getItem(position).layoutId
 
-    inner class CallHolder constructor(private val binding: GroupDetailChildBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CallLogData, num: Int, fragmentManager: FragmentManager) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-            Log.i("수정", "통화 메모 UI 개선")
-//            통화일자 헤더로 넣기
-//            메모표시로 expandable?
+        return when (viewType) {
+            CallLogItem.Header.VIEW_TYPE -> GroupDetailHeaderViewHolder.from(parent)
+            CallLogItem.Item.VIEW_TYPE -> GroupDetailItemViewHolder.from(parent)
+            else -> throw IllegalArgumentException("Cannot create ViewHolder for view type: $viewType")
+        }
+    }
 
-            setUpImageWithConvertCallType(binding.imgCallType, item.callType!!.toInt(), mContext)
-            binding.logDuration.text = convertLongToTimeString(item.duration!!.toLong())
-            binding.logDate.text = convertLongToDateString(item.date!!.toLong())
-            if (item.callKeyword == "") {
-                binding.callKeyword.text = "키워드없음"
-            } else {
-                binding.callKeyword.text = "${item.callKeyword}"
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+        when (viewHolder) {
+            is GroupDetailHeaderViewHolder -> {
+                val item = getItem(position) as CallLogItem.Header
+                viewHolder.bind(item)
             }
-            if (item.callContent == "") {
-                binding.callLogContentText.text = "메모없음"
-            } else {
-                binding.callLogContentText.text = item.callContent
-            }
+            is GroupDetailItemViewHolder -> {
+                val item = getItem(position) as CallLogItem.Item
+                val callLogData = item.callLog
+                viewHolder.bind(item, position, mFragmentManager, mContext)
+                setUpImageWithConvertCallType(viewHolder.imgCallType, callLogData.callType!!.toInt(),mContext)
 
-            importanceStatus[num] = item.importance == true
+                importanceStatus[position] = callLogData.importance == true
 
-            if (importanceStatus[num]) {
-                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
-                binding.btnImportance.setColorFilter(ContextCompat.getColor(mContext, R.color.yellow))
-            } else {
-                binding.btnImportance.setImageResource(R.drawable.ic_baseline_star_yellow_50)
-                binding.btnImportance.setColorFilter(ContextCompat.getColor(mContext, R.color.light_gray))
-            }
-
-            // expandable layout 코드
-            if (expandStatus[num]) {
-                binding.layoutExpand.visibility = View.VISIBLE
-            } else {
-                binding.layoutExpand.visibility = View.GONE
-            }
-
-            binding.callLogChild.setOnClickListener {
-                expandStatus[num] = !expandStatus[num]
-                notifyDataSetChanged()
-            }
-
-            // 별 터치 시 작동 코드
-            binding.btnImportance.setOnClickListener {
-                if (item.importance == true) {
-                    _callLogImportanceSetting.value = item
+                if (importanceStatus[position]) {
+                    with(viewHolder.btnImportance) {
+                        setImageResource(R.drawable.ic_baseline_star_yellow_50)
+                        setColorFilter(
+                            ContextCompat.getColor(
+                                mContext,
+                                R.color.yellow
+                            )
+                        )
+                    }
                 } else {
-                    _callLogImportanceRemoving.value = item
+                    with(viewHolder.btnImportance) {
+                        setImageResource(R.drawable.ic_baseline_star_yellow_50)
+                        setColorFilter(
+                            ContextCompat.getColor(
+                                mContext,
+                                R.color.light_gray
+                            )
+                        )
+                    }
+                }
+                // 별 터치 시 작동 코드
+                viewHolder.btnImportance.setOnClickListener {
+                    if (callLogData.importance == true) {
+                        _callLogImportanceSetting.value = callLogData
+                    } else {
+                        _callLogImportanceRemoving.value = callLogData
+                    }
                 }
             }
+        }
+    }
 
-            // layoutExpand 터치 시, EditCallContent Dialog show
-            binding.layoutExpand.setOnClickListener {
-                // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
-                // 해당 전화번호를 넘겨주는 코드
-                val bundle = bundleOf()
-                val list: CallLogData = item
-                bundle.putParcelable("callLogData", list)
-                val dialog = EditCallContent()
-                dialog.arguments = bundle
-                dialog.show(fragmentManager, "EditCallContentDialog")
+    // 헤더용 뷰홀더
+    class GroupDetailHeaderViewHolder constructor(private val binding: CallLogHeaderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            fun from(parent: ViewGroup): GroupDetailHeaderViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = CallLogHeaderBinding.inflate(layoutInflater, parent, false)
+                return GroupDetailHeaderViewHolder(binding)
+            }
+        }
+
+        fun bind(item: CallLogItem) {
+            val callLogData = (item as CallLogItem.Header).callLog
+            binding.apply {
+                textDate.text = callLogData.date?.let { convertLongToDateString(it.toLong()) }
+            }
+        }
+    }
+
+    // 리스트용 뷰홀더
+    class GroupDetailItemViewHolder constructor(private val binding: GroupDetailChildBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            fun from(parent: ViewGroup): GroupDetailItemViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = GroupDetailChildBinding.inflate(layoutInflater, parent, false)
+                return GroupDetailItemViewHolder(binding)
+            }
+        }
+
+        val imgCallType = binding.imgCallType
+        val btnImportance = binding.btnImportance
+
+        fun bind(item: CallLogItem, num: Int, fragmentManager: FragmentManager, context: Context) {
+            val callLogData = (item as CallLogItem.Item).callLog
+            binding.apply {
+                if (callLogData.callKeyword == "") {
+                    logKeyword.text = "키워드 없음"
+                } else {
+                    logKeyword.text = callLogData.callKeyword
+                }
+                logDuration.text = convertLongToTimeString(callLogData.duration!!.toLong())
+
+                // layoutExpand 터치 시
+                callLogChild.setOnClickListener {
+                    // EditCallContent Dialog 띄우고, CallLogData 넘겨줌
+                    // 해당 전화번호를 넘겨주는 코드
+                    val bundle = bundleOf()
+                    val list: CallLogData = callLogData
+                    bundle.putParcelable("callLogData", list)
+                    val dialog = EditCallContent()
+                    dialog.arguments = bundle
+                    dialog.show(fragmentManager, "EditCallContentDialog")
+                }
+
+                if (callLogData.callKeyword == "" && callLogData.callContent == "") {
+                    imgMemo.visibility = View.INVISIBLE
+                } else {
+                    imgMemo.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -107,27 +160,4 @@ class GroupDetailAdapter(context: Context, fragmentManager: FragmentManager) :
         _callLogImportanceSetting.value = null
         _callLogImportanceRemoving.value = null
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallHolder {
-        val binding =
-            GroupDetailChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CallHolder(binding)
-    }
-
-    @SuppressLint("SimpleDateFormat", "SetTextI18n")
-    override fun onBindViewHolder(holder: CallHolder, position: Int) {
-        holder.bind(getItem(position), position, mFragmentManager)
-    }
-}
-
-
-class CallLogDiffCallback : DiffUtil.ItemCallback<CallLogData>() {
-    override fun areItemsTheSame(oldItem: CallLogData, newItem: CallLogData): Boolean {
-        return oldItem.number == newItem.number
-    }
-
-    override fun areContentsTheSame(oldItem: CallLogData, newItem: CallLogData): Boolean {
-        return oldItem == newItem
-    }
-
 }

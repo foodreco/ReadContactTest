@@ -32,6 +32,10 @@ interface CallLogDao {
     @Query("SELECT * FROM call_history ORDER BY date DESC")
     suspend fun getAllCallLogData(): List<CallLogData>
 
+    // 특정 number 의 CallLog 특정 정보만 불러오는 함수 (최신일자부터)
+    @Query("SELECT duration FROM call_history WHERE number LIKE :number ORDER BY date DESC")
+    suspend fun getGroupDetailList(number: String): List<String>
+
     // 통화 기록 중, number, date, duration 이 동일한 기록을 하나 반환하는 함수
     @Query("SELECT * FROM call_history WHERE number LIKE :number AND date LIKE :date AND duration LIKE :duration LIMIT 1")
     suspend fun confirmAndInsert(number: String, date: String, duration: String): CallLogData?
@@ -40,11 +44,15 @@ interface CallLogDao {
     @Query("SELECT * FROM call_history ORDER BY date DESC")
     fun getAllDataByDate(): LiveData<List<CallLogData>>
 
+    // callLogData 중 번호만 다 가져오는 함수
+    @Query("SELECT number FROM call_history ORDER BY name ASC")
+    fun getAllCallLogDataFlow(): Flow<List<String>>
+
     // 전화번호를 인자로 넘겨받아, 해당 CallLogData 를 Live 로 받아오는 함수
     @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC")
     fun findAndReturnLive(number: String): LiveData<List<CallLogData>>
 
-    // 연락처가 저장된 callLogData 만 불러오는 함수 (정렬)
+    // 모든 callLogData 를 불러오는 함수 (정렬)
     @Query("SELECT * FROM call_history ORDER BY date DESC")
     fun sortByNormal(): Flow<List<CallLogData>>
 

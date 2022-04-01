@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.leesangmin89.readcontacttest.GroupTopData
 import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
@@ -12,6 +13,7 @@ import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.dao.RecommendationDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
+import com.leesangmin89.readcontacttest.group.groupList.GroupItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import org.json.JSONArray
@@ -29,11 +31,11 @@ class GroupViewModel @Inject constructor(
     private val _groupInfo = MutableLiveData<List<GroupData>>()
     val groupInfo: LiveData<List<GroupData>> = _groupInfo
 
+    private val _groupFragmentList = MutableLiveData<List<GroupData>>()
+    val groupFragmentList: LiveData<List<GroupData>> = _groupFragmentList
+
     private val _groupList = MutableLiveData<List<ContactBase>>()
     val groupList: LiveData<List<ContactBase>> = _groupList
-
-    private val _groupListEmptyEvent = MutableLiveData<Boolean>()
-    val groupListEmptyEvent: LiveData<Boolean> = _groupListEmptyEvent
 
     lateinit var liveGroupLiveData: LiveData<List<GroupList>>
 
@@ -52,31 +54,34 @@ class GroupViewModel @Inject constructor(
     private val _groupNameEditDone = MutableLiveData<Boolean>()
     val groupNameEditDone: LiveData<Boolean> = _groupNameEditDone
 
+    private val _groupListRecyclerView = MutableLiveData<List<GroupItem>>()
+    val groupListRecyclerView: LiveData<List<GroupItem>> = _groupListRecyclerView
+
     // updateDialog dismiss 를 위한 코드
     private var _updateDataEventNumber = 0
     private var _updateDataEvent = MutableLiveData<Int>(0)
     val updateDataEvent: LiveData<Int> = _updateDataEvent
 
 
-
     init {
     }
 
-    // 그룹이 존재하는 리스트를 정리하여 recyclerview 에 알맞게 가공하는 함수
+    // 그룹이 존재하는 리스트를 정리하여 GroupData 형태로 가공하는 함수
     fun getGroupName() {
         viewModelScope.launch {
-            // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수
-            val data = dataGroup.getGroupName()
+            // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수(그룹 생성 순으로 불러온다)
+            val data: List<String> = dataGroup.getGroupName()
 
             // GroupData 를 넣을 빈 리스트 변수
             val groupData = mutableListOf<GroupData>()
 
+            // 맵 : 키-그룹명, 값-사람수
             val groupDataMap = mutableMapOf<String, Int>()
 
             // 그룹명을 리스트 형태로 모아서, 그룹당 사람 수를 출력하는 코드
             // 만약 data 가 empty 상태라면
             if (data == emptyList<String>()) {
-                _groupListEmptyEvent.value = true
+                _groupInfo.value = groupData
             } else {
                 // data 가 empty 가 아니라면
                 // data 를 순회하면서
@@ -84,9 +89,11 @@ class GroupViewModel @Inject constructor(
                     if (groupDataMap.contains(groupName)) {
                         val preValue = groupDataMap[groupName]
                         if (preValue != null) {
+                            // 기존 값이 있으면 1을 더하고
                             groupDataMap[groupName] = preValue + 1
                         }
                     } else {
+                        // 없으면 1로 시작한다.
                         groupDataMap[groupName] = 1
                     }
                 }
@@ -95,18 +102,13 @@ class GroupViewModel @Inject constructor(
                 val groupNameToSumOfNumbers: Int =
                     groupDataMap.map { it.value }.sum()
 
-                // groupDataMap 을 순회하면서
+                // groupDataMap 을 순회하면서 name : 그룹명, numbers : 사람수
                 for ((name, numbers) in groupDataMap) {
-                    val rateNumber: Double =
-                        (numbers.toDouble() / groupNameToSumOfNumbers.toDouble()) * 100
-                    val rate = "등록비율 : ${
-                        String.format(
-                            "%.0f",
-                            rateNumber
-                        )
-                    }%      (${numbers}/${groupNameToSumOfNumbers})"
-                    val regiNumbers = "등록인원 수 : ${numbers}명"
-                    val list = GroupData(name, regiNumbers, rate)
+                    val numberOfRecommendationTrue: Int =
+                        dataGroup.getGroupListRecommendationTrue(name).count()
+                    val starRatingInt =
+                        ((numberOfRecommendationTrue.toDouble() / numbers.toDouble()) * 5)
+                    val list = GroupData(name, numbers, groupNameToSumOfNumbers, numberOfRecommendationTrue, starRatingInt)
                     groupData.add(list)
                 }
                 _groupInfo.value = groupData
@@ -156,15 +158,10 @@ class GroupViewModel @Inject constructor(
         }
     }
 
-
-    fun groupListEmptyChecked() {
-        _groupListEmptyEvent.value = false
-    }
-
     fun insert(groupList: GroupList) {
         viewModelScope.launch {
             dataGroup.insert(groupList)
-            _updateDataEventNumber ++
+            _updateDataEventNumber++
             _updateDataEvent.value = _updateDataEventNumber
         }
     }
@@ -229,7 +226,7 @@ class GroupViewModel @Inject constructor(
         viewModelScope.launch {
             val groupListForDelete = dataGroup.getGroupByNumber(number)!!
             dataGroup.delete(groupListForDelete)
-            _updateDataEventNumber ++
+            _updateDataEventNumber++
             _updateDataEvent.value = _updateDataEventNumber
 
         }
@@ -249,7 +246,7 @@ class GroupViewModel @Inject constructor(
                 groupListForUpdate.id
             )
             dataGroup.update(updateList)
-            _updateDataEventNumber ++
+            _updateDataEventNumber++
             _updateDataEvent.value = _updateDataEventNumber
         }
     }
@@ -260,7 +257,7 @@ class GroupViewModel @Inject constructor(
             // DB 로부터 그룹 명만 리스트 형태로 받아
             val groupNameList = dataGroup.getGroupName().distinct()
             val jsonList = JSONArray()
-//            "그룹명", "직접입력"
+            // "그룹명", "직접입력"
             jsonList.put("그룹명 선택")
             jsonList.put("직접입력")
             for (i in groupNameList) {
@@ -298,22 +295,24 @@ class GroupViewModel @Inject constructor(
             for (number in testList) {
                 // 번호를 받아서, ContactBase 정보를 불러와
                 val preContactBase = database.getContact(number)
-                val updateContactBase = ContactBase(
-                    preContactBase.name,
-                    preContactBase.number,
-                    "",
-                    preContactBase.image,
-                    preContactBase.id
-                )
+                if (preContactBase != null) {
+                    val updateContactBase = ContactBase(
+                        preContactBase.name,
+                        preContactBase.number,
+                        "",
+                        preContactBase.image,
+                        preContactBase.id
+                    )
 
-                // ContactBase DB group 을 공백으로 업데이트 하는 코드
-                updateInContactBase(updateContactBase)
+                    // ContactBase DB group 을 공백으로 업데이트 하는 코드
+                    updateInContactBase(updateContactBase)
 
-                // GroupList 에서 group 을 삭제하는 코드
-                deleteDataInGroupList(number)
+                    // GroupList 에서 group 을 삭제하는 코드
+                    deleteDataInGroupList(number)
 
-                // Reco DB 에서 해당 정보를 삭제하는 코드
-                deleteDataInReco(number)
+                    // Reco DB 에서 해당 정보를 삭제하는 코드
+                    deleteDataInReco(number)
+                }
             }
         }
     }
@@ -356,14 +355,14 @@ class GroupViewModel @Inject constructor(
 
     fun updateDialogDone() {
         _updateDialogDone.value = true
-        _updateDataEventNumber ++
+        _updateDataEventNumber++
         _updateDataEvent.value = _updateDataEventNumber
     }
 
     fun update(contact: ContactBase) {
         viewModelScope.launch {
             database.update(contact)
-            _updateDataEventNumber ++
+            _updateDataEventNumber++
             _updateDataEvent.value = _updateDataEventNumber
         }
     }
@@ -376,7 +375,7 @@ class GroupViewModel @Inject constructor(
                 when (newGroup) {
                     // 신규 지정 Group 도 없다면
                     "" -> {
-                        _updateDataEventNumber ++
+                        _updateDataEventNumber++
                         _updateDataEvent.value = _updateDataEventNumber
                     }
                     // 넘어온 건 없는데, 신규 지정 Group 은 있다면, 그룹 DB 에 신규 추가
@@ -440,7 +439,7 @@ class GroupViewModel @Inject constructor(
     }
 
     // GroupFragment 에서 그룹명 변경에 사용되는 함수
-    fun groupNameEdit(preGroupName : String, newGroupName : String) {
+    fun groupNameEdit(preGroupName: String, newGroupName: String) {
         viewModelScope.launch {
             val preGroupList = dataGroup.getGroupList(preGroupName)
             for (each in preGroupList) {
@@ -484,5 +483,87 @@ class GroupViewModel @Inject constructor(
     fun groupNameEditReset() {
         _groupNameEditDone.value = false
     }
+
+
+    // GroupList Adapter 에 들어갈 Data 를 가공하는 함수 (미리 정렬한 리스트를 가져와야 함)
+    fun makeGroupItem(groupList: List<GroupList>) {
+        viewModelScope.launch {
+            val baseList = groupList
+            // 해당 group 에 통화시간과 통화횟수를 추출하는 코드
+            val dataList = mutableListOf<GroupTopData>()
+            for (item in baseList) {
+                val name = item.name
+                val number = item.number
+                var duration = 0L
+                var times = 0
+                val callLogDurationList: List<String> = dataCall.getGroupDetailList(number)
+                // 만약 통화기록이 없다면(duration 이 없다면) continue
+                if (callLogDurationList == emptyList<String>()) {
+                    continue
+                }
+                for (callDuration in callLogDurationList) {
+                    duration += callDuration.toLong()
+                    times += 1
+                }
+                val addList = GroupTopData(name, number, duration, times)
+                dataList.add(addList)
+            }
+
+            // dataList 중 Top 3 선정 코드
+            val topList = mutableListOf<GroupTopData>()
+            dataList.sortByDescending { it.duration }
+            when (dataList.size) {
+                0 -> {}
+                1 -> topList.add(dataList[0])
+                2 -> {
+                    topList.add(dataList[0])
+                    topList.add(dataList[1])
+                }
+                else -> {
+                    topList.add(dataList[0])
+                    topList.add(dataList[1])
+                    topList.add(dataList[2])
+                }
+            }
+
+            dataList.sortByDescending { it.times }
+            when (dataList.size) {
+                0 -> {}
+                1 -> topList.add(dataList[0])
+                2 -> {
+                    topList.add(dataList[0])
+                    topList.add(dataList[1])
+                }
+                else -> {
+                    topList.add(dataList[0])
+                    topList.add(dataList[1])
+                    topList.add(dataList[2])
+                }
+            }
+
+            // 결과를 리턴할 리스트
+            val result = arrayListOf<GroupItem>()
+            // 1. 헤더값 add
+            result.add(GroupItem.Header(topList))
+            // 2. 나머지 groupList 값 add
+            baseList.forEach { groupList ->
+                result.add(GroupItem.Item(groupList))
+            }
+            _groupListRecyclerView.postValue(result)
+        }
+    }
+
+    // 그룹 중요도 순으로 정렬하여 반환
+    fun sortGroupByImportance(it: List<GroupData>) {
+        val newGroupList: List<GroupData> = it.sortedByDescending { it.importanceRating }
+        _groupFragmentList.postValue(newGroupList)
+    }
+
+    // 그룹 인원 순으로 정렬하여 반환
+    fun sortGroupByMembers(it: List<GroupData>) {
+        val newGroupList: List<GroupData> = it.sortedByDescending { it.groupNumber }
+        _groupFragmentList.postValue(newGroupList)
+    }
+
 
 }

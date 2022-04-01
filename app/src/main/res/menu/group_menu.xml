@@ -7,19 +7,18 @@
         android:icon="@drawable/ic_baseline_add_24"
         app:showAsAction="always"
         android:iconTint="@color/menu_icon_tint_color"/>
-
     <item
-        android:icon="@drawable/ic_baseline_delete_24"
+        android:icon="@drawable/ic_baseline_sort_24"
         android:iconTint="@color/menu_icon_tint_color"
-        android:title="삭제"
+        android:title="Sort"
         app:showAsAction="always">
         <menu>
             <item
-                android:id="@+id/delete_all"
-                android:title="전체 삭제" />
+                android:id="@+id/group_sort_by_importance"
+                android:title="중요도 순"/>
             <item
-                android:id="@+id/delete_part"
-                android:title="선택 삭제" />
+                android:id="@+id/group_sort_by_members"
+                android:title="인원 많은 순"/>
         </menu>
     </item>
 

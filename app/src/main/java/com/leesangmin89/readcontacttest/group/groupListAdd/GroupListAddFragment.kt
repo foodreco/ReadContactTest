@@ -1,20 +1,25 @@
 package com.leesangmin89.readcontacttest.group.groupListAdd
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.hieupt.android.standalonescrollbar.attachTo
 import com.leesangmin89.readcontacttest.InputModeLifecycleHelper
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.clearFocusAndHideKeyboard
+import com.leesangmin89.readcontacttest.customDialog.GroupAddDialogDirections
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListAddBinding
 import com.leesangmin89.readcontacttest.getSoftInputMode
@@ -77,12 +82,19 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
         // 업데이트 완료 시, GroupListFragment 이동 코드
         groupListAddViewModel.navigateEvent.observe(viewLifecycleOwner) { updateFinished ->
             if (updateFinished) {
-                val action =
-                    GroupListAddFragmentDirections.actionGroupListAddFragmentToGroupListFragment(
-                        args.groupName
-                    )
-                findNavController().navigate(action)
-                groupListAddViewModel.navigateDone()
+                binding.apply {
+                    // 검색 사용 시, 키보드 먼저 내리고 이동
+                    btnGroupAdd.clearFocusAndHideKeyboard(requireContext())
+                    // 시간을 두고 dismiss 후 Fragment 이동
+                    btnGroupAdd.postDelayed({
+                        val action =
+                            GroupListAddFragmentDirections.actionGroupListAddFragmentToGroupListFragment(
+                                args.groupName
+                            )
+                        findNavController().navigate(action)
+                        groupListAddViewModel.navigateDone()
+                    }, 50)
+                }
             }
         }
 
@@ -93,12 +105,20 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
 //        viewLifecycleOwner.lifecycle.addObserver(lifecycleEventObserver)
 
 
+        // scroll bar
+        val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
+        val colorTrack = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        with(binding) {
+            scrollBar.attachTo(binding.groupListAddRecyclerView)
+            scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
+            scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
+        }
+
 
         setHasOptionsMenu(true)
 
         return binding.root
     }
-
 
 
     // 그룹을 추가하고(GroupList), 연락처 정보를 변경하는 함수
@@ -130,15 +150,18 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
+        // 검색 이용 시, 기존에 체크되었던 박스는 해제된다.
+        adapter.clearCheckBox()
         groupListAddViewModel.searchDatabase(searchQuery).observe(this) { list ->
             list.let {
                 adapter.submitList(it)
-                adapter.clearCheckBox(1)
+                // 검색 이용 시, 기존에 체크되었던 박스는 해제된다.
+                adapter.clearCheckBox()
             }
         }
     }
 
-    fun showProgress(show: Boolean) {
+    private fun showProgress(show: Boolean) {
         binding.groupListAddProgressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 

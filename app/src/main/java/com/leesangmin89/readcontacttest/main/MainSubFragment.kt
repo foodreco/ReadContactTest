@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.data.entity.Tendency
 import com.leesangmin89.readcontacttest.databinding.FragmentMainSubBinding
 import com.leesangmin89.readcontacttest.recommendationLogic.RecommendationViewModel
@@ -32,8 +33,8 @@ class MainSubFragment : Fragment() {
         Log.i("추가", "성향 데이터 추가")
 //        데이터 그래프로 우선 나타내기 ?
 
-        // 연락처 갯수를 업데이트 하는 함수
-        mainViewModel.countContactNumbers(requireActivity())
+        // CountNumber 를 업데이트 하는 함수
+        mainViewModel.syncCountNumbers()
         // ContactInfo 를 업데이트 하는 함수
         mainViewModel.contactInfoUpdate(requireActivity())
 
@@ -48,32 +49,9 @@ class MainSubFragment : Fragment() {
         }
 
         // 활성 통화 횟수 및 마지막 통화 표현 코드
-        mainViewModel.infoData.observe(viewLifecycleOwner, Observer {
+        mainViewModel.getInfoData().observe(viewLifecycleOwner, Observer {
             showMainProgress(true)
-            binding.apply {
-                if (it == null) {
-//                    textContactNumber.text = getString(R.string.contact_number, 0)
-                    textContactActivated.text = getString(R.string.contact_activated, 0)
-                    textRecentContact.text = getString(R.string.recent_contact, "해당없음")
-                    mostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
-                    mostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
-                    mainViewModel.progressBarEventDone()
-                } else {
-//                    textContactNumber.text = getString(R.string.contact_number, it.contactNumber)
-                    textContactActivated.text =
-                        getString(R.string.contact_activated, it.activatedContact)
-                    textRecentContact.text =
-                        getString(R.string.recent_contact, it.mostRecentContact)
-                    mostContactNumber.text =
-                        getString(R.string.most_contact_name, it.mostContactName)
-
-                    val minutes = it.mostContactTimes!!.toLong() / 60
-                    val seconds = it.mostContactTimes.toLong() % 60
-                    mostContactDuration.text =
-                        getString(R.string.most_contact_duration, minutes, seconds)
-                    mainViewModel.progressBarEventDone()
-                }
-            }
+            bindTextInContact(it)
         })
 
         // 경향 text 대입
@@ -83,16 +61,53 @@ class MainSubFragment : Fragment() {
             }
         }
 
-        // 연락처 개수 표현 코드
-        mainViewModel.contactNumbers.observe(viewLifecycleOwner) {
+        // 연락처 개수, 그룹 지정수, 알림 지정 수 표현 코드
+        mainViewModel.countNumbers.observe(viewLifecycleOwner) {
             if (it == null) {
-                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, 0)
+                binding.apply {
+                    textContactNumber.text = getString(R.string.contact_phone_numbers, 0)
+                    textGroupNumber.text = "그룹 지정 수 : 0명"
+                    textRecommendationNumber.text = "전화추천 지정 수 : 0명"
+                }
             } else {
-                binding.textContactNumber.text = getString(R.string.contact_phone_numbers, it)
+                binding.apply {
+                    textContactNumber.text = getString(R.string.contact_phone_numbers, it.contactNumbers)
+                    textGroupNumber.text = getString(R.string.group_phone_numbers, it.groupNumbers)
+                    textRecommendationNumber.text = getString(R.string.recommendation_phone_numbers, it.recoNumbers)
+                }
             }
         }
 
         return binding.root
+    }
+
+    // 연락처 통계 bindText 함수
+    private fun bindTextInContact(it: ContactInfo?) {
+        binding.apply {
+            if (it == null) {
+                Log.i("삭제할것","앱 다시 빌드시 activatedContact 활성화통화 삭제하고 다른 것으로 대체")
+//                textContactActivated.text = getString(R.string.contact_activated, 0)
+                textRecentContact.text = getString(R.string.recent_contact, "해당없음")
+                mostContactNumber.text = getString(R.string.most_contact_name, "해당없음")
+                mostContactDuration.text = getString(R.string.most_contact_duration, 0, 0)
+                mainViewModel.progressBarEventDone()
+            } else {
+
+                Log.i("삭제할것","앱 다시 빌드시 activatedContact 활성화통화 삭제하고 다른 것으로 대체")
+//                textContactActivated.text =
+//                getString(R.string.contact_activated, it.activatedContact)
+                textRecentContact.text =
+                    getString(R.string.recent_contact, it.mostRecentContact)
+                mostContactNumber.text =
+                    getString(R.string.most_contact_name, it.mostContactName)
+
+                val minutes = it.mostContactTimes!!.toLong() / 60
+                val seconds = it.mostContactTimes.toLong() % 60
+                mostContactDuration.text =
+                    getString(R.string.most_contact_duration, minutes, seconds)
+                mainViewModel.progressBarEventDone()
+            }
+        }
     }
 
     // layout 텍스트 대입 함수
@@ -114,7 +129,7 @@ class MainSubFragment : Fragment() {
         }
     }
 
-    fun showMainProgress(show: Boolean) {
+    private fun showMainProgress(show: Boolean) {
         binding.progressBarMain.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

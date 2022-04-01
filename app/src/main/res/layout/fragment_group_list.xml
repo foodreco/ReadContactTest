@@ -7,17 +7,26 @@
         android:layout_height="match_parent"
         tools:context=".group.groupList.GroupListFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/group_list_recyclerView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_list_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/btn_group_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.hieupt.android.standalonescrollbar.StandaloneScrollBar
+        android:id="@+id/scroll_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/group_list_recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/group_list_recyclerView"
+        app:layout_constraintTop_toTopOf="@+id/group_list_recyclerView" />
 
         <ProgressBar
             android:id="@+id/group_list_progressBar"
@@ -30,16 +39,19 @@
             app:layout_constraintStart_toStartOf="@+id/group_list_recyclerView"
             app:layout_constraintTop_toTopOf="@+id/group_list_recyclerView" />
 
-        <Button
-            android:id="@+id/btn_group_delete"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:clickable="true"
-            android:text="삭제하기"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible" />
+    <Button
+        android:id="@+id/btn_group_delete"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="삭제하기"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="4dp">
-    <LinearLayout
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/group_each_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         android:orientation="vertical"
-        android:padding="8dp"
-        android:background="?attr/selectableItemBackground">
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/text_group_name"
@@ -20,27 +22,63 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="가족"
+            android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="@+id/group_each_list"
+            app:layout_constraintStart_toStartOf="@+id/group_each_list"
+            app:layout_constraintTop_toTopOf="@+id/group_each_list" />
 
         <TextView
             android:id="@+id/text_group_numbers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:text="등록인원 수 : 00명"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/group_each_list"
+            app:layout_constraintStart_toStartOf="@+id/group_each_list"
+            app:layout_constraintTop_toBottomOf="@+id/text_group_name" />
 
         <TextView
             android:id="@+id/text_group_rate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:text="등록비율 : 5.3% (13/502)"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/group_each_list"
+            app:layout_constraintStart_toStartOf="@+id/group_each_list"
+            app:layout_constraintTop_toBottomOf="@+id/text_group_numbers" />
+
+        <TextView
+            android:id="@+id/text_group_rate_explanation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="중요도 : "
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/group_each_list"
+            app:layout_constraintTop_toBottomOf="@+id/text_group_rate" />
+
+        <RatingBar
+            android:id="@+id/group_rating"
+            style="@style/Widget.AppCompat.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:stepSize="0.5"
+            app:layout_constraintBottom_toBottomOf="@+id/text_group_rate_explanation"
+            app:layout_constraintStart_toEndOf="@+id/text_group_rate_explanation"
+            app:layout_constraintTop_toTopOf="@+id/text_group_rate_explanation" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

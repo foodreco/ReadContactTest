@@ -49,30 +49,36 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding.recyclerViewList.adapter = adapter
+        with(binding) {
+            recyclerViewList.adapter = adapter
 
-        // 초기화 버튼 클릭 시, 연락처 데이터를 다시 가져오는 코드
-        binding.btnUpdateList.setOnClickListener {
-            checkPermissionsAndStart(PERMISSIONS)
-        }
-
-        // 리싸이클러뷰 옵저버
-        // 정렬기능 추가 (구조 개선 필요!! 처음 로드 시 앱 데드)
-        Log.i("보완", "통화기록이 있는 연락처만 불러오기 정렬 -> 그룹 추가 용이")
-        Log.i("보완", "recyclerView 헤더 추가하기")
-
-        listViewModel.testData.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
-
-        // 연락처 업데이트 옵저버
-        listViewModel.initializeContactEvent.observe(
-            viewLifecycleOwner
-        ) {
-            if (it) {
-                updateContactBase()
+            // 화살 버튼 클릭 시, 리싸이클러뷰 최상단 이동
+            btnUpScroll.setOnClickListener {
+                binding.recyclerViewList.scrollToPosition(0)
             }
         }
+
+        with(listViewModel) {
+            // 변환된 코드를 헤더 adapter 에 적용하는 코드
+            contactBaseItemData.observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
+
+            // ContactBase DB 모든 값을 이름오름차순으로 가져오는 코드
+            getContactBaseLiveData().observe(viewLifecycleOwner) {
+                listViewModel.makeList(it)
+            }
+
+            // 연락처 업데이트 옵저버
+            initializeContactEvent.observe(
+                viewLifecycleOwner
+            ) {
+                if (it) {
+                    updateContactBase()
+                }
+            }
+        }
+
 
         // scroll bar
         val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
@@ -112,7 +118,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val searchQuery = "%$query%"
         listViewModel.searchDatabase(searchQuery).observe(this) { list ->
             list.let {
-                adapter.submitList(it)
+                listViewModel.makeList(it)
+                Log.i("수정", "수정필요 - 반환값 형태 바꿔야함? ContactBaseItem")
             }
         }
     }
@@ -120,31 +127,32 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.delete_menu -> {
-                deleteData()
+                checkPermissionsAndStart(PERMISSIONS)
                 true
             }
             R.id.sort_by_call -> {
+                getHavingCallLogDataContactBaseOnly()
                 true
             }
+            R.id.sort_all -> {
+                // ContactBase DB 모든 값을 이름오름차순으로 가져오는 코드
+                listViewModel.getContactBaseLiveData().observe(viewLifecycleOwner) {
+                    listViewModel.makeList(it)
+                }
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    // 데이터 전체 삭제 함수
-    private fun deleteData() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setPositiveButton("Yes") { _, _ ->
-            listViewModel.clear()
-            Snackbar.make(
-                requireView(),
-                "삭제 완료",
-                Snackbar.LENGTH_SHORT
-            ).show()
+    // 통화이력 있는 연락처만 가져오는 코드
+    private fun getHavingCallLogDataContactBaseOnly() {
+        listViewModel.sortByCallLog().observe(viewLifecycleOwner){ numberList ->
+            if (numberList != emptyList<String>()) {
+                listViewModel.checkCallLogData(numberList)
+            }
         }
-        builder.setNegativeButton("No") { _, _ -> }
-        builder.setTitle("연락처 삭제")
-        builder.setMessage("연락처 정보를 삭제하시겠습니까?")
-        builder.create().show()
     }
 
     // 초기화 진행 함수

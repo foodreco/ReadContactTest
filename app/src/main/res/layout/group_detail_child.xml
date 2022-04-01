@@ -10,7 +10,9 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp">
 
@@ -18,15 +20,19 @@
             android:id="@+id/callLog_child"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:background="?attr/selectableItemBackground"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp">
 
             <TextView
-                android:id="@+id/call_keyword"
+                android:id="@+id/log_keyword"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:gravity="center"
                 android:maxLength="15"
-                android:text="키워드"
+                android:text="통화내용 키워드"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -34,26 +40,14 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/log_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:text="통화일자"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_importance"
-                app:layout_constraintTop_toBottomOf="@+id/log_duration" />
-
-            <TextView
                 android:id="@+id/log_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
-                android:text="통화시간"
+                android:text="104분 38초"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/log_date"
-                app:layout_constraintEnd_toStartOf="@+id/btn_importance"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBaseline_toBaselineOf="@+id/log_keyword"
+                app:layout_constraintEnd_toStartOf="@+id/btn_importance" />
 
             <ImageButton
                 android:id="@+id/btn_importance"
@@ -72,36 +66,23 @@
                 android:id="@+id/img_callType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/call_keyword"
-                app:layout_constraintTop_toBottomOf="@+id/call_keyword"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/img_memo"
+                app:layout_constraintEnd_toEndOf="@+id/log_duration"
+                app:layout_constraintTop_toBottomOf="@+id/log_duration"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/ic_round_phone_callback_12" />
+
+            <ImageView
+                android:id="@+id/img_memo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/img_callType"
+                app:layout_constraintTop_toBottomOf="@+id/log_duration"
+                app:srcCompat="@drawable/ic_round_edit_note_20" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-    <LinearLayout
-        android:id="@+id/layout_expand"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-        android:background="?attr/selectableItemBackground"
-        android:backgroundTint="@color/hau_white_green"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="-8dp"
-        tools:layout_editor_absoluteY="113dp"
-        tools:visibility="visible">
-
-        <TextView
-            android:id="@+id/call_log_content_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="내용없음"
-            android:scrollbars="vertical"/>
-
-    </LinearLayout>
-
 </LinearLayout>

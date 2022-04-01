@@ -132,6 +132,11 @@ dependencies {
     // ExtendedFloatingActionButton
     implementation 'com.google.android.material:material:1.6.0-beta01'
 
+    //MP Chart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // 메인 활성화 그래프
+    implementation 'com.github.Marvel999:Arc-Progressbar-lib:1.0.0'
 
 
 }

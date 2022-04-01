@@ -8,16 +8,14 @@ import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.ContactSpl
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.Tendency
+import com.leesangmin89.readcontacttest.group.GroupData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,13 +27,15 @@ class MainViewModel @Inject constructor(
     private val dataGroup: GroupListDao,
     private val dataCall: CallLogDao,
     private val dataTen: TendencyDao,
+    private val dataReco: RecommendationDao,
     application: Application
 ) : AndroidViewModel(application) {
 
-    val infoData: LiveData<ContactInfo>
+    private val _countNumbers = MutableLiveData<CountNumbers>()
+    val countNumbers: LiveData<CountNumbers> = _countNumbers
 
-    val _contactNumbers = MutableLiveData<Int>()
-    val contactNumbers: LiveData<Int> = _contactNumbers
+    private val _mainGroupChartData = MutableLiveData<List<MainGroupChartData>>()
+    val mainGroupChartData: LiveData<List<MainGroupChartData>> = _mainGroupChartData
 
     private val _makeRecommendationInfoEvent = MutableLiveData<Boolean>()
     val makeRecommendationInfoEvent: LiveData<Boolean> = _makeRecommendationInfoEvent
@@ -43,14 +43,13 @@ class MainViewModel @Inject constructor(
     private val _progressBarEventFinished = MutableLiveData<Boolean>()
     val progressBarEventFinished: LiveData<Boolean> = _progressBarEventFinished
 
-//    private val _emptyCheck = MutableLiveData<Boolean>()
-//    val emptyCheck: LiveData<Boolean> = _emptyCheck
-
     private var emptyCheck: Boolean = false
 
-    init {
-        infoData = dataInfo.getRecentData()
+
+    fun getInfoData(): LiveData<ContactInfo> {
+        return dataInfo.getRecentDataFlow().asLiveData()
     }
+
 
     // ContactInfo 를 insert 하는 함수
     // 단, contactBase 가 먼저 구성되어 있어야 한다.
@@ -372,94 +371,86 @@ class MainViewModel @Inject constructor(
         _makeRecommendationInfoEvent.value = false
     }
 
-//    private fun confirmAndInsertCallLogData(
-//        name: String,
-//        number: String,
-//        date: String,
-//        duration: String,
-//        callType: String
-//    ) {
-//        viewModelScope.launch {
-//            val check = dataCall.confirmAndInsert(number, date, duration)
-//            if (check == null) {
-//                // 기존에 없는 CallLog 가 발생하면 insert
-//                val callLogListChild = CallLogData(name, number, date, duration, callType)
-//                dataCall.insert(callLogListChild)
-//
-//                // 추가로 Tendency AllCall 관련 데이터도 업데이트,
-//                val preTendency = dataTen.getRecentTendency()
-//                if (preTendency != null) {
-//
-//                    var allCallIncoming = 0
-//                    var allCallOutgoing = 0
-//                    var allCallMissed = 0
-//                    var allCallCount = 0
-//                    var allCallDuration = 0
-//                    var allCallPartnerList = mutableListOf<String>()
-//
-//                    allCallCount += 1
-//                    allCallDuration += duration.toInt()
-//                    allCallPartnerList.add(number)
-//
-//                    // 통화 유형
-//                    when (callType.toInt()) {
-//                        1 -> allCallIncoming += 1
-//                        2 -> allCallOutgoing += 1
-//                        3 -> allCallMissed += 1
-//                        else -> {}
-//                    }
-//
-//                    allCallIncoming += preTendency.allCallIncoming.toInt()
-//                    allCallOutgoing += preTendency.allCallOutgoing.toInt()
-//                    allCallMissed += preTendency.allCallMissed.toInt()
-//                    allCallCount += preTendency.allCallCount.toInt()
-//                    allCallDuration += preTendency.allCallDuration.toInt()
-//                    allCallPartnerList =
-//                        (preTendency.allCallPartnerList + allCallPartnerList) as MutableList<String>
-//
-//                    val updateList = Tendency(
-//                        allCallIncoming.toString(),
-//                        allCallOutgoing.toString(),
-//                        allCallMissed.toString(),
-//                        allCallCount.toString(),
-//                        allCallDuration.toString(),
-//                        allCallPartnerList.distinct(),
-//                        preTendency.groupListCallIncoming,
-//                        preTendency.groupListCallOutgoing,
-//                        preTendency.groupListCallMissed,
-//                        preTendency.groupListCallCount,
-//                        preTendency.groupListCallDuration,
-//                        preTendency.groupListCallPartnerList,
-//                        preTendency.recommendationCallIncoming,
-//                        preTendency.recommendationCallOutgoing,
-//                        preTendency.recommendationCallMissed,
-//                        preTendency.recommendationCallCount,
-//                        preTendency.recommendationCallDuration,
-//                        preTendency.recommendationCallPartnerList,
-//                        preTendency.id
-//                    )
-//                    dataTen.update(updateList)
-//                }
-//            }
-//        }
-//    }
+    // CountNumber 를 추출하는 함수
+    fun syncCountNumbers() {
+        viewModelScope.launch {
+            var contactNumbers = 0
+            var groupListNumbers = 0
+            var recoListNumbers = 0
 
+            val allContactBase = dataBase.getNumbersContactBaseList()
+            for (number in allContactBase) {
+                contactNumbers++
+            }
 
-    // 전체 연락처 갯수를 알려주는 함수
-    @SuppressLint("Range")
-    fun countContactNumbers(activity: Activity) {
-        var contactNumbers = 0
-        val contacts = activity.contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
-        )
-        while (contacts!!.moveToNext()) {
-            contactNumbers++
+            val allGroupList = dataGroup.getNumberFromGroupList()
+            for (number in allGroupList) {
+                groupListNumbers++
+            }
+
+            val allRecoList = dataReco.getAllNumbers()
+            for (number in allRecoList) {
+                recoListNumbers++
+            }
+            _countNumbers.value = CountNumbers(contactNumbers, groupListNumbers, recoListNumbers)
         }
-        _contactNumbers.value = contactNumbers
-        contacts.close()
+    }
+
+    fun getGroupNameListDataLive(): LiveData<List<String>> {
+        return dataGroup.getGroupNameFlow().asLiveData()
+    }
+
+    // MainFragment 의 GroupChart 데이터 생성을 위한 함수
+    fun getGroupChartData(groupList: List<String>) {
+        // 그룹 이름이 있는 것들을 리스트 형태로 모은 변수(그룹 생성 순으로 불러온다)
+        val data: List<String> = groupList
+        // GroupData 를 넣을 빈 리스트 변수
+        val groupData = mutableListOf<MainGroupChartData>()
+
+        // 맵 : 키-그룹명, 값-사람수
+        val groupDataMap = mutableMapOf<String, Int>()
+
+        // 그룹명을 리스트 형태로 모아서, 그룹당 사람 수를 출력하는 코드
+        // 만약 data 가 empty 상태라면
+        if (data == emptyList<String>()) {
+//                _mainGroupChartData.value = groupData
+            Log.i("중지", "아무것도 안한다고 가정?")
+        } else {
+            // data 가 empty 가 아니라면
+            // data 를 순회하면서
+            for (groupName in data) {
+                if (groupDataMap.contains(groupName)) {
+                    val preValue = groupDataMap[groupName]
+                    if (preValue != null) {
+                        // 기존 값이 있으면 1을 더하고
+                        groupDataMap[groupName] = preValue + 1
+                    }
+                } else {
+                    // 없으면 1로 시작한다.
+                    groupDataMap[groupName] = 1
+                }
+            }
+
+            // groupDataMap 을 순회하면서 name : 그룹명, numbers : 사람수
+            for ((name, numbers) in groupDataMap) {
+                val list = MainGroupChartData(name, numbers.toFloat())
+                groupData.add(list)
+            }
+
+            // 사람수가 많은 그룹부터 정렬하여 최종 출력한다.
+            val result = groupData.sortedByDescending { it.groupNumber.toInt() }
+            _mainGroupChartData.postValue(result)
+        }
     }
 }
+
+data class CountNumbers(
+    var contactNumbers: Int,
+    var groupNumbers: Int,
+    var recoNumbers: Int
+)
+
+data class MainGroupChartData(
+    var groupName: String,
+    var groupNumber: Float
+)

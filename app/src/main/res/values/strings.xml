@@ -12,6 +12,12 @@
     <string name="group_list_numbers">등록인원 수 : %1$d명</string>
     <string name="group_list_rate">등록비율 : %1$d%      (%1$d/2000)</string>
     <string name="contact_phone_numbers"> 등록 연락처 수 : %1$d 개</string>
+    <string name="group_phone_numbers"> 그룹 지정 수 : %1$d 개</string>
+    <string name="recommendation_phone_numbers"> 전화추천 지정 수 : %1$d 개</string>
+
+    <!--Main Text-->
+    <string name="recommendation_active_rate"> 활성화도 %1$d%%</string>
+
 
     <!--MainSub Text-->
     <string name="all_in_count">총 수신 횟수 : %1$s 회</string>

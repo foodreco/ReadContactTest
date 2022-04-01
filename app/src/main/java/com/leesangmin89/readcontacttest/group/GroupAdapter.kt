@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.GroupChildBinding
 
 class GroupAdapter() : ListAdapter<GroupData, GroupHolder>(GroupDiffCallback()) {
@@ -20,24 +22,36 @@ class GroupAdapter() : ListAdapter<GroupData, GroupHolder>(GroupDiffCallback()) 
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: GroupHolder, position: Int) {
         val item = getItem(position)
+        with(holder) {
+            groupName.text = item.groupName
+            groupNumber.text = "등록인원 수 : ${item.groupNumber}명"
+            val rateNumber: Double =
+                (item.groupNumber.toDouble() / item.totalNumber.toDouble()) * 100
+            groupRate.text = "등록비율 : ${
+                String.format(
+                    "%.0f",
+                    rateNumber
+                )
+            }%      (${item.groupNumber}/${item.totalNumber})"
+            rating.numStars = 5
+            rating.rating = item.importanceRating.toFloat()
 
-        holder.groupName.text = item.groupName
-        holder.groupNumber.text = item.groupNumber
-        holder.groupRate.text = item.groupRate
+            //리싸이클러 터치 시, GroupListFragment 로 이동
+            groupEachList.setOnClickListener {
+                // 이동 시, 그룹명을 args 로 넘겨준다.
+                val action =
+                    GroupFragmentDirections.actionGroupFragmentToGroupListFragment(item.groupName)
+                it.findNavController().navigate(action)
+            }
 
-        //리싸이클러 터치 시, GroupListFragment 로 이동
-        holder.groupEachList.setOnClickListener {
-            // 이동 시, 그룹명을 args 로 넘겨준다.
-            val action = GroupFragmentDirections.actionGroupFragmentToGroupListFragment(item.groupName)
-            it.findNavController().navigate(action)
-        }
-
-        //리싸이클러 길게 터치 시, 그룹명 변경하기
-        holder.groupEachList.setOnLongClickListener {
-            // 그룹명 argument 로 넘겨주기
-            val action = GroupFragmentDirections.actionGroupFragmentToGroupNameEditDialog(item.groupName)
-            it.findNavController().navigate(action)
-            return@setOnLongClickListener true
+            //리싸이클러 길게 터치 시, 그룹명 변경하기
+            groupEachList.setOnLongClickListener {
+                // 그룹명 argument 로 넘겨주기
+                val action =
+                    GroupFragmentDirections.actionGroupFragmentToGroupNameEditDialog(item.groupName)
+                it.findNavController().navigate(action)
+                return@setOnLongClickListener true
+            }
         }
     }
 }
@@ -48,6 +62,7 @@ class GroupHolder constructor(private val binding: GroupChildBinding) :
     val groupNumber = binding.textGroupNumbers
     val groupRate = binding.textGroupRate
     val groupEachList = binding.groupEachList
+    val rating = binding.groupRating
 }
 
 class GroupDiffCallback : DiffUtil.ItemCallback<GroupData>() {
@@ -63,6 +78,8 @@ class GroupDiffCallback : DiffUtil.ItemCallback<GroupData>() {
 
 data class GroupData(
     val groupName: String,
-    val groupNumber: String,
-    val groupRate: String
+    val groupNumber: Int,
+    val totalNumber: Int,
+    val recommendedNumber: Int,
+    val importanceRating : Double
 )

@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.leesangmin89.readcontacttest.data.entity.ContactInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContactInfoDao {
@@ -21,5 +22,8 @@ interface ContactInfoDao {
 
     @Query("SELECT * FROM info_table ORDER BY id DESC LIMIT 1")
     fun getRecentData() : LiveData<ContactInfo>
+
+    @Query("SELECT * FROM info_table ORDER BY id DESC LIMIT 1")
+    fun getRecentDataFlow() : Flow<ContactInfo>
 
 }

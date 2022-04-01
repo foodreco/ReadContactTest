@@ -11,9 +11,9 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
     <item
         android:id="@+id/delete_menu"
-        android:icon="@drawable/ic_baseline_delete_24"
+        android:icon="@drawable/ic_baseline_sync_24"
         android:iconTint="@color/menu_icon_tint_color"
-        android:title="Delete"
+        android:title="업데이트"
         app:showAsAction="always" />
     <item
         android:icon="@drawable/ic_baseline_sort_24"
@@ -22,8 +22,11 @@
         app:showAsAction="always">
         <menu>
             <item
+                android:id="@+id/sort_all"
+                android:title="전체 보기"/>
+            <item
                 android:id="@+id/sort_by_call"
-                android:title="통화기록 있는 연락처 보기"/>
+                android:title="통화기록 있는 연락처만 보기"/>
         </menu>
     </item>
 </menu>

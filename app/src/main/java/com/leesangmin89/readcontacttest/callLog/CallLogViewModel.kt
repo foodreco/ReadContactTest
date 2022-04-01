@@ -64,6 +64,12 @@ class CallLogViewModel @Inject constructor(
         _dialogDismissEvent.value = false
     }
 
+
+    fun makeList(callLogData: List<CallLogData>) {
+        val listItems = callLogData.toListItems()
+        _callLogItemData.postValue(listItems)
+    }
+
     // DB 에서 가져온 리스트 가공 (미리 날짜별로 정렬한 리스트를 가져와야 함)
     private fun List<CallLogData>.toListItems(): List<CallLogItem> {
         val result = arrayListOf<CallLogItem>() // 결과를 리턴할 리스트
@@ -81,11 +87,6 @@ class CallLogViewModel @Inject constructor(
             groupHeaderDate = callLog.date?.let { convertLongToDateString(it.toLong()) }.toString()
         }
         return result
-    }
-
-    fun makeList(callLogData: List<CallLogData>) {
-        val listItems = callLogData.toListItems()
-        _callLogItemData.postValue(listItems)
     }
 
 

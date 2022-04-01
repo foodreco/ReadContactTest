@@ -1,17 +1,22 @@
 package com.leesangmin89.readcontacttest.group.groupList
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.hieupt.android.standalonescrollbar.attachTo
+import com.leesangmin89.readcontacttest.GroupTopData
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
@@ -36,6 +41,7 @@ class GroupListFragment : Fragment() {
         )
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,24 +51,33 @@ class GroupListFragment : Fragment() {
 
         showProgress(true)
 
-        // 그룹 추가된 리스트 정보 업데이트
-        groupViewModel.updateGroupRecentInfo(args.groupName)
-        // 업데이트 후 해당 그룹 리스트를 Live 로 받아옴
-        groupViewModel.getGroupListFromGroupListByLive(args.groupName)
+        with(groupViewModel) {
+            // 그룹 추가된 리스트 정보 업데이트
+            updateGroupRecentInfo(args.groupName)
+            // 업데이트 후 해당 그룹 리스트를 Live 로 받아옴
+            getGroupListFromGroupListByLive(args.groupName)
 
-        // groupList LiveData 출력
-        groupViewModel.liveGroupLiveData.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-            showProgress(false)
-        }
+            // groupList LiveData 출력
+            liveGroupLiveData.observe(viewLifecycleOwner) {
+                // 업데이트 된 데이터로 Top Data 계산
+                groupViewModel.makeGroupItem(it)
+            }
 
-        // deleteData() 작업이 완료되면 GroupFragment 로 이동
-        groupViewModel.coroutineDoneEvent.observe(viewLifecycleOwner) {
-            if (it) {
-                findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupFragment())
-                groupViewModel.coroutineDoneEventFinished()
+            // 헤더 RecyclerView 출력
+            groupListRecyclerView.observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+                showProgress(false)
+            }
+
+            // deleteData() 작업이 완료되면 GroupFragment 로 이동
+            coroutineDoneEvent.observe(viewLifecycleOwner) {
+                if (it) {
+                    findNavController().navigate(GroupListFragmentDirections.actionGroupListFragmentToGroupFragment())
+                    groupViewModel.coroutineDoneEventFinished()
+                }
             }
         }
+
 
         // 삭제 버튼 터치 시 작동 코드
         binding.btnGroupDelete.setOnClickListener {
@@ -80,45 +95,49 @@ class GroupListFragment : Fragment() {
             adapter.clearCheckBoxReturnList()
         }
 
+        with(adapter) {
+            // 어뎁터 터치 알람 해제
+            alarmNumberSetting.observe(viewLifecycleOwner) { groupList ->
+                if (groupList != null) {
+                    // GroupList DB 업데이트
+                    groupViewModel.findAndUpdate(
+                        groupList.name,
+                        groupList.number,
+                        groupList.group,
+                        false
+                    )
+                    // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
+                    // recommendation 이 해체되면, Recommendation DB 에서도 삭제되어야 함
+                    groupViewModel.dataRecoDeleteByNumber(groupList.number)
+                    adapter.alarmNumberReset()
+                    Toast.makeText(requireContext(), "통화 추천 해제됨", Toast.LENGTH_SHORT).show()
+                }
+            }
+            // 어뎁터 터치 알람 설정
+            alarmNumberRemoving.observe(viewLifecycleOwner) { groupList ->
+                if (groupList != null) {
+                    // GroupList DB 업데이트
+                    groupViewModel.findAndUpdate(
+                        groupList.name,
+                        groupList.number,
+                        groupList.group,
+                        true
+                    )
+                    groupViewModel.updateDialogDone()
+                    adapter.alarmNumberReset()
+                    Toast.makeText(requireContext(), "통화 추천 설정됨", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        // 어뎁터 터치 알람 해제
-        adapter.alarmNumberSetting.observe(viewLifecycleOwner) { groupList ->
-            if (groupList != null) {
-                // GroupList DB 업데이트
-                groupViewModel.findAndUpdate(
-                    groupList.name,
-                    groupList.number,
-                    groupList.group,
-                    false
-                )
-                // 알림 false 설정 시, Reco DB 에서 해당 data 를 삭제하는 코드
-                // recommendation 이 해체되면, Recommendation DB 에서도 삭제되어야 함
-                groupViewModel.dataRecoDeleteByNumber(groupList.number)
-                adapter.alarmNumberReset()
-            }
-        }
-        // 어뎁터 터치 알람 설정
-        adapter.alarmNumberRemoving.observe(viewLifecycleOwner) { groupList ->
-            if (groupList != null) {
-                // GroupList DB 업데이트
-                groupViewModel.findAndUpdate(
-                    groupList.name,
-                    groupList.number,
-                    groupList.group,
-                    true
-                )
-                groupViewModel.updateDialogDone()
-                adapter.alarmNumberReset()
+            // 어뎁터 롱터치 삭제 설정
+            deleteEventActive.observe(viewLifecycleOwner) { activate ->
+                if (activate == true) {
+                    deletePart()
+                    adapter.deleteEventReset()
+                }
             }
         }
 
-        // 어뎁터 롱터치 삭제 설정
-        adapter.deleteEventActive.observe(viewLifecycleOwner) { activate ->
-            if (activate == true) {
-                deletePart()
-                adapter.deleteEventReset()
-            }
-        }
 
         // 백버튼 조건부 작동 코드
         backEventCheckLive.observe(viewLifecycleOwner) { backEvent ->
@@ -139,6 +158,16 @@ class GroupListFragment : Fragment() {
                 callback.remove()
             }
         }
+
+        // scroll bar
+        val colorThumb = ContextCompat.getColor(requireContext(), R.color.hau_dark_green)
+        val colorTrack = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        with(binding) {
+            scrollBar.attachTo(binding.groupListRecyclerView)
+            scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
+            scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
+        }
+
 
         setHasOptionsMenu(true)
         return binding.root
@@ -193,9 +222,11 @@ class GroupListFragment : Fragment() {
     private fun deleteData() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("Yes") { _, _ ->
-            groupViewModel.clearByGroupName(args.groupName)
-            groupViewModel.clearGroupNameInContactBase(args.groupName)
-            groupViewModel.dataRecoDeleteByGroup(args.groupName)
+            with(groupViewModel) {
+                clearByGroupName(args.groupName)
+                clearGroupNameInContactBase(args.groupName)
+                dataRecoDeleteByGroup(args.groupName)
+            }
             Toast.makeText(
                 requireContext(),
                 "${args.groupName} DB 삭제됨",
@@ -208,7 +239,7 @@ class GroupListFragment : Fragment() {
         builder.create().show()
     }
 
-    fun showProgress(show: Boolean) {
+    private fun showProgress(show: Boolean) {
         binding.groupListProgressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

@@ -17,11 +17,21 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.leesangmin89.readcontacttest.CUSTOM_CHART_COLORS
+import com.leesangmin89.readcontacttest.R
+import com.leesangmin89.readcontacttest.customDialog.RecommendationListShowDialog
 import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import com.leesangmin89.readcontacttest.data.entity.Tendency
 import com.leesangmin89.readcontacttest.databinding.FragmentMainBinding
+import com.leesangmin89.readcontacttest.recommendationLogic.NumberForStatusProgressbar
 import com.leesangmin89.readcontacttest.recommendationLogic.RecommendationViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.roundToInt
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
@@ -37,7 +47,12 @@ class MainFragment : Fragment() {
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
     private val recoViewModel: RecommendationViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
-    private val adapter: CallRecommendAdapter by lazy { CallRecommendAdapter(requireContext(), childFragmentManager) }
+    private val adapter: CallRecommendAdapter by lazy {
+        CallRecommendAdapter(
+            requireContext(),
+            childFragmentManager
+        )
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
@@ -52,6 +67,7 @@ class MainFragment : Fragment() {
 
         showProgressInRecommendation(true)
         showProgressInTendency(true)
+        showStatusProgressbar(true)
 
         // 허용 체크 후, 기초 정보 구축하기
         checkPermissionsAndStart(PERMISSIONS)
@@ -63,13 +79,6 @@ class MainFragment : Fragment() {
                 mainViewModel.makeRecommendationInfoEventDone()
             }
         }
-
-//        // call 추천
-//        // ViewPager2 적용
-//        binding.recommendationViewPager.adapter = adapter
-//        binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-//        // spring indicator 실시간 적용
-//        binding.dotsIndicator.setViewPager2(binding.recommendationViewPager)
 
         recoViewModel.getRecommendationLiveList().observe(viewLifecycleOwner) {
             if (it == emptyList<Recommendation>()) {
@@ -88,24 +97,192 @@ class MainFragment : Fragment() {
                 binding.recommendationViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
                 // spring indicator 실시간 적용
                 binding.dotsIndicator.setViewPager2(binding.recommendationViewPager)
-                adapter.submitList(it)
+                // 갯수 제한하기? 5명
+                adapter.submitList(it.take(5))
                 showProgressInRecommendation(false)
+
+                // 유지상태 프로그래스바 활성화 코드
+                recoViewModel.makeDataForStatusProgressbar(it)
             }
         }
 
-        // 경향 text 대입
+        // StatusProgressbar 활성화 코드
+        recoViewModel.mainStatusProgressbar.observe(viewLifecycleOwner) {
+            activateStatusProgressBar(it)
+        }
+
+        // 경향 LiveData 출력 코드
         recoViewModel.getTendencyLive()?.observe(viewLifecycleOwner) { tendency ->
             if (tendency != null) {
                 getBindTextView(tendency)
             }
         }
 
+        // 정보 detail 을 보여주는 코드
         binding.tendencyLayout.setOnClickListener {
             val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
             it.findNavController().navigate(action)
         }
 
+        // Recommendation List 를 보여주는 버튼
+        binding.btnShowRecoList.setOnClickListener {
+            val dialog = RecommendationListShowDialog()
+            dialog.show(childFragmentManager, "RecommendationListShowDialog")
+        }
+
+        // PieChart 데이터 생성 코드
+        mainViewModel.getGroupNameListDataLive().observe(viewLifecycleOwner){
+            mainViewModel.getGroupChartData(it)
+        }
+        // PieChart 데이터 출력 코드
+        mainViewModel.mainGroupChartData.observe(viewLifecycleOwner) {
+            if (it != null) {
+                activateGroupPieChart(it)
+                showStatusProgressbar(false)
+            }
+        }
+
+        // 기본세팅 : 180 이 max scale 인 프로그래스바
+        with(binding.statusProgressbar) {
+            // 배경 bar 두께
+            setProgressThickness(20f)
+            // 진행 bar 두께
+            setForeGroundProgressThickness(30f)
+            setRoundedCorner(true)
+        }
+
         return binding.root
+    }
+
+    private fun activateGroupPieChart(groupChartList: List<MainGroupChartData>) {
+        // MP 차트 관련 코드
+        with(binding.mpChart) {
+            // 데이터 없을 때, 텍스트 생략
+            setNoDataText("")
+            // 퍼센트값 적용
+            setUsePercentValues(true)
+            description.isEnabled = false
+            isRotationEnabled = false
+            setExtraOffsets(0f, 0f, 0f, 0f)
+            // 그래프 아이템 이름색상
+            setEntryLabelColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
+            // 그래프 아이템 이름 크기, 글자유형
+            setEntryLabelTextSize(16f)
+            setEntryLabelTypeface(android.graphics.Typeface.DEFAULT_BOLD)
+            // 가운데 구멍 생성 여부
+            isDrawHoleEnabled = true
+            // 가운데 구멍 색상
+            setHoleColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
+            // 가운데 불투명써클 크기
+            transparentCircleRadius = 0f
+            // 차트 범례 표현 여부
+            legend.isEnabled = false
+            // 중앙 텍스트 및 크기, 색상, 글자유형
+            centerText = "비율\n(%)"
+            setCenterTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.hau_dark_green
+                )
+            )
+            setCenterTextSize(24f)
+            setCenterTextTypeface(android.graphics.Typeface.DEFAULT_BOLD)
+
+            // 그래프 애니메이션 (https://superkts.com/jquery/@easingEffects)
+            // ★ 이게 있어야 실시간으로 업데이트 됨
+             animateY(10, Easing.EaseInCubic)
+
+            // data set - 데이터 넣어주기
+            // 인수가 많은 집합부터 불러오기(사람수 많은 그룹부터 불러오기)
+            // 데이터 넣기, 조건부로 null 일 때 넣을 리스트 따로 만들기
+            val entries = ArrayList<PieEntry>()
+            if (groupChartList == emptyList<MainGroupChartData>()) {
+                entries.add(PieEntry(100f, "그룹없음"))
+            } else {
+                for (list in groupChartList) {
+                    entries.add(PieEntry(list.groupNumber, list.groupName))
+                }
+            }
+
+            // 데이터 관련 옵션 정하기
+            val dataSet = PieDataSet(entries, "")
+            with(dataSet) {
+                // 그래프 사이 간격
+                sliceSpace = 1f
+                colors = CUSTOM_CHART_COLORS
+            }
+
+            // 차트 제목 텍스트?
+            val pieData = PieData(dataSet)
+            with(pieData) {
+                // 그래프 value(수치) 크기
+                setValueTextSize(16f)
+                // value 색상
+                setValueTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.white
+                    )
+                )
+            }
+            data = pieData
+        }
+    }
+
+    private fun activateStatusProgressBar(it: NumberForStatusProgressbar) {
+        // 활성화도 : 추천대상인 중, 교류하고 있는 사람 비율(높을수록 교류 양호)
+        val rateText =
+            ((it.allNumber - it.recommendedNumber).toDouble()) / (it.allNumber.toDouble()) * 100
+        // bar 지수 (180을 기준으로 함)
+        val barState = rateText / 100 * 180
+        binding.textStatusProgressbar.text =
+            getString(R.string.recommendation_active_rate, rateText.toInt())
+        binding.statusProgressbar.setProgressWithAnimation(barState.toFloat(), 3000)
+        when (barState.toFloat()) {
+            in 0f..59f -> {
+                // 색상 적용
+                binding.statusProgressbar.setForegroundProgressColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_red
+                    )
+                )
+                // 멘트 적용
+                binding.textTotalActivation.text = "# 교류가 부족해요."
+            }
+            in 60f..119f -> {
+                // 색상 적용
+                binding.statusProgressbar.setForegroundProgressColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_orange
+                    )
+                )
+                // 멘트 적용
+                binding.textTotalActivation.text = "# 적당히 연락하고 있어요."
+            }
+            in 120f..180f -> {
+                // 색상 적용
+                binding.statusProgressbar.setForegroundProgressColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.hau_green
+                    )
+                )
+                // 멘트 적용
+                binding.textTotalActivation.text = "# 활발하게 교류하고 있어요."
+            }
+        }
     }
 
     // CallLogCalls 데이터를 순회하며, Recommendation 정보를 가져오는 함수
@@ -127,6 +304,9 @@ class MainFragment : Fragment() {
         binding.progressBarTendency.visibility = if (show) View.VISIBLE else View.GONE
     }
 
+    private fun showStatusProgressbar(show: Boolean) {
+        binding.mpChartProgressBar.visibility = if (show) View.VISIBLE else View.GONE
+    }
 
 
     private fun getBindTextView(tendency: Tendency) {
@@ -159,21 +339,31 @@ class MainFragment : Fragment() {
         var callTypeTendencyInReco = "알람 발수신 성향"
         var callDurationTendency = "총 통화 시간 성향"
 
-        callTypeTendency = if (tendency.allCallIncoming >= tendency.allCallOutgoing) {
-            "거는 전화가 많아요."
-        } else {
-            "받는 전화가 많아요."
-        }
-        callTypeTendencyInReco =
-            if (tendency.recommendationCallIncoming >= tendency.recommendationCallOutgoing) {
-                "가까운 사람들에게 주로 전화를 먼저 거는 편이에요."
+        callTypeTendency =
+            if (tendency.allCallIncoming.toInt() >= tendency.allCallOutgoing.toInt()) {
+                val rating = (((tendency.allCallIncoming.toDouble()
+                    .minus(tendency.allCallOutgoing.toDouble())) / tendency.allCallOutgoing.toDouble()) * 100).toInt()
+                "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
+
             } else {
-                "가까운 사람들에게 주로 전화를 받는 편이에요."
+                val rating = (((tendency.allCallOutgoing.toDouble()
+                    .minus(tendency.allCallIncoming.toDouble())) / tendency.allCallIncoming.toDouble()) * 100).toInt()
+                "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
             }
-        callDurationTendency = "평균 통화시간은 \n" +
-                "전체 전화 ${callDurationAvg / 60} 분 \n" +
-                "그룹 전화 ${callDurationAvgGroup / 60} 분 \n" +
-                "추천 전화 ${callDurationAvgReco / 60} 분 입니다."
+
+        callTypeTendencyInReco =
+            if (tendency.recommendationCallIncoming.toInt() >= tendency.recommendationCallOutgoing.toInt()) {
+                val rating = (((tendency.recommendationCallIncoming.toDouble()
+                    .minus(tendency.recommendationCallOutgoing.toDouble())) / tendency.recommendationCallOutgoing.toDouble()) * 100).toInt()
+                "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
+            } else {
+                val rating = (((tendency.recommendationCallOutgoing.toDouble()
+                    .minus(tendency.recommendationCallIncoming.toDouble())) / tendency.recommendationCallIncoming.toDouble()) * 100).toInt()
+                "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
+            }
+
+        callDurationTendency =
+            "'전체 전화 ${callDurationAvg / 60} 분'\n'그룹 전화 ${callDurationAvgGroup / 60} 분'\n'추천 전화 ${callDurationAvgReco / 60} 분' 입니다."
 
         binding.textCallTypeTendency.text = callTypeTendency
         binding.textCallTypeTendencyReco.text = callTypeTendencyInReco

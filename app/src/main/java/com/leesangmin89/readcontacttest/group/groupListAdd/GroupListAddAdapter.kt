@@ -22,7 +22,7 @@ class GroupListAddAdapter(ctx: Context) :
 
     private var context: Context = ctx
     private val checkboxStatus = SparseBooleanArray()
-    private var checkboxClearEvent = 0
+    private var checkboxClearEvent : Boolean = false
     val checkBoxReturnList = mutableListOf<ContactBase>()
 
     inner class Holder constructor(private val binding: ContactGroupAddChildBinding) :
@@ -53,6 +53,13 @@ class GroupListAddAdapter(ctx: Context) :
 
             // 그룹이 없는 view 만 체크기능 작동
             if (item.group == "") {
+
+                // 검색 리스트가 새로 갱신되면 checkboxStatus 초기화
+                if (checkboxClearEvent) {
+                    checkboxStatus.clear()
+                    checkboxClearEvent = false
+                }
+
                 // 체크박스 유지 코드
                 checkBox.visibility = View.VISIBLE
                 checkBox.isChecked = checkboxStatus[num]
@@ -62,10 +69,8 @@ class GroupListAddAdapter(ctx: Context) :
                 } else {
                     checkBoxReturnList.remove(item)
                 }
-                if (checkboxClearEvent == 1) {
-                    checkboxStatus.clear()
-                }
 
+                // 체크박스 or 레이아웃 터치 시 checkboxStatus 상태 변경
                 checkBox.setOnClickListener {
                     checkboxStatus[num] = !checkboxStatus[num]
                     notifyItemChanged(num)
@@ -74,9 +79,9 @@ class GroupListAddAdapter(ctx: Context) :
                     checkboxStatus[num] = !checkboxStatus[num]
                     notifyItemChanged(num)
                 }
+
             } else {
                 checkBox.visibility = View.GONE
-
             }
 
         }
@@ -93,8 +98,8 @@ class GroupListAddAdapter(ctx: Context) :
         holder.bind(getItem(position), position)
     }
 
-    fun clearCheckBox(number: Int) {
-        checkboxClearEvent = number
+    fun clearCheckBox() {
+        checkboxClearEvent = true
     }
 
     @JvmName("getCheckBoxReturnList1")

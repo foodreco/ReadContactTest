@@ -15,7 +15,6 @@
                 android:id="@+id/sort_by_importance"
                 android:title="중요 표시된 기록만 보기"/>
         </menu>
-
     </item>
 
 </menu>

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.*
+import com.leesangmin89.readcontacttest.main.RecommendationMinimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,10 @@ class RecommendationViewModel @Inject constructor(
 
     private val _progressBarEventFinished = MutableLiveData<Boolean>()
     val progressBarEventFinished: LiveData<Boolean> = _progressBarEventFinished
+
+    private val _mainStatusProgressbar = MutableLiveData<NumberForStatusProgressbar>()
+    val mainStatusProgressbar: LiveData<NumberForStatusProgressbar> = _mainStatusProgressbar
+
 
     init {
     }
@@ -326,4 +331,22 @@ class RecommendationViewModel @Inject constructor(
             }
         }
     }
+
+    fun getRecommendationMinimalLiveList(): LiveData<List<RecommendationMinimal>> {
+        return dataReco.getNameAndGroup().asLiveData()
+    }
+
+    fun makeDataForStatusProgressbar(it: List<Recommendation>) {
+        viewModelScope.launch {
+            val allNumberList = dataReco.getAllNumbers()
+            val recommendedNumber = it.count()
+            var allNumber = allNumberList.count()
+            _mainStatusProgressbar.value = NumberForStatusProgressbar(recommendedNumber, allNumber)
+        }
+    }
 }
+
+data class NumberForStatusProgressbar(
+    var recommendedNumber: Int,
+    var allNumber: Int
+)

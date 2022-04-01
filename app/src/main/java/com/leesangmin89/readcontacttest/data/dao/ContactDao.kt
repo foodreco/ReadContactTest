@@ -24,9 +24,12 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     suspend fun getAllContactBaseList(): List<ContactBase>
 
+    @Query("SELECT number FROM contact_table ORDER BY name ASC")
+    suspend fun getNumbersContactBaseList(): List<String>
+
     // 번호를 받아서, 해당 ContactBase 를 불러오는 함수
     @Query("SELECT * FROM contact_table WHERE `number` =:number LIMIT 1")
-    suspend fun getContact(number: String): ContactBase
+    suspend fun getContact(number: String): ContactBase?
 
     // 번호를 받아서, contactBase 에 해당 name 을 반환하는 함수
     @Query("SELECT name FROM contact_table WHERE `number` =:number")
@@ -50,8 +53,11 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table WHERE `group` is not :argsGroup ORDER BY name ASC")
     fun getDataExceptArgsGroup(argsGroup: String): LiveData<List<ContactBase>>
 
-    @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
+    @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ORDER BY name ASC")
     fun searchDatabase(searchQuery: String): Flow<List<ContactBase>>
+
+    @Query("SELECT * FROM contact_table ORDER BY name ASC")
+    fun getAllContactBaseFlow(): Flow<List<ContactBase>>
 
 
 }

@@ -48,6 +48,7 @@ class CallLogFragment : Fragment() {
 
         showProgress(true)
 
+        // 헤더뷰홀더 리싸이클러뷰 코드
         callLogViewModel.callLogItemData.observe(viewLifecycleOwner){
             adapter.submitList(it)
             showProgress(false)
@@ -193,7 +194,7 @@ class CallLogFragment : Fragment() {
         showProgress(true)
     }
 
-    fun showProgress(show: Boolean) {
+    private fun showProgress(show: Boolean) {
         binding.callLogProgressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
