@@ -28,7 +28,6 @@ class CallLogFragment : Fragment() {
     private val callLogViewModel: CallLogViewModel by viewModels()
     private val adapter by lazy { CallLogAdapter(requireContext() ,childFragmentManager) }
 
-
     private val sortNumber = MutableLiveData<Int>(0)
 
     private val SORT_NORMAL_STATE = 0
@@ -40,9 +39,6 @@ class CallLogFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        Log.i("보완", "중요 통화기록 정렬 위치 조정하기(최상단으로??)")
-        Log.i("보완", "스크롤 바 넣기")
 
         binding.callLogRecyclerView.adapter = adapter
 
@@ -148,6 +144,10 @@ class CallLogFragment : Fragment() {
             scrollBar.attachTo(binding.callLogRecyclerView)
             scrollBar.defaultThumbTint = ColorStateList.valueOf(colorThumb)
             scrollBar.defaultTrackTint = ColorStateList.valueOf(colorTrack)
+            // 화살 버튼 클릭 시, 리싸이클러뷰 최상단 이동
+            btnUpScroll.setOnClickListener {
+                binding.callLogRecyclerView.scrollToPosition(0)
+            }
         }
 
         setHasOptionsMenu(true)
@@ -195,7 +195,7 @@ class CallLogFragment : Fragment() {
     }
 
     private fun showProgress(show: Boolean) {
-        binding.callLogProgressBar.visibility = if (show) View.VISIBLE else View.GONE
+        binding.callLogProgressbar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
 }

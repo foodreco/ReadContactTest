@@ -23,51 +23,23 @@ class GroupListAddViewModel @Inject constructor(
     private val _navigateEvent = MutableLiveData<Boolean>()
     val navigateEvent : LiveData<Boolean> = _navigateEvent
 
-    lateinit var liveList: LiveData<List<ContactBase>>
-
-    init {
-    }
-
-
-    fun initSort(groupName: String) {
-        liveList = database.getDataExceptArgsGroup(groupName)
+    fun getOtherContactBase(groupName: String) : LiveData<List<ContactBase>> {
+        return database.getDataExceptArgsGroup(groupName).asLiveData()
     }
 
     fun searchDatabase(searchQuery: String): LiveData<List<ContactBase>> {
         return database.searchDatabase(searchQuery).asLiveData()
     }
 
-    // 특정 정보를 넘겨 가장 최근 통화일자, 시간, 유형을 받아와 insert 하는 함수
-    fun insertGroupRecentInfo(groupList:GroupList) {
+    fun groupListInsert(groupList: GroupList) {
         viewModelScope.launch {
-            val newInfo = dataCall.getDDC(groupList.number)
-            if (newInfo != null) {
-                val newList = GroupList(
-                    groupList.name,
-                    groupList.number,
-                    groupList.group,
-                    groupList.image,
-                    newInfo.date,
-                    newInfo.duration,
-                    groupList.recommendation,
-                    0
-                )
-                dataGroup.insert(newList)
-            } else {
-                // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
-                val newList = GroupList(
-                    groupList.name,
-                    groupList.number,
-                    groupList.group,
-                    groupList.image,
-                    "",
-                    "",
-                    groupList.recommendation,
-                    0
-                )
-                dataGroup.insert(newList)
+            dataGroup.insert(groupList)
+        }
+    }
 
-            }
+    fun groupListUpdate(groupList: GroupList) {
+        viewModelScope.launch {
+            dataGroup.update(groupList)
         }
     }
 
@@ -112,7 +84,7 @@ class GroupListAddViewModel @Inject constructor(
                             newGroupList.recommendation,
                             0
                         )
-                        dataGroup.insert(newList)
+                        groupListInsert(newList)
                     } else {
                         // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                         val newList = GroupList(
@@ -125,7 +97,7 @@ class GroupListAddViewModel @Inject constructor(
                             newGroupList.recommendation,
                             0
                         )
-                        dataGroup.insert(newList)
+                        groupListInsert(newList)
 
                     }
                 } else {
@@ -145,7 +117,7 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.recommendation,
                             preGroupList.id
                         )
-                        dataGroup.update(newList)
+                        groupListUpdate(newList)
                     } else {
                         // 해당 번호와의 통화기록이 없으면 빈칸을 반환한다.
                         val newList = GroupList(
@@ -158,7 +130,7 @@ class GroupListAddViewModel @Inject constructor(
                             preGroupList.recommendation,
                             preGroupList.id
                         )
-                        dataGroup.update(newList)
+                        groupListUpdate(newList)
                     }
                 }
             }

@@ -1,230 +1,406 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".main.MainSubFragment">
+    android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_for_contact_status"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:padding="4dp">
 
-        <LinearLayout
-            android:id="@+id/LinearLayout_contact_status"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView_for_progress_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="연락처 현황"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/text_contact_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="총 연락처 수 : 000명"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
-            <TextView
-                android:id="@+id/text_group_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="그룹 지정 수 : 00명"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.531"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_contact_number" />
-
-            <TextView
-                android:id="@+id/text_recommendation_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="알림 등록 수 : 00명"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.531"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_group_number" />
-
-            <TextView
-                android:id="@+id/text_contact_activated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="다른 대체 텍스트!!"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/text_recent_contact"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="마지막 통화 : xxx"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/most_contact_duration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="최대 통화 시간 000"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/most_contact_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="최대 통화 상대 : 000"
-                android:textSize="16sp" />
-
-            <ProgressBar
-                android:id="@+id/progressBar_main"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="76dp"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_for_activation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView_for_contact_status">
-
-        <LinearLayout
-            android:id="@+id/linearLayout_activation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="14dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/most_contact_duration">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="통화 성향"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="20dp">
 
-            <TextView
-                android:id="@+id/text_all_in_count"
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/call_pie_chart"
+                    android:layout_width="300dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/call_name_text" />
+
+                <TextView
+                    android:id="@+id/call_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="# 전화를 얼마나 받고, 걸까요?"
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/rc_progressbar_total"
+                    android:layout_width="170dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_total_in"
+                    app:layout_constraintEnd_toStartOf="@+id/text_total_out"
+                    app:layout_constraintStart_toEndOf="@+id/text_total_in"
+                    app:layout_constraintTop_toTopOf="@+id/text_total_in"
+                    app:rcAnimationEnable="true"
+                    app:rcAnimationSpeedScale="3"
+                    app:rcBackgroundColor="@color/ANALOGOUS_color_4"
+                    app:rcProgressColor="@color/hau_green"
+                    app:rcRadius="0dp" />
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/rc_progressbar_group"
+                    android:layout_width="170dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_group_in"
+                    app:layout_constraintEnd_toStartOf="@+id/text_total_out"
+                    app:layout_constraintStart_toEndOf="@+id/text_total_in"
+                    app:layout_constraintTop_toTopOf="@+id/text_group_in"
+                    app:rcBackgroundColor="@color/ANALOGOUS_color_4"
+                    app:rcProgressColor="@color/hau_green"
+                    app:rcRadius="0dp"
+                    app:rcAnimationEnable="true"
+                    app:rcAnimationSpeedScale="3"/>
+
+                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+                    android:id="@+id/rc_progressbar_reco"
+                    android:layout_width="170dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_reco_in"
+                    app:layout_constraintEnd_toStartOf="@+id/text_total_out"
+                    app:layout_constraintStart_toEndOf="@+id/text_total_in"
+                    app:layout_constraintTop_toTopOf="@+id/text_reco_in"
+                    app:rcBackgroundColor="@color/ANALOGOUS_color_4"
+                    app:rcProgressColor="@color/hau_green"
+                    app:rcRadius="0dp"
+                    app:rcAnimationEnable="true"
+                    app:rcAnimationSpeedScale="3"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="수신"
+                    app:layout_constraintEnd_toEndOf="@+id/text_total_in"
+                    app:layout_constraintStart_toStartOf="@+id/text_total_in"
+                    app:layout_constraintTop_toBottomOf="@+id/call_pie_chart" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="전체"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="발신"
+                    app:layout_constraintEnd_toEndOf="@+id/text_total_out"
+                    app:layout_constraintStart_toStartOf="@+id/text_total_out"
+                    app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+                <TextView
+                    android:id="@+id/text_total_in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:gravity="end"
+                    android:text="TextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView12"
+                    app:layout_constraintStart_toEndOf="@+id/textView12" />
+
+                <TextView
+                    android:id="@+id/text_total_out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="TextView"
+                    android:gravity="end"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_total_in"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="그룹"
+                    app:layout_constraintStart_toStartOf="@+id/textView12"
+                    app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="알림"
+                    app:layout_constraintStart_toStartOf="@+id/textView12"
+                    app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+                <TextView
+                    android:id="@+id/text_group_in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="TextView"
+                    app:layout_constraintEnd_toEndOf="@+id/text_total_in"
+                    app:layout_constraintTop_toTopOf="@+id/textView18" />
+
+                <TextView
+                    android:id="@+id/text_reco_in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="TextView"
+                    app:layout_constraintEnd_toEndOf="@+id/text_group_in"
+                    app:layout_constraintTop_toTopOf="@+id/textView19" />
+
+                <TextView
+                    android:id="@+id/text_group_out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:gravity="end"
+                    app:layout_constraintEnd_toEndOf="@+id/text_total_out"
+                    app:layout_constraintTop_toTopOf="@+id/text_group_in" />
+
+                <TextView
+                    android:id="@+id/text_reco_out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:gravity="end"
+                    app:layout_constraintEnd_toEndOf="@+id/text_total_out"
+                    app:layout_constraintTop_toTopOf="@+id/text_reco_in" />
+
+                <TextView
+                    android:id="@+id/text_callType_review"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="그룹 발수신 성향은..."
+                    android:gravity="end"
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+                <TextView
+                    android:id="@+id/text_callType_review2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:text="알람 발수신 성향은..."
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_callType_review" />
+
+                <TextView
+                    android:id="@+id/text_callType_review3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="ㆍ부재중 통화가 많아요."
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_callType_review2" />
+
+                <ProgressBar
+                    android:id="@+id/progressbar_progress_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/combined_chart_cardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView_for_progress_status"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="14dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/combined_chart_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="총 수신 횟수 : 000회"
-                android:textSize="16sp" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="20dp">
 
-            <TextView
-                android:id="@+id/text_all_out_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="총 발신 횟수 : 000회"
-                android:textSize="16sp" />
+                <ProgressBar
+                    android:id="@+id/progressbar_for_combined_chart_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-            <TextView
-                android:id="@+id/text_group_in_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="그룹 수신 횟수 : 000회"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/duration_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="# 월별 통화량을 확인해보세요."
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_group_out_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="그룹 발신 횟수 : 000회"
-                android:textSize="16sp" />
+                <com.github.mikephil.charting.charts.CombinedChart
+                    android:id="@+id/combined_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/duration_name_text" />
 
-            <TextView
-                android:id="@+id/text_alarm_in_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="알람 수신 횟수 : 000회"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/text_com_review"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="ㆍ통화시간은 늘고, 통화횟수는 감소해요."
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/combined_chart" />
 
-            <TextView
-                android:id="@+id/text_alarm_out_count"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="알람 발신 횟수 : 000회"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/all_call_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="총 통화시간"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/group_call_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="그룹 통화시간"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/alarm_call_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="left"
-                android:text="알람 통화시간"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/text_com_review2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="ㆍ부재중 통화가 많아요."
+                    android:textColor="@color/hau_dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_com_review" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:layout_margin="4dp"-->
+<!--            app:cardCornerRadius="14dp"-->
+<!--            android:id="@+id/cardView_for_activation"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/combined_chart_cardView">-->
+
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/call_duration_barchart_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="500dp"-->
+<!--                android:orientation="vertical"-->
+<!--                android:padding="8dp">-->
+
+<!--                <ProgressBar-->
+<!--                    android:id="@+id/progressbar_for_call_duration"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"/>-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/duration_per_group_name_text"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="# 그룹별 통화시간 입니다."-->
+<!--                    android:textColor="@color/hau_dark_green"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                <com.github.mikephil.charting.charts.BarChart-->
+<!--                    android:id="@+id/bar_chart"-->
+<!--                    android:layout_width="300dp"-->
+<!--                    android:layout_height="300dp"-->
+<!--                    android:layout_marginTop="16dp"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/duration_per_group_name_text" />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/all_call_time"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:gravity="left"-->
+<!--                    android:text="총 통화시간"-->
+<!--                    android:textSize="16sp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/bar_chart"/>-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/group_call_time"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:gravity="left"-->
+<!--                    android:text="그룹 통화시간"-->
+<!--                    android:textSize="16sp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/all_call_time"/>-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/alarm_call_time"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:gravity="left"-->
+<!--                    android:text="알람 통화시간"-->
+<!--                    android:textSize="16sp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/group_call_time"/>-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--        </androidx.cardview.widget.CardView>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

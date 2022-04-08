@@ -3,6 +3,9 @@ package com.leesangmin89.readcontacttest.data.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
+import com.leesangmin89.readcontacttest.recommendationLogic.CallLogDataForTendency
+import com.leesangmin89.readcontacttest.recommendationLogic.CallLogDataForTendencyMinimal
+import com.leesangmin89.readcontacttest.recommendationLogic.CallLogDataForTendencyMinimal2
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -25,12 +28,16 @@ interface CallLogDao {
     suspend fun getDDC(number: String): CallLogData?
 
     // 전화번호를 인자로 넘겨받아, 해당 CallLog 정보를 다 가져오는 함수
-    @Query("SELECT * FROM call_history WHERE number LIKE :number ORDER BY date DESC")
-    suspend fun getCallLogDataByNumber(number: String): List<CallLogData>
+    @Query("SELECT duration, callType FROM call_history WHERE number LIKE :number ORDER BY date DESC")
+    suspend fun getCallLogDataByNumber(number: String): List<CallLogDataForTendencyMinimal>
+
+    // 전화번호를 인자로 넘겨받아, 해당 CallLog 정보를 다 가져오는 함수
+    @Query("SELECT duration, date FROM call_history WHERE number LIKE :number ORDER BY date DESC")
+    suspend fun getCallLogDataByNumber2(number: String): List<CallLogDataForTendencyMinimal2>
 
     // CallLog 정보를 다 가져오는 함수 (최신일자부터)
-    @Query("SELECT * FROM call_history ORDER BY date DESC")
-    suspend fun getAllCallLogData(): List<CallLogData>
+    @Query("SELECT number,duration,callType FROM call_history ORDER BY date DESC")
+    suspend fun getAllCallLogData(): List<CallLogDataForTendency>
 
     // 특정 number 의 CallLog 특정 정보만 불러오는 함수 (최신일자부터)
     @Query("SELECT duration FROM call_history WHERE number LIKE :number ORDER BY date DESC")

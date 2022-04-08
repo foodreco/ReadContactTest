@@ -35,7 +35,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
             app:srcCompat="@drawable/ic_round_call_50"
-            app:tint="@color/hau_green" />
+            app:tint="@color/hau_green"
+            android:contentDescription="전화버튼"/>
 
         <TextView
             android:id="@+id/textView7"
@@ -64,6 +65,7 @@
             app:layout_constraintStart_toEndOf="@+id/dia_btn_call"
             app:layout_constraintTop_toTopOf="@+id/dia_btn_call"
             app:srcCompat="@drawable/ic_baseline_cancel_50"
-            app:tint="@color/red" />
+            app:tint="@color/red"
+            android:contentDescription="창닫기 버튼"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

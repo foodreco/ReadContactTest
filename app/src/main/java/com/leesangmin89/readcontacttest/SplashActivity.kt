@@ -19,10 +19,6 @@ class SplashActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
             finish()
-        },2000)
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
+        },1000)
     }
 }

@@ -1,14 +1,17 @@
 package com.leesangmin89.readcontacttest.group.groupList
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,7 +19,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.hieupt.android.standalonescrollbar.attachTo
-import com.leesangmin89.readcontacttest.GroupTopData
 import com.leesangmin89.readcontacttest.R
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
@@ -110,7 +112,7 @@ class GroupListFragment : Fragment() {
                     // recommendation 이 해체되면, Recommendation DB 에서도 삭제되어야 함
                     groupViewModel.dataRecoDeleteByNumber(groupList.number)
                     adapter.alarmNumberReset()
-                    Toast.makeText(requireContext(), "통화 추천 해제됨", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "알림 해제됨", Toast.LENGTH_SHORT).show()
                 }
             }
             // 어뎁터 터치 알람 설정
@@ -125,7 +127,7 @@ class GroupListFragment : Fragment() {
                     )
                     groupViewModel.updateDialogDone()
                     adapter.alarmNumberReset()
-                    Toast.makeText(requireContext(), "통화 추천 설정됨", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "알림 설정됨", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -134,6 +136,14 @@ class GroupListFragment : Fragment() {
                 if (activate == true) {
                     deletePart()
                     adapter.deleteEventReset()
+                }
+            }
+
+            // 전화걸기 작동 코드
+            checkAndCall.observe(viewLifecycleOwner) { phoneNumber ->
+                if (phoneNumber != null) {
+                    checkPermissionsAndCall(phoneNumber)
+                    adapter.checkAndCallClear()
                 }
             }
         }
@@ -229,7 +239,7 @@ class GroupListFragment : Fragment() {
             }
             Toast.makeText(
                 requireContext(),
-                "${args.groupName} DB 삭제됨",
+                "${args.groupName} 그룹 삭제됨",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -238,6 +248,39 @@ class GroupListFragment : Fragment() {
         builder.setMessage("해당 정보를 삭제하시겠습니까?")
         builder.create().show()
     }
+
+    private fun call(phoneNumber: String) {
+        val uri = Uri.parse("tel:$phoneNumber")
+        val intent = Intent(Intent.ACTION_CALL, uri)
+        requireContext().startActivity(intent)
+    }
+
+    // 허용 체크 후, 전화걸기
+    private fun checkPermissionsAndCall(phoneNumber: String) {
+        val permission = Manifest.permission.CALL_PHONE
+        if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            // 허용 안되어 있는 경우, 요청
+            requestCallPermission.launch(
+                permission
+            )
+        } else {
+            // 허용 되어있는 경우, 전화걸기
+            call(phoneNumber)
+        }
+    }
+
+    // 전화걸기 허용 요청 코드 및 작동
+    private val requestCallPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // 허용된, 경우
+                Toast.makeText(context, "이제 전화를 할 수 있습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                // 허용안된 경우,
+                Toast.makeText(context, "전화를 하기 위해,\n전화 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
 
     private fun showProgress(show: Boolean) {
         binding.groupListProgressBar.visibility = if (show) View.VISIBLE else View.GONE

@@ -1,26 +1,21 @@
 package com.leesangmin89.readcontacttest.list
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.util.set
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.leesangmin89.readcontacttest.*
-import com.leesangmin89.readcontacttest.callLog.CallLogAdapter
-import com.leesangmin89.readcontacttest.customDialog.EditCallContent
 import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
-import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.CallLogHeaderBinding
 import com.leesangmin89.readcontacttest.databinding.ContactChildBinding
-import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
+import com.leesangmin89.readcontacttest.util.ContactBaseItem
+import com.leesangmin89.readcontacttest.util.transformingToInitialSpell
 
 class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
     ListAdapter<ContactBaseItem, RecyclerView.ViewHolder>(ContactDiffCallback()) {
@@ -105,7 +100,7 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
                     ivProfile.setImageDrawable(
                         ContextCompat.getDrawable(
                             context,
-                            R.mipmap.ic_launcher_round
+                            R.mipmap.none_profile
                         )
                     )
             }

@@ -18,13 +18,11 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
-import com.leesangmin89.readcontacttest.GroupTopData
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.databinding.GroupListChildBinding
 import com.leesangmin89.readcontacttest.databinding.GroupListHeaderBinding
+import com.leesangmin89.readcontacttest.util.GroupTopData
 
 class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
     ListAdapter<GroupItem, RecyclerView.ViewHolder>(GroupDiffCallback()) {
@@ -44,6 +42,9 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
 
     private val _deleteEventActive = MutableLiveData<Boolean?>()
     val deleteEventActive: LiveData<Boolean?> = _deleteEventActive
+
+    private val _checkAndCall = MutableLiveData<String?>()
+    val checkAndCall : LiveData<String?> = _checkAndCall
 
     // 1. 항목 유형에 따라, 뷰홀더 타입(일반 리스트용, 헤더용)을 반환할 함수
     override fun getItemViewType(position: Int): Int = getItem(position).id
@@ -127,11 +128,7 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
 
                     // 전화버튼 롱클릭 시, 전화걸기
                     viewHolder.btnCallDirect.setOnLongClickListener {
-                        item.groupList.number.let { phoneNumber ->
-                            val uri = Uri.parse("tel:${phoneNumber.toString()}")
-                            val intent = Intent(Intent.ACTION_CALL, uri)
-                            context.startActivity(intent)
-                        }
+                        _checkAndCall.value = item.groupList.number
                         return@setOnLongClickListener true
                     }
 
@@ -139,7 +136,7 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
                     viewHolder.groupDetail.setOnClickListener {
                         val action =
                             GroupListFragmentDirections.actionGroupListFragmentToGroupDetailFragment(
-                                item.groupList.number
+                                item.groupList.number,item.groupList.name
                             )
                         it.findNavController().navigate(action)
                     }
@@ -200,7 +197,7 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
                 binding.contactImage.setImageDrawable(
                     ContextCompat.getDrawable(
                         context,
-                        R.mipmap.ic_launcher_round
+                        R.mipmap.none_profile
                     )
                 )
         }
@@ -291,12 +288,12 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
             thirdTimes: Int
         ) {
             with(binding) {
-                textDuration1.text = "통화시간 1위 : $firstDName"
-                textDuration2.text = "통화시간 2위 : $secondDName"
-                textDuration3.text = "통화시간 3위 : $thirdDName"
-                textTimes1.text = "통화횟수 1위 : $firstTName"
-                textTimes2.text = "통화횟수 2위 : $secondTName"
-                textTimes3.text = "통화횟수 3위 : $thirdTName"
+                textDuration1.text = "1위 : $firstDName"
+                textDuration2.text = "2위 : $secondDName"
+                textDuration3.text = "3위 : $thirdDName"
+                textTimes1.text = "1위 : $firstTName"
+                textTimes2.text = "2위 : $secondTName"
+                textTimes3.text = "3위 : $thirdTName"
             }
         }
     }
@@ -325,6 +322,9 @@ class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
         checkboxStatus.clear()
     }
 
+    fun checkAndCallClear() {
+        _checkAndCall.value = null
+    }
 
 }
 
@@ -363,185 +363,3 @@ sealed class GroupItem {
         }
     }
 }
-
-
-///////////////////////////// 복사 ///////////////////////////// ///////////////////////////// /////////////////////////////
-
-
-//class GroupListAdapter(ctx: Context, fragmentManager: FragmentManager) :
-//    ListAdapter<GroupList, GroupListAdapter.GroupHolder>(GroupDiffCallback()) {
-//
-//    private var mFragmentManager: FragmentManager = fragmentManager
-//    private var context: Context = ctx
-//    private var checkBoxControlNumber: Int = 0
-//    private val checkboxStatus = SparseBooleanArray()
-//    private val alarmBtnStatus = SparseBooleanArray()
-//    val checkBoxReturnList = mutableListOf<String>()
-//
-//    private val _alarmNumberSetting = MutableLiveData<GroupList?>()
-//    val alarmNumberSetting : LiveData<GroupList?> = _alarmNumberSetting
-//
-//    private val _alarmNumberRemoving = MutableLiveData<GroupList?>()
-//    val alarmNumberRemoving : LiveData<GroupList?> = _alarmNumberRemoving
-//
-//    private val _deleteEventActive = MutableLiveData<Boolean?>()
-//    val deleteEventActive : LiveData<Boolean?> = _deleteEventActive
-//
-//    inner class GroupHolder constructor(private val binding: GroupListChildBinding) :
-//        RecyclerView.ViewHolder(binding.root) {
-//        fun bind(item: GroupList, num: Int, fragmentManager: FragmentManager) {
-//
-//            binding.contactName.text = item.name
-//            binding.contactNumber.text = item.number
-//            //이미지 관련
-//            if (item.image != null)
-//                binding.contactImage.setImageBitmap(item.image)
-//            else
-//                binding.contactImage.setImageDrawable(
-//                    ContextCompat.getDrawable(
-//                        context,
-//                        R.mipmap.ic_launcher_round
-//                    )
-//                )
-//
-//            alarmBtnStatus[num] = item.recommendation
-//
-//            if (alarmBtnStatus[num]) {
-//                binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_active_24)
-//                binding.btnAlarm.setColorFilter(ContextCompat.getColor(context, R.color.hau_dark_green))
-//            } else {
-//                binding.btnAlarm.setImageResource(R.drawable.ic_baseline_notifications_off_24)
-//                binding.btnAlarm.setColorFilter(ContextCompat.getColor(context, R.color.light_gray))
-//            }
-//
-//            binding.checkBoxGroupListChild.isChecked = checkboxStatus[num]
-//
-//            if (binding.checkBoxGroupListChild.isChecked) {
-//                checkBoxReturnList.add(item.number)
-//            } else {
-//                checkBoxReturnList.remove(item.number)
-//            }
-//
-//
-//            // 체크박스 on-off 코드
-//            if (checkBoxControlNumber == 1) {
-//                checkBoxOnActivate(num, item)
-//            } else {
-//                // 체크박스 off 상태인 경우 발동
-//                // 체크박스 초기화
-//                checkboxStatus.clear()
-//                binding.checkBoxGroupListChild.visibility = View.GONE
-//                binding.btnAlarm.visibility = View.VISIBLE
-//                binding.btnCallDirect.visibility = View.VISIBLE
-//
-//                // 전화버튼 클릭 시, 스낵바 메세지 띄우기
-//                binding.btnCallDirect.setOnClickListener {
-//                    Toast.makeText(context, "전화하려면 길게 터치하세요.", Toast.LENGTH_SHORT).show()
-////                    val callSnackBar = Snackbar.make(it, "전화하려면 길게 터치하세요.", Snackbar.LENGTH_SHORT)
-////                    callSnackBar.setTextColor(ContextCompat.getColor(context, R.color.white))
-////                    callSnackBar.setBackgroundTint(ContextCompat.getColor(context, R.color.hau_emerald))
-////                    callSnackBar.show()
-//                }
-//
-//                // 전화버튼 롱클릭 시, 전화걸기
-//                binding.btnCallDirect.setOnLongClickListener {
-//                    item.number.let { phoneNumber ->
-//                        val uri = Uri.parse("tel:${phoneNumber.toString()}")
-//                        val intent = Intent(Intent.ACTION_CALL, uri)
-//                        context.startActivity(intent)
-//                    }
-//                    return@setOnLongClickListener true
-//                }
-//
-//                //리싸이클러 터치 시, GroupDetailFragment 로 이동
-//                binding.groupDetail.setOnClickListener {
-//                    val action =
-//                        GroupListFragmentDirections.actionGroupListFragmentToGroupDetailFragment(item.number)
-//                    it.findNavController().navigate(action)
-//                }
-//
-//                //리싸이클러 길게 터치 시, 삭제 작동
-//                binding.groupDetail.setOnLongClickListener {
-//                    checkboxStatus[num] = true
-//                    _deleteEventActive.value = true
-//                    return@setOnLongClickListener true
-//                }
-//
-//                //image_btn 터치 시, 알람 설정 작동 코드
-//                binding.btnAlarm.setOnClickListener {
-//                    if (item.recommendation) {
-//                        _alarmNumberSetting.value = item
-//                    } else {
-//                        _alarmNumberRemoving.value = item
-//                    }
-//                }
-//            }
-//        }
-//
-//        // 체크박스 on 일 때 작동하는 코드
-//        private fun checkBoxOnActivate(num:Int, item:GroupList) {
-//            binding.btnAlarm.visibility = View.GONE
-//            binding.btnCallDirect.visibility = View.GONE
-//            // checkBox 를 표시하고 코드 진행
-//            binding.checkBoxGroupListChild.visibility = View.VISIBLE
-//
-//            // 체크 박스 터치 시,
-//            binding.checkBoxGroupListChild.setOnClickListener {
-//                checkboxStatus[num] = !checkboxStatus[num]
-//                notifyItemChanged(num)
-//            }
-//            // 항목 전체 터치 시,
-//            binding.groupDetail.setOnClickListener {
-//                checkboxStatus[num] = !checkboxStatus[num]
-//                notifyItemChanged(num)
-//            }
-//        }
-//    }
-//
-//    fun onCheckBox(number: Int) {
-//        checkBoxControlNumber = number
-//        notifyDataSetChanged()
-//    }
-//
-//    fun alarmNumberReset() {
-//        _alarmNumberSetting.value = null
-//        _alarmNumberRemoving.value = null
-//    }
-//
-//    fun deleteEventReset() {
-//        _deleteEventActive.value = null
-//    }
-//
-//    @JvmName("getCheckBoxReturnList1")
-//    fun getCheckBoxReturnList(): List<String> {
-//        return checkBoxReturnList
-//    }
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHolder {
-//        val binding =
-//            GroupListChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-//        return GroupHolder(binding)
-//    }
-//
-//    @SuppressLint("MissingPermission")
-//    override fun onBindViewHolder(holder: GroupHolder, position: Int) {
-//        holder.bind(getItem(position), position, mFragmentManager)
-//    }
-//
-//    fun clearCheckBoxReturnList() {
-//        checkBoxReturnList.clear()
-//        checkboxStatus.clear()
-//    }
-//}
-//
-//class GroupDiffCallback : DiffUtil.ItemCallback<GroupList>() {
-//
-//    override fun areItemsTheSame(oldItem: GroupList, newItem: GroupList): Boolean {
-//        return oldItem.number == newItem.number
-//    }
-//
-//    override fun areContentsTheSame(oldItem: GroupList, newItem: GroupList): Boolean {
-//        return oldItem == newItem
-//    }
-//
-//}

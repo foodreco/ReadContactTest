@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="메인"
+    <item android:title="홈"
         android:id="@+id/mainFragment"
         android:icon="@drawable/ic_baseline_home_24"/>
     <item android:title="그룹"
@@ -10,7 +10,7 @@
     <item android:title="연락처"
         android:id="@+id/listFragment"
         android:icon="@drawable/ic_baseline_contact_phone_24"/>
-    <item android:title="통화"
+    <item android:title="통화기록"
         android:id="@+id/callLogFragment"
         android:icon="@drawable/ic_baseline_phone_android_24"/>
 </menu>

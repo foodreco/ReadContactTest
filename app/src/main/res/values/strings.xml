@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Call 시제품</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!--d : Int / s : String-->
     <string name="contact_number"> 통화 횟수 : %1$d 회</string>
     <string name="contact_activated">활성 통화 횟수 : %1$d 회 </string>
     <string name="recent_contact">마지막 통화 : "%1$s" 상대로 통화함</string>
@@ -18,7 +18,6 @@
     <!--Main Text-->
     <string name="recommendation_active_rate"> 활성화도 %1$d%%</string>
 
-
     <!--MainSub Text-->
     <string name="all_in_count">총 수신 횟수 : %1$s 회</string>
     <string name="all_out_count">총 발신 횟수 : %1$s 회</string>
@@ -30,6 +29,14 @@
     <string name="group_duration">그룹 통화 시간 : %1$d 분</string>
     <string name="reco_duration">알람 통화 시간 : %1$d 분</string>
     <string name="update_btn_text">업데이트</string>
+
+    <!--Notification-->
+    <string name="notification_title">WOW!!</string>
+    <string name="notification_text">친구는 모든 것을 나눈다. -플라톤</string>
+
+    <string name="notification_channel_id" translatable="false">notification_channel</string>
+    <string name="notification_channel_name" translatable="true">통화추천 알림</string>
+
 
 
 </resources>

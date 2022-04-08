@@ -38,14 +38,6 @@ class GroupDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.i("보완", "중요 통화기록 정렬 위치 조정하기(최상단으로??)")
-        Log.i("수정", "통화일자 헤더로 넣고, recyclerView 심플하게 개선")
-        Log.i("수정", "recommendation 정보")
-//        세련되게
-//        recommendation 정보넣어주기?
-//                main reco dialog는 제거? 다른정보?
-
-
         binding.groupDetailRecyclerView.adapter = adapter
 
         showProgress(true)

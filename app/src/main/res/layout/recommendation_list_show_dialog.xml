@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/updateFragment_background"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -22,7 +21,8 @@
             app:layout_constraintEnd_toEndOf="@+id/recyclerView_recommendation_list"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_round_question_mark_24"
-            android:alpha="0.5"/>
+            android:alpha="0.5"
+            android:contentDescription="알림 설정 목록 설명"/>
 
         <TextView
             android:id="@+id/dialog_name"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="통화 추천 목록"
+            android:text="알림 설정 목록"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/recyclerView_recommendation_list"
-            app:srcCompat="@drawable/ic_baseline_cancel_24" />
+            app:srcCompat="@drawable/ic_baseline_cancel_24"
+            android:contentDescription="창닫기 버튼"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

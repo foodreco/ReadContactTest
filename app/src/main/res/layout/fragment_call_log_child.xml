@@ -2,7 +2,6 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -20,11 +19,11 @@
             android:id="@+id/callLog_child"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
             android:paddingStart="8dp"
-            android:paddingEnd="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:background="?attr/selectableItemBackground">
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp">
 
             <TextView
                 android:id="@+id/log_name"
@@ -51,8 +50,8 @@
 
             <ImageButton
                 android:id="@+id/btn_importance"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginBottom="2dp"
@@ -60,7 +59,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_star_border_50" />
+                app:srcCompat="@drawable/ic_baseline_star_border_50"
+                android:contentDescription="통화기록 중요도 체크"/>
 
             <ImageView
                 android:id="@+id/img_callType"
@@ -71,7 +71,8 @@
                 app:layout_constraintEnd_toEndOf="@+id/log_duration"
                 app:layout_constraintTop_toBottomOf="@+id/log_duration"
                 app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/ic_round_phone_callback_12" />
+                app:srcCompat="@drawable/ic_round_phone_callback_12"
+                android:contentDescription="통화 유형"/>
 
             <ImageView
                 android:id="@+id/img_memo"
@@ -81,7 +82,8 @@
                 android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toStartOf="@+id/img_callType"
                 app:layout_constraintTop_toBottomOf="@+id/log_duration"
-                app:srcCompat="@drawable/ic_round_edit_note_20" />
+                app:srcCompat="@drawable/ic_round_edit_note_20"
+                android:contentDescription="통화 내용 기록 여부"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

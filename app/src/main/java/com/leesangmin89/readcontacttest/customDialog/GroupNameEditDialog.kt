@@ -7,15 +7,14 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import com.leesangmin89.readcontacttest.clearFocusAndHideKeyboard
-import com.leesangmin89.readcontacttest.setFocusAndShowKeyboard
-
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.leesangmin89.readcontacttest.databinding.GroupNameEditDialogBinding
 import com.leesangmin89.readcontacttest.group.GroupViewModel
+import com.leesangmin89.readcontacttest.util.clearFocusAndHideKeyboard
+import com.leesangmin89.readcontacttest.util.setFocusAndShowKeyboard
 
 @AndroidEntryPoint
 class GroupNameEditDialog : DialogFragment() {

@@ -39,4 +39,10 @@
     <color name="ANALOGOUS_color_8">#009361</color>0,147,97
     <color name="ANALOGOUS_color_9">#005e98</color>0,94,152
 
+    <!--Diagram Color-->
+    <color name="diagram_color_1">#00CD3E</color>
+    <color name="diagram_color_2">#0090cd</color>
+    <color name="diagram_color_3">#007040</color>
+    <color name="diagram_color_4">#00cda4</color>
+
 </resources>

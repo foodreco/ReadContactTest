@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.leesangmin89.readcontacttest.GroupTopData
 import com.leesangmin89.readcontacttest.MyApplication
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
@@ -14,6 +13,7 @@ import com.leesangmin89.readcontacttest.data.dao.GroupListDao
 import com.leesangmin89.readcontacttest.data.dao.RecommendationDao
 import com.leesangmin89.readcontacttest.data.entity.GroupList
 import com.leesangmin89.readcontacttest.group.groupList.GroupItem
+import com.leesangmin89.readcontacttest.util.GroupTopData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import org.json.JSONArray
@@ -62,9 +62,6 @@ class GroupViewModel @Inject constructor(
     private var _updateDataEvent = MutableLiveData<Int>(0)
     val updateDataEvent: LiveData<Int> = _updateDataEvent
 
-
-    init {
-    }
 
     // 그룹이 존재하는 리스트를 정리하여 GroupData 형태로 가공하는 함수
     fun getGroupName() {

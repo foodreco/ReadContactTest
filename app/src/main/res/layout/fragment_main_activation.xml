@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="14dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="32dp">
+
+        <ImageButton
+            android:id="@+id/btn_explanation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.5"
+            android:background="@drawable/shape_button"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/textView20"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_round_question_mark_24"
+            android:contentDescription="연락처 관리 현황 도움말"/>
+
+        <com.puskal.oniondiagram.OnionDiagramView
+            android:id="@+id/diagram"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="16dp"
+            app:diagramType="UniformDecreasing"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView20"
+            app:onionTextAlign="differentRow"
+            app:textColor="@color/hau_white_green"
+            app:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/img_dot_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_baseline_circle_24"
+            app:layout_constraintStart_toStartOf="@+id/diagram"
+            app:layout_constraintTop_toBottomOf="@+id/diagram"
+            android:contentDescription="도트 이미지1"/>
+
+        <ImageView
+            android:id="@+id/img_dot_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_circle_24"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@+id/diagram"
+            app:layout_constraintTop_toBottomOf="@+id/img_dot_1"
+            android:contentDescription="도트 이미지2"/>
+
+        <ImageView
+            android:id="@+id/img_dot_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_circle_24"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@+id/diagram"
+            app:layout_constraintTop_toBottomOf="@+id/img_dot_2"
+            android:contentDescription="도트 이미지3"/>
+
+        <ImageView
+            android:id="@+id/img_dot_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_circle_24"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@+id/diagram"
+            app:layout_constraintTop_toBottomOf="@+id/img_dot_3"
+            android:contentDescription="도트 이미지4"/>
+
+        <TextView
+            android:id="@+id/text_group_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="TextView"
+            android:textColor="@color/hau_dark_green"
+            app:layout_constraintBottom_toBottomOf="@+id/img_dot_1"
+            app:layout_constraintStart_toEndOf="@+id/img_dot_1"
+            app:layout_constraintTop_toTopOf="@+id/img_dot_1" />
+
+        <TextView
+            android:id="@+id/text_group_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="TextView"
+            android:textColor="@color/hau_dark_green"
+            app:layout_constraintBottom_toBottomOf="@+id/img_dot_2"
+            app:layout_constraintStart_toEndOf="@+id/img_dot_2"
+            app:layout_constraintTop_toTopOf="@+id/img_dot_2" />
+
+        <TextView
+            android:id="@+id/text_group_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="TextView"
+            android:textColor="@color/hau_dark_green"
+            app:layout_constraintBottom_toBottomOf="@+id/img_dot_3"
+            app:layout_constraintStart_toEndOf="@+id/img_dot_3"
+            app:layout_constraintTop_toTopOf="@+id/img_dot_3" />
+
+        <TextView
+            android:id="@+id/text_group_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="TextView"
+            android:textColor="@color/hau_dark_green"
+            app:layout_constraintBottom_toBottomOf="@+id/img_dot_4"
+            app:layout_constraintStart_toEndOf="@+id/img_dot_4"
+            app:layout_constraintTop_toTopOf="@+id/img_dot_4" />
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="연락처 관리 현황"
+            android:textColor="@color/hau_dark_green"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_group_4"
+            app:srcCompat="@drawable/ic_baseline_cancel_24"
+            android:contentDescription="창닫기 버튼"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+

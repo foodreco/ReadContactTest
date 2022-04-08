@@ -1,55 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/updateFragment_background"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="36dp"
-    android:id="@+id/updateFragment_background">
+    app:cardCornerRadius="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="0dp">
+        android:padding="12dp">
 
         <EditText
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="44dp"
-            android:layout_marginEnd="32dp"
             android:id="@+id/content_keyword"
-            android:layout_width="200dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
             android:hint="키워드"
             android:inputType="text"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <EditText
             android:id="@+id/call_content"
-            android:layout_width="200dp"
-            android:layout_height="150dp"
+            android:layout_width="250dp"
+            android:layout_height="200dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:gravity="center_vertical"
             android:hint="통화내용"
             android:inputType="textMultiLine|text"
-            android:scrollHorizontally="false"
-            android:textSize="14sp"
+            android:scrollHorizontally="true"
+            android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/btn_content_save"
             app:layout_constraintEnd_toEndOf="@+id/content_keyword"
             app:layout_constraintStart_toStartOf="@+id/content_keyword"
             app:layout_constraintTop_toBottomOf="@+id/content_keyword" />
 
         <Button
-            android:layout_marginBottom="32dp"
             android:id="@+id/btn_content_save"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="입력"
-            android:textColor="@color/hau_white_green"
-            android:backgroundTint="@color/hau_bright_blue"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/shape_button"
+            android:text="저장"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,10 +58,22 @@
             android:id="@+id/checkBox_importance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:text="중요"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="18dp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:text="# 통화 내용"
+            android:textStyle="bold"
+            android:textColor="@color/hau_dark_green"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

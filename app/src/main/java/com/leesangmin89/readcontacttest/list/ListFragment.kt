@@ -119,7 +119,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         listViewModel.searchDatabase(searchQuery).observe(this) { list ->
             list.let {
                 listViewModel.makeList(it)
-                Log.i("수정", "수정필요 - 반환값 형태 바꿔야함? ContactBaseItem")
             }
         }
     }
@@ -181,7 +180,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 권한 요청 관련 함수
 
-    private fun checkPermissionsAndStart(permissions: Array<out String>) {
+    private fun checkPermissionsAndStart(permissions: Array<String>) {
         if (!checkNeedPermissionBoolean(permissions)) {
             // 허용 안되어 있는 경우, 요청
             requestMultiplePermissions.launch(
@@ -194,7 +193,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     // 허용 여부에 따른 Boolean 반환
-    private fun checkNeedPermissionBoolean(permissions: Array<out String>): Boolean {
+    private fun checkNeedPermissionBoolean(permissions: Array<String>): Boolean {
         for (perm in permissions) {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),

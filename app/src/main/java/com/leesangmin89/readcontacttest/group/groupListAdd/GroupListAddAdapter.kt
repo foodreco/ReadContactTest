@@ -6,6 +6,7 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.util.set
 import androidx.lifecycle.LifecycleOwner
@@ -22,7 +23,6 @@ class GroupListAddAdapter(ctx: Context) :
 
     private var context: Context = ctx
     private val checkboxStatus = SparseBooleanArray()
-    private var checkboxClearEvent : Boolean = false
     val checkBoxReturnList = mutableListOf<ContactBase>()
 
     inner class Holder constructor(private val binding: ContactGroupAddChildBinding) :
@@ -47,26 +47,21 @@ class GroupListAddAdapter(ctx: Context) :
                 profile.setImageDrawable(
                     ContextCompat.getDrawable(
                         context,
-                        R.mipmap.ic_launcher_round
+                        R.mipmap.none_profile
                     )
                 )
 
             // 그룹이 없는 view 만 체크기능 작동
             if (item.group == "") {
-
-                // 검색 리스트가 새로 갱신되면 checkboxStatus 초기화
-                if (checkboxClearEvent) {
-                    checkboxStatus.clear()
-                    checkboxClearEvent = false
-                }
-
-                // 체크박스 유지 코드
                 checkBox.visibility = View.VISIBLE
                 checkBox.isChecked = checkboxStatus[num]
 
-                if (checkBox.isChecked) {
+                // checkboxStatus[num] 경우에 따른 리스트 변경
+                if (checkboxStatus[num]) {
+                    checkBox.isChecked = true
                     checkBoxReturnList.add(item)
                 } else {
+                    checkBox.isChecked = false
                     checkBoxReturnList.remove(item)
                 }
 
@@ -79,11 +74,11 @@ class GroupListAddAdapter(ctx: Context) :
                     checkboxStatus[num] = !checkboxStatus[num]
                     notifyItemChanged(num)
                 }
-
             } else {
                 checkBox.visibility = View.GONE
+                update.setOnClickListener {
+                }
             }
-
         }
     }
 
@@ -98,14 +93,22 @@ class GroupListAddAdapter(ctx: Context) :
         holder.bind(getItem(position), position)
     }
 
+    // 체크박스를 초기화하는 함수
     fun clearCheckBox() {
-        checkboxClearEvent = true
+        checkboxStatus.clear()
+    }
+
+    // 리턴리스트를 초기화하는 함수
+    fun clearReturnList() {
+        checkBoxReturnList.clear()
     }
 
     @JvmName("getCheckBoxReturnList1")
     fun getCheckBoxReturnList(): List<ContactBase> {
         return checkBoxReturnList
     }
+
+
 }
 
 

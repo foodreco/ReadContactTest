@@ -1,24 +1,26 @@
 package com.leesangmin89.readcontacttest.list
 
+import android.R.attr
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
-import com.leesangmin89.readcontacttest.CallLogItem
-import com.leesangmin89.readcontacttest.ContactBaseItem
-import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.dao.ContactDao
 import com.leesangmin89.readcontacttest.data.dao.GroupListDao
-import com.leesangmin89.readcontacttest.transformingToInitialSpell
+import com.leesangmin89.readcontacttest.data.entity.ContactBase
+import com.leesangmin89.readcontacttest.util.ContactBaseItem
+import com.leesangmin89.readcontacttest.util.transformingToInitialSpell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
@@ -27,6 +29,8 @@ class ListViewModel @Inject constructor(
     private val dataCall : CallLogDao,
     application: Application
 ) : AndroidViewModel(application) {
+
+    private val app = application
 
     private var _initializeContactEvent = MutableLiveData<Boolean>()
     val initializeContactEvent: LiveData<Boolean> = _initializeContactEvent
@@ -117,7 +121,6 @@ class ListViewModel @Inject constructor(
                             contact.id
                         )
                         update(updateList)
-                        Log.i("listFragment", "동기화 중.. : ${contact.name}")
                     }
                 }
             }
@@ -149,13 +152,16 @@ class ListViewModel @Inject constructor(
                 contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
             val contactList = ContactBase(name, number, "", null, 0)
             if (photoUri != null) {
-                Log.i("수정", "getBitmap -> ImageDecoder 변경시도 but 오류발생")
-                contactList.image = MediaStore.Images.Media.getBitmap(
-                    activity.contentResolver,
-                    Uri.parse(photoUri)
-                )
-//                    val source = ImageDecoder.createSource(requireActivity().contentResolver, photoUri)
-//                    val bitmap = ImageDecoder.decodeBitmap(source)
+                if(Build.VERSION.SDK_INT < 28) {
+                    contactList.image = MediaStore.Images.Media.getBitmap(
+                        activity.contentResolver,
+                        Uri.parse(photoUri)
+                    )
+                } else {
+                    val source = ImageDecoder.createSource(activity.contentResolver, Uri.parse(photoUri))
+                    val bitmap = ImageDecoder.decodeBitmap(source)
+                    contactList.image = bitmap
+                }
             }
             insert(contactList)
         }

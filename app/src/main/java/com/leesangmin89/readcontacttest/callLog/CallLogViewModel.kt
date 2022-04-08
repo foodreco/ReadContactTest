@@ -2,11 +2,11 @@ package com.leesangmin89.readcontacttest.callLog
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.leesangmin89.readcontacttest.CallLogItem
-import com.leesangmin89.readcontacttest.convertLongToDateString
 import com.leesangmin89.readcontacttest.data.dao.CallLogDao
 import com.leesangmin89.readcontacttest.data.dao.TendencyDao
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
+import com.leesangmin89.readcontacttest.util.CallLogItem
+import com.leesangmin89.readcontacttest.util.convertLongToDateString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,9 +23,6 @@ class CallLogViewModel @Inject constructor(
 
     private val _callLogItemData = MutableLiveData<List<CallLogItem>>()
     val callLogItemData : LiveData<List<CallLogItem>> = _callLogItemData
-
-    init {
-    }
 
     fun insert(callLogData: CallLogData) {
         viewModelScope.launch {

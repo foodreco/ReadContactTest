@@ -1,28 +1,22 @@
 package com.leesangmin89.readcontacttest.group.groupListAdd
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.hieupt.android.standalonescrollbar.attachTo
-import com.leesangmin89.readcontacttest.InputModeLifecycleHelper
 import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.clearFocusAndHideKeyboard
-import com.leesangmin89.readcontacttest.customDialog.GroupAddDialogDirections
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.databinding.FragmentGroupListAddBinding
-import com.leesangmin89.readcontacttest.getSoftInputMode
+import com.leesangmin89.readcontacttest.util.InputModeLifecycleHelper
+import com.leesangmin89.readcontacttest.util.clearFocusAndHideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +26,8 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
     private val groupListAddViewModel: GroupListAddViewModel by viewModels()
     private val adapter: GroupListAddAdapter by lazy { GroupListAddAdapter(requireContext()) }
     private val args by navArgs<GroupListAddFragmentArgs>()
+
+    private val adapterListClearCode = MutableLiveData<String>()
 
     // deprecated 대비용
 //    private var window: Window? = null
@@ -61,21 +57,18 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
         showProgress(true)
         binding.groupListAddRecyclerView.adapter = adapter
 
-        groupListAddViewModel.initSort(args.groupName)
-
-        groupListAddViewModel.liveList.observe(viewLifecycleOwner) {
+        groupListAddViewModel.getOtherContactBase(args.groupName).observe(viewLifecycleOwner){
             adapter.submitList(it)
             showProgress(false)
         }
 
         binding.btnGroupAdd.setOnClickListener {
             val list = adapter.getCheckBoxReturnList()
-
             if (list == mutableListOf<ContactBase>()) {
                 Toast.makeText(requireContext(), "선택된 연락처가 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 // 체크박스 선택된 데이터 업데이트
-                updateDataInScope()
+                updateDataInScope(list)
             }
         }
 
@@ -122,8 +115,7 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
 
     // 그룹을 추가하고(GroupList), 연락처 정보를 변경하는 함수
-    private fun updateDataInScope() {
-        val list: List<ContactBase> = adapter.getCheckBoxReturnList()
+    private fun updateDataInScope(list : List<ContactBase>) {
         groupListAddViewModel.addGroupListData(list, args.groupName)
     }
 
@@ -133,7 +125,7 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val search = menu.findItem(R.id.menu_search)
         val searchView = search?.actionView as? SearchView
-        searchView?.isSubmitButtonEnabled = true
+        searchView?.isSubmitButtonEnabled = false
         searchView?.setOnQueryTextListener(this)
     }
 
@@ -150,13 +142,17 @@ class GroupListAddFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
-        // 검색 이용 시, 기존에 체크되었던 박스는 해제된다.
-        adapter.clearCheckBox()
-        groupListAddViewModel.searchDatabase(searchQuery).observe(this) { list ->
+        adapterListClearCode.value = searchQuery
+        // 검색 텍스트가 변할 때 마다, 어뎁터 초기화
+        adapterListClearCode.observe(viewLifecycleOwner){
+            adapter.submitList(null)
+            adapter.clearReturnList()
+            adapter.clearCheckBox()
+        }
+        // 검색어에 맞는 결과 어뎁터에 전달
+        groupListAddViewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { list ->
             list.let {
                 adapter.submitList(it)
-                // 검색 이용 시, 기존에 체크되었던 박스는 해제된다.
-                adapter.clearCheckBox()
             }
         }
     }

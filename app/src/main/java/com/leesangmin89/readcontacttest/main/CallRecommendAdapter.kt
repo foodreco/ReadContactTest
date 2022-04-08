@@ -7,17 +7,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
-import com.leesangmin89.readcontacttest.R
-import com.leesangmin89.readcontacttest.customDialog.RecommendationDetailDialog
-import com.leesangmin89.readcontacttest.customDialog.UpdateDialog
-import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.Recommendation
 import com.leesangmin89.readcontacttest.databinding.CallRecommendAdapterChildBinding
 
@@ -26,6 +22,9 @@ class CallRecommendAdapter(ctx: Context, fragmentManager: FragmentManager) :
 
     private var mFragmentManager: FragmentManager = fragmentManager
     private var context: Context = ctx
+
+    private val _checkAndCall = MutableLiveData<String?>()
+    val checkAndCall : LiveData<String?> = _checkAndCall
 
     inner class GroupHolder constructor(private val binding: CallRecommendAdapterChildBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -44,14 +43,10 @@ class CallRecommendAdapter(ctx: Context, fragmentManager: FragmentManager) :
                     }
                 }
 
-                // 레이아웃 터치 시, 상세정보
+                // 레이아웃 터치 시, 통화기록으로 이동
                 recommendLayout.setOnClickListener {
-                    // recommendation detail dialog 띄우고, item 넘겨줌
-                    val bundle = bundleOf()
-                    bundle.putParcelable("recommendation", item)
-                    val dialog = RecommendationDetailDialog()
-                    dialog.arguments = bundle
-                    dialog.show(fragmentManager, "RecommendationDetailDialog")
+                    val action = MainFragmentDirections.actionMainFragmentToGroupDetailFragment(item.number,item.name)
+                    it.findNavController().navigate(action)
                 }
 
                 // 전화버튼 클릭 시, 스낵바 메세지 띄우기
@@ -61,15 +56,15 @@ class CallRecommendAdapter(ctx: Context, fragmentManager: FragmentManager) :
 
                 // 전화버튼 롱클릭 시, 전화걸기
                 btnCallDirect.setOnLongClickListener {
-                    item.number.let { phoneNumber ->
-                        val uri = Uri.parse("tel:${phoneNumber.toString()}")
-                        val intent = Intent(Intent.ACTION_CALL, uri)
-                        context.startActivity(intent)
-                    }
+                    _checkAndCall.value = item.number
                     return@setOnLongClickListener true
                 }
             }
         }
+    }
+
+    fun checkAndCallClear() {
+        _checkAndCall.value = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHolder {

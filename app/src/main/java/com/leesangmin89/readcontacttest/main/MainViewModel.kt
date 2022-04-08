@@ -3,21 +3,25 @@ package com.leesangmin89.readcontacttest.main
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.os.Parcelable
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
-import com.leesangmin89.readcontacttest.ContactSpl
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.ContactInfo
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.data.entity.ContactBase
 import com.leesangmin89.readcontacttest.data.entity.Tendency
-import com.leesangmin89.readcontacttest.group.GroupData
+import com.leesangmin89.readcontacttest.util.CombinedChartData
+import com.leesangmin89.readcontacttest.util.convertLongToMonthLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,62 +48,6 @@ class MainViewModel @Inject constructor(
     val progressBarEventFinished: LiveData<Boolean> = _progressBarEventFinished
 
     private var emptyCheck: Boolean = false
-
-
-    fun getInfoData(): LiveData<ContactInfo> {
-        return dataInfo.getRecentDataFlow().asLiveData()
-    }
-
-
-    // ContactInfo 를 insert 하는 함수
-    // 단, contactBase 가 먼저 구성되어 있어야 한다.
-    fun insertInfo(
-        contactNumber: Int,
-        activatedContact: Int,
-        mostRecentContact: String,
-        mostContactName: String,
-        mostContactTimes: Int
-    ) {
-        viewModelScope.launch {
-            // contactBase 에 해당 번호가 등록되어 있으면, name 을
-            // 등록되어 있지 않으면 number 를 인자로 해서 insert 하는 함수
-            val insertName = dataBase.getName(mostContactName)
-            if (insertName != null) {
-                val insertList = ContactInfo(
-                    contactNumber,
-                    activatedContact,
-                    mostRecentContact,
-                    insertName,
-                    mostContactTimes
-                )
-                dataInfo.insert(insertList)
-            } else {
-                val insertList = ContactInfo(
-                    contactNumber,
-                    activatedContact,
-                    mostRecentContact,
-                    mostContactName,
-                    mostContactTimes
-                )
-                dataInfo.insert(insertList)
-            }
-            _progressBarEventFinished.value = true
-        }
-    }
-
-    fun contactInfoDataClear() {
-        viewModelScope.launch {
-            dataInfo.clear()
-        }
-    }
-
-    fun progressBarEventDone() {
-        _progressBarEventFinished.value = true
-    }
-
-    fun progressBarEventReset() {
-        _progressBarEventFinished.value = false
-    }
 
     fun emptyCheck() {
         viewModelScope.launch {
@@ -135,14 +83,20 @@ class MainViewModel @Inject constructor(
                     val photoUri =
                         contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI))
                     val contactList = ContactBase(name, number, "", null, 0)
-
                     if (photoUri != null) {
-                        contactList.image = MediaStore.Images.Media.getBitmap(
-                            activity.contentResolver,
-                            Uri.parse(photoUri)
-                        )
-//                    val source = ImageDecoder.createSource(activity.contentResolver, photoUri)
-//                    val bitmap = ImageDecoder.decodeBitmap(source)
+                        if (Build.VERSION.SDK_INT < 28) {
+                            contactList.image = MediaStore.Images.Media.getBitmap(
+                                activity.contentResolver,
+                                Uri.parse(photoUri)
+                            )
+                        } else {
+                            val source = ImageDecoder.createSource(
+                                activity.contentResolver,
+                                Uri.parse(photoUri)
+                            )
+                            val bitmap = ImageDecoder.decodeBitmap(source)
+                            contactList.image = bitmap
+                        }
                     }
                     insertContactBase(contactList)
                 }
@@ -215,19 +169,20 @@ class MainViewModel @Inject constructor(
                     name = number
                 }
 
-                // 필요시만 갱신
+                // 필요시만 갱신 ★
                 // CallLogData 통화기록 데이터 갱신
                 // 없는 기록만 insert, Tendency DB update
                 val check = dataCall.confirmAndInsert(number, date, duration)
                 if (check == null) {
-                    // 기존에 없는 CallLog 가 발생하면 insert
+                    // 기존에 없는 CallLog 가 발생하면 insert ★
                     val callLogListChild = CallLogData(name, number, date, duration, callType)
                     dataCall.insert(callLogListChild)
 
                     // 추가로 Tendency AllCall 관련 데이터도 업데이트,
                     val preTendency = dataTen.getRecentTendency()
                     if (preTendency != null) {
-
+                        // 기존에 없는 CallLog 가 발생하고,
+                        // Tendency DB 가 기존에 존재할 때, 업데이트 함
                         var allCallIncoming = 0
                         var allCallOutgoing = 0
                         var allCallMissed = 0
@@ -287,17 +242,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    // contactInfo data 를 매번 업데이트 하는 함수
+    // MainSubFragment Used
+    // 월별 통화시간과 통화횟수를 결산하는 함수
     // 매번 갱신
     @SuppressLint("Range")
-    fun contactInfoUpdate(activity: Activity) {
+    fun contactInfoUpdate(activity: Activity): List<CombinedChartData> {
         // 전화 로그 가져오는 uri
         val callLogUri = CallLog.Calls.CONTENT_URI
-        // contactInfo 변수
+
+        var month = 0L
         var callCountNum = 0
-        var activatedContact = 0
-        val list = mutableListOf<ContactSpl>()
-        val contactMap = mutableMapOf<String, Int>()
+        var callDuration = 0L
+
+        val list = mutableListOf<CombinedChartData>()
 
         val contacts = activity.contentResolver.query(
             callLogUri,
@@ -307,59 +264,42 @@ class MainViewModel @Inject constructor(
             null
         )
 
-        // 데이터 중첩을 막기 위해, 기존 데이터 삭제
-        contactInfoDataClear()
-
+        // 최근것부터 불러옴
         while (contacts!!.moveToNext()) {
-            val id =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID))
-            var name =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.CACHED_NAME))
-            val number =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.NUMBER))
+            // 통화시간 : 초
             val duration =
-                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DURATION))
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DURATION)).toLong()
+            // 통화일자 : 밀리초
+            val date =
+                contacts.getString(contacts.getColumnIndex(CallLog.Calls.DATE)).toLong()
 
-            if (name == null) {
-                name = number
-            }
+            val cycleMonth = convertLongToMonthLong(date)
 
-            // contactInfo 전화 통계 데이터 갱신
-            // 59초 이상 통화 -> 유효 통화횟수 추가
-            if (duration.toInt() > 59) {
-                activatedContact++
-            }
-            callCountNum++
-
-            val listChild = ContactSpl(id, name, number, duration)
-            list.add(listChild)
-
-            // 번호와 누적 통화량을 기록하는 코드
-            if (number in contactMap) {
-                val preValue = contactMap[number]
-                if (preValue != null) {
-                    contactMap[number] = preValue + duration.toInt()
-                }
+            if (month != cycleMonth) {
+                list.add(CombinedChartData(month, callCountNum, callDuration))
+                month = cycleMonth
             } else {
-                contactMap[number] = duration.toInt()
+                callCountNum += 1
+                callDuration += duration
             }
         }
-        // 가장 최근 통화 대상(최근 대상부터 while 반복됨)
-        val mostRecentContact = list[0].name
-        // 가장 최장 통화시간
-        val mapMaxValue = contactMap.maxOf { it.value }
-        // 가장 최장 통화대상 번호
-        val mapMaxKey = contactMap.filterValues { it == mapMaxValue }.keys.first()
-
-        // ContactBase 필요
-        insertInfo(
-            callCountNum,
-            activatedContact,
-            mostRecentContact,
-            mapMaxKey,
-            mapMaxValue
-        )
         contacts.close()
+
+        // 0,0,0 요소 삭제
+        list.removeAt(0)
+
+        // 최근 일자부터 재정렬
+//        list.sortByDescending { it.month }
+
+        list.sortBy { it.month }
+
+        // 12개 제한
+//        list.take(12)
+        // 다시 예전부터 정렬
+//        list.reverse()
+
+        //반환
+        return list
     }
 
 
@@ -374,25 +314,21 @@ class MainViewModel @Inject constructor(
     // CountNumber 를 추출하는 함수
     fun syncCountNumbers() {
         viewModelScope.launch {
-            var contactNumbers = 0
-            var groupListNumbers = 0
-            var recoListNumbers = 0
+            var contactNumber = 0
+            var groupListNumber = 0
+            var recoListNumber = 0
+            var recoActivatedNumber = 0
 
-            val allContactBase = dataBase.getNumbersContactBaseList()
-            for (number in allContactBase) {
-                contactNumbers++
-            }
+            contactNumber = dataBase.getNumbersContactBaseList().count()
 
-            val allGroupList = dataGroup.getNumberFromGroupList()
-            for (number in allGroupList) {
-                groupListNumbers++
-            }
+            groupListNumber = dataGroup.getNumberFromGroupList().count()
 
-            val allRecoList = dataReco.getAllNumbers()
-            for (number in allRecoList) {
-                recoListNumbers++
-            }
-            _countNumbers.value = CountNumbers(contactNumbers, groupListNumbers, recoListNumbers)
+            recoListNumber = dataReco.getAllNumbers().count()
+
+            recoActivatedNumber = dataReco.getNumberDataByRecommended().count()
+
+            _countNumbers.value =
+                CountNumbers(contactNumber, groupListNumber, recoListNumber, recoActivatedNumber)
         }
     }
 
@@ -410,11 +346,11 @@ class MainViewModel @Inject constructor(
         // 맵 : 키-그룹명, 값-사람수
         val groupDataMap = mutableMapOf<String, Int>()
 
+
         // 그룹명을 리스트 형태로 모아서, 그룹당 사람 수를 출력하는 코드
         // 만약 data 가 empty 상태라면
         if (data == emptyList<String>()) {
-//                _mainGroupChartData.value = groupData
-            Log.i("중지", "아무것도 안한다고 가정?")
+            _mainGroupChartData.postValue(groupData)
         } else {
             // data 가 empty 가 아니라면
             // data 를 순회하면서
@@ -444,11 +380,13 @@ class MainViewModel @Inject constructor(
     }
 }
 
+@Parcelize
 data class CountNumbers(
-    var contactNumbers: Int,
-    var groupNumbers: Int,
-    var recoNumbers: Int
-)
+    var contactNumber: Int,
+    var groupNumber: Int,
+    var recoNumber: Int,
+    var recoActivatedNumber: Int
+) : Parcelable
 
 data class MainGroupChartData(
     var groupName: String,

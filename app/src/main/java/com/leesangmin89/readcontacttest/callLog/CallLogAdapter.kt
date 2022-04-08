@@ -19,6 +19,10 @@ import com.leesangmin89.readcontacttest.customDialog.EditCallContent
 import com.leesangmin89.readcontacttest.data.entity.CallLogData
 import com.leesangmin89.readcontacttest.databinding.CallLogHeaderBinding
 import com.leesangmin89.readcontacttest.databinding.FragmentCallLogChildBinding
+import com.leesangmin89.readcontacttest.util.CallLogItem
+import com.leesangmin89.readcontacttest.util.convertLongToDateString
+import com.leesangmin89.readcontacttest.util.convertLongToTimeString
+import com.leesangmin89.readcontacttest.util.setUpImageWithConvertCallType
 
 class CallLogAdapter(context: Context, fragmentManager: FragmentManager) :
     ListAdapter<CallLogItem, RecyclerView.ViewHolder>(CallLogItemDiffCallback()) {

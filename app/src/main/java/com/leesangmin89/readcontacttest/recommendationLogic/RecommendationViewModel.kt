@@ -1,6 +1,7 @@
 package com.leesangmin89.readcontacttest.recommendationLogic
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.leesangmin89.readcontacttest.data.dao.*
 import com.leesangmin89.readcontacttest.data.entity.*
@@ -22,15 +23,8 @@ class RecommendationViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val _progressBarEventFinished = MutableLiveData<Boolean>()
-    val progressBarEventFinished: LiveData<Boolean> = _progressBarEventFinished
-
     private val _mainStatusProgressbar = MutableLiveData<NumberForStatusProgressbar>()
     val mainStatusProgressbar: LiveData<NumberForStatusProgressbar> = _mainStatusProgressbar
-
-
-    init {
-    }
 
     fun getRecommendationLiveList(): LiveData<List<Recommendation>> {
         return dataReco.getAllDataByRecommended().asLiveData()
@@ -71,15 +65,15 @@ class RecommendationViewModel @Inject constructor(
                 val longNow: Long = System.currentTimeMillis()
 
                 //3. 해당 GroupList 에 해당하는 CallLogData 를 다 가져온다.
-                val callLogData: List<CallLogData> =
-                    dataCallLog.getCallLogDataByNumber(groupList.number)
+                val callLogData: List<CallLogDataForTendencyMinimal2> =
+                    dataCallLog.getCallLogDataByNumber2(groupList.number)
 
                 //4. 가져온 CallLogData 를 순회하면서 Recommendation 인자를 수집한다.
                 for (recoInfo in callLogData) {
                     numberOfCalling++
                     totalCallTime =
-                        recoInfo.duration?.let { totalCallTime.plus(it.toInt()) }!!
-                    recoInfo.date?.let { callDateList.add(it.toLong()) }
+                        recoInfo.duration.let { totalCallTime.plus(it.toInt()) }
+                    recoInfo.date.let { callDateList.add(it.toLong()) }
                 }
                 //4-1. 통화횟수에 따른 Reco DB 인자 설정
                 when (numberOfCalling) {
@@ -128,7 +122,7 @@ class RecommendationViewModel @Inject constructor(
                         numberOfCallingBelow,
                         recentCallExcess,
                         frequencyExcess,
-                        dataReco.confirm(groupList.number)!!.id
+                        dataReco.confirm(groupList.number)!!
                     )
                     dataReco.update(updateRecommendation)
                 } else {
@@ -153,17 +147,13 @@ class RecommendationViewModel @Inject constructor(
         }
     }
 
-    fun progressBarEventDone() {
-        _progressBarEventFinished.value = false
-    }
-
     // callType 성향과 통화 성향을 추론하는 함수
     // 수신, 발신, 부재중 비중 도출
     // 평균 통화시간, 통화 상대수
     // 1. 전체 call 에서 정의
     // 2. groupList 관계에서 정의
     // 3. recommendation 관계에서 정의
-    fun callTendencyForAllCall() {
+    private fun callTendencyForAllCall() {
         viewModelScope.launch {
             val allTendency: Tendency? = dataTen.getRecentTendency()
 
@@ -191,19 +181,18 @@ class RecommendationViewModel @Inject constructor(
             // Tendency 인자 수정
             // 메모리 부하가 크므로, 최초 발동시에만 작업
             if (allTendency == null) {
-                // 최초 앱 빌드 후(CallLogData 구축 후) 발동 시,
+                // 최초 앱 빌드 후(CallLogData 구축 후) 발동 시(Tendency DB 가 없는 경우),
                 // 1. 전체 call 기준
-                val allCallLogData: List<CallLogData> = dataCallLog.getAllCallLogData()
+                val allCallLogData: List<CallLogDataForTendency> = dataCallLog.getAllCallLogData()
                 // 전체 call 순회
                 for (item in allCallLogData) {
-                    // 기존 없던 통화기록 데이터만, 작업 진행
                     // 총 전화 횟수
                     allCallCount += 1
                     // 총 전화 시간
-                    allCallDuration += item.duration!!.toInt()
+                    allCallDuration += item.duration.toInt()
 
                     // 통화 유형
-                    when (item.callType?.toInt()) {
+                    when (item.callType.toInt()) {
                         1 -> allCallIncoming += 1
                         2 -> allCallOutgoing += 1
                         3 -> allCallMissed += 1
@@ -259,19 +248,20 @@ class RecommendationViewModel @Inject constructor(
 
             // 매번 업데이트(GroupList 가 변할 수 있으므로)
             // 2. GroupList 순회 방식
-            val allGroupList: List<GroupList> = dataGroup.getAllDataFromGroupList()
-            for (groupList in allGroupList) {
+            val allGroupNumberList: List<String> = dataGroup.getNumberFromGroupList()
+            for (number in allGroupNumberList) {
                 // groupList 를 순회하면서 번호를 넘겨, 해당 통화기록을 다 가져옴
-                val callLogDataAll = dataCallLog.getCallLogDataByNumber(groupList.number)
+                val callLogDataAll: List<CallLogDataForTendencyMinimal> =
+                    dataCallLog.getCallLogDataByNumber(number)
                 // 통화 상대 추가
-                groupListCallPartnerList.add(groupList.number)
+                groupListCallPartnerList.add(number)
                 for (callLogData in callLogDataAll) {
                     // 그룹 전화 횟수
                     groupListCallCount += 1
                     // 그룹 전화 시간
-                    groupListCallDuration += callLogData.duration!!.toInt()
+                    groupListCallDuration += callLogData.duration.toInt()
                     // 그룹 통화 유형
-                    when (callLogData.callType?.toInt()) {
+                    when (callLogData.callType.toInt()) {
                         1 -> groupListCallIncoming += 1
                         2 -> groupListCallOutgoing += 1
                         3 -> groupListCallMissed += 1
@@ -282,19 +272,20 @@ class RecommendationViewModel @Inject constructor(
 
             // 매번 업데이트(Recommendation 이 변할 수 있으므로)
             // 3. Recommendation 순회 방식
-            val allRecommendationList: List<Recommendation> = dataReco.getAllData()
-            for (recommendation in allRecommendationList) {
+            val allRecommendationNumberList: List<String> = dataReco.getAllNumbers()
+            for (number in allRecommendationNumberList) {
                 // recommendation 를 순회하면서 번호를 넘겨, 해당 통화기록을 다 가져옴
-                val callLogDataAll = dataCallLog.getCallLogDataByNumber(recommendation.number)
+                val callLogDataAll: List<CallLogDataForTendencyMinimal> =
+                    dataCallLog.getCallLogDataByNumber(number)
                 // 통화 상대 추가
-                recommendationCallPartnerList.add(recommendation.number)
+                recommendationCallPartnerList.add(number)
                 for (callLogData in callLogDataAll) {
                     // 추천 전화 횟수
                     recommendationCallCount += 1
                     // 추천 전화 시간
-                    recommendationCallDuration += callLogData.duration!!.toInt()
+                    recommendationCallDuration += callLogData.duration.toInt()
                     // 추천 통화 유형
-                    when (callLogData.callType?.toInt()) {
+                    when (callLogData.callType.toInt()) {
                         1 -> recommendationCallIncoming += 1
                         2 -> recommendationCallOutgoing += 1
                         3 -> recommendationCallMissed += 1
@@ -339,8 +330,8 @@ class RecommendationViewModel @Inject constructor(
     fun makeDataForStatusProgressbar(it: List<Recommendation>) {
         viewModelScope.launch {
             val allNumberList = dataReco.getAllNumbers()
+            val allNumber = allNumberList.count()
             val recommendedNumber = it.count()
-            var allNumber = allNumberList.count()
             _mainStatusProgressbar.value = NumberForStatusProgressbar(recommendedNumber, allNumber)
         }
     }
@@ -349,4 +340,20 @@ class RecommendationViewModel @Inject constructor(
 data class NumberForStatusProgressbar(
     var recommendedNumber: Int,
     var allNumber: Int
+)
+
+data class CallLogDataForTendency(
+    var number: String,
+    var duration: String,
+    var callType: String
+)
+
+data class CallLogDataForTendencyMinimal(
+    var duration: String,
+    var callType: String
+)
+
+data class CallLogDataForTendencyMinimal2(
+    var duration: String,
+    var date: String
 )

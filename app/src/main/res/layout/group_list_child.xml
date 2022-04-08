@@ -24,7 +24,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_group_list_child"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:contentDescription="이미지 사진"/>
 
             <TextView
                 android:id="@+id/contact_name"
@@ -57,7 +58,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/hau_green"
                 android:background="@drawable/shape_button"
-                app:srcCompat="@drawable/ic_round_phone_forwarded_32"/>
+                app:srcCompat="@drawable/ic_round_phone_forwarded_32"
+                android:contentDescription="전화버튼"/>
 
             <CheckBox
                 android:id="@+id/checkBox_group_list_child"
@@ -80,7 +82,8 @@
                 app:layout_constraintEnd_toStartOf="@+id/btn_call_direct"
                 app:layout_constraintTop_toTopOf="@+id/btn_call_direct"
                 app:srcCompat="@drawable/ic_baseline_notifications_off_24"
-                app:tint="@color/hau_dark_green" />
+                app:tint="@color/hau_dark_green"
+                android:contentDescription="알림 설정 버튼"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

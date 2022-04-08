@@ -33,9 +33,6 @@ class EditCallContent : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.i("수정", "콜메모 dialog 터치 심플하게 개선")
-//        콜메모 dialog 터치 심플하게 개선
-
         val args = arguments?.getParcelable<CallLogData>("callLogData")
         binding.callContent.setText(args!!.callContent)
         binding.contentKeyword.setText(args.callKeyword)

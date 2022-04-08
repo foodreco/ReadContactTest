@@ -51,7 +51,7 @@ interface ContactDao {
     fun getAllDataByNumberASC(): LiveData<List<ContactBase>>
 
     @Query("SELECT * FROM contact_table WHERE `group` is not :argsGroup ORDER BY name ASC")
-    fun getDataExceptArgsGroup(argsGroup: String): LiveData<List<ContactBase>>
+    fun getDataExceptArgsGroup(argsGroup: String): Flow<List<ContactBase>>
 
     @Query("SELECT * FROM contact_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ORDER BY name ASC")
     fun searchDatabase(searchQuery: String): Flow<List<ContactBase>>

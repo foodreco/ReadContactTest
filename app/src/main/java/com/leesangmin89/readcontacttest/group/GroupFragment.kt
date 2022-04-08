@@ -37,8 +37,6 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.i("수정", "검색 후 알맞은 라이브러리 적용")
-
         val adapter = GroupAdapter()
         binding.groupRecyclerView.adapter = adapter
 
@@ -47,8 +45,8 @@ class GroupFragment : Fragment() {
             getGroupName()
 
             // recyclerView 로 출력
-            groupFragmentList.observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            groupFragmentList.observe(viewLifecycleOwner) {
+                adapter.addHeaderAndSubmitList(it)
             }
         }
 
@@ -58,21 +56,24 @@ class GroupFragment : Fragment() {
                 SORT_BY_IMPORTANCE -> {
                     groupViewModel.groupInfo.observe(viewLifecycleOwner) {
                         if (sortNumber.value == SORT_BY_IMPORTANCE) {
-                            if (it == emptyList<List<GroupData>>()) {
-                                popUpDialog()
-                            } else {
-                                groupViewModel.sortGroupByImportance(it)
-                            }
+//                            if (it == emptyList<List<GroupData>>()) {
+//                                popUpDialog()
+//                                Toast.makeText(requireContext(),"그룹이 없습니다.\n상단 ＋를 눌러 그룹을 추가해주세요.", Toast.LENGTH_LONG).show()
+//                            } else {
+                            groupViewModel.sortGroupByImportance(it)
+//                            }
                         }
                     }
                 }
                 SORT_BY_MEMBERS -> {
                     groupViewModel.groupInfo.observe(viewLifecycleOwner) {
                         if (sortNumber.value == SORT_BY_MEMBERS) {
-                            if (it == emptyList<List<GroupData>>()) {
-                                popUpDialog()
-                            }
+//                            if (it == emptyList<List<GroupData>>()) {
+//                                popUpDialog()
+//                                Toast.makeText(requireContext(),"그룹이 없습니다.\n상단 ＋를 눌러 그룹을 추가해주세요.", Toast.LENGTH_LONG).show()
+//                            }
                             groupViewModel.sortGroupByMembers(it)
+//                        }
                         }
                     }
                 }
@@ -133,5 +134,4 @@ class GroupFragment : Fragment() {
         // Dialog 를 거쳐서 GroupListAddFragment 까지 가야하므로, navigation 을 사용한다.
         findNavController().navigate(GroupFragmentDirections.actionGroupFragmentToGroupAddDialog())
     }
-
 }

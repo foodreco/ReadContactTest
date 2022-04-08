@@ -8,11 +8,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.leesangmin89.readcontacttest.databinding.GroupAddDialogBinding
 import dagger.hilt.android.AndroidEntryPoint
-import com.leesangmin89.readcontacttest.clearFocusAndHideKeyboard
-import com.leesangmin89.readcontacttest.setFocusAndShowKeyboard
-
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import com.leesangmin89.readcontacttest.util.clearFocusAndHideKeyboard
+import com.leesangmin89.readcontacttest.util.setFocusAndShowKeyboard
 
 @AndroidEntryPoint
 class GroupAddDialog : DialogFragment() {

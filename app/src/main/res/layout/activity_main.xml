@@ -29,8 +29,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@color/hau_white_green"
-        app:itemIconTint="@color/hau_green"
-        app:itemTextColor="@color/hau_green"
+        app:labelVisibilityMode="unlabeled"
+        app:itemIconTint="@color/bottom_navigation_color"
         app:menu="@menu/bottom_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
