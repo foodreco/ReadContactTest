@@ -210,7 +210,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val granted = permissions.entries.all {
-                it.value == true
+                it.value
             }
             if (granted) {
                 // 허용된, 경우

@@ -60,7 +60,7 @@ class MainSubFragment : Fragment() {
         // 2. 월별 통화량 CombinedChart 관련 코드
         // combinedChartList 를 생성하는 함수 데이터 (뷰모델인데 넘어온다?? activity 때문?)
         val combinedChartList = mainViewModel.contactInfoUpdate(requireActivity())
-        Log.i("차트","combinedChartList : $combinedChartList")
+        Log.i("차트", "combinedChartList : $combinedChartList")
         // 콤바인 차트 (월별 통화횟수 및 통화량)
         activateCombinedChart(combinedChartList)
 
@@ -137,9 +137,9 @@ class MainSubFragment : Fragment() {
             // 인수가 많은 집합부터 불러오기(사람수 많은 그룹부터 불러오기)
             // 데이터 넣기, 조건부로 null 일 때 넣을 리스트 따로 만들기
             val entries = mutableListOf<PieEntry>()
-            entries.add(PieEntry(tendency.allCallMissed.toFloat(),"부재중"))
-            entries.add(PieEntry(tendency.allCallIncoming.toFloat(),"수신"))
-            entries.add(PieEntry(tendency.allCallOutgoing.toFloat(),"발신"))
+            entries.add(PieEntry(tendency.allCallMissed.toFloat(), "부재중"))
+            entries.add(PieEntry(tendency.allCallIncoming.toFloat(), "수신"))
+            entries.add(PieEntry(tendency.allCallOutgoing.toFloat(), "발신"))
             // 통화수 많은 순으로 정렬해서 대입한다.
             entries.sortByDescending { it.value }
 
@@ -168,9 +168,9 @@ class MainSubFragment : Fragment() {
         }
     }
 
-    private fun activateCombinedChart(applyList : List<CombinedChartData>) {
+    private fun activateCombinedChart(applyList: List<CombinedChartData>) {
 
-        Log.i("차트","applyList : $applyList")
+        Log.i("차트", "applyList : $applyList")
 
         val chart = binding.combinedChart
 
@@ -205,7 +205,8 @@ class MainSubFragment : Fragment() {
 
         var months = mutableListOf<String>()
         for (num in applyList) {
-            val monthToString = num.month.toString().substring(0,2) + "/" + num.month.toString().substring(2)
+            val monthToString =
+                num.month.toString().substring(0, 2) + "/" + num.month.toString().substring(2)
             months.add(monthToString)
         }
 
@@ -261,33 +262,53 @@ class MainSubFragment : Fragment() {
             var callTypeTendencyInReco = "알람 발수신 성향"
             var callTypeTendencyOverView = "총 성향"
             // 발신이 많으면 true
-            var groupTendency :Boolean? = null
-            var recoTendency :Boolean? = null
+            var groupTendency: Boolean? = null
+            var recoTendency: Boolean? = null
 
             callTypeTendencyInGroup =
                 if (tendency.groupListCallIncoming.toInt() >= tendency.groupListCallOutgoing.toInt()) {
-                    groupTendency = false
-                    val rating = (((tendency.groupListCallIncoming.toDouble()
-                        .minus(tendency.groupListCallOutgoing.toDouble())) / tendency.groupListCallOutgoing.toDouble()) * 100).toInt()
-                    "그룹 등록 상대로 '전화를 받는 편이에요.'\n(수신이 $rating% 더 많아요.)"
+                    if (tendency.groupListCallOutgoing.toInt() == 0) {
+                        groupTendency = false
+                        "그룹 등록 상대로 '전화를 받는 편이에요.'"
+                    } else {
+                        groupTendency = false
+                        val rating = (((tendency.groupListCallIncoming.toDouble()
+                            .minus(tendency.groupListCallOutgoing.toDouble())) / tendency.groupListCallOutgoing.toDouble()) * 100).toInt()
+                        "그룹 등록 상대로 '전화를 받는 편이에요.'\n(수신이 $rating% 더 많아요.)"
+                    }
                 } else {
-                    groupTendency = true
-                    val rating = (((tendency.groupListCallOutgoing.toDouble()
-                        .minus(tendency.groupListCallIncoming.toDouble())) / tendency.groupListCallIncoming.toDouble()) * 100).toInt()
-                    "그룹 등록 상대로 '전화를 거는 편이에요.'\n(발신이 $rating% 더 많아요.)"
+                    if (tendency.groupListCallIncoming.toInt() == 0) {
+                        groupTendency = true
+                        "그룹 등록 상대로 '전화를 거는 편이에요.'"
+                    } else {
+                        groupTendency = true
+                        val rating = (((tendency.groupListCallOutgoing.toDouble()
+                            .minus(tendency.groupListCallIncoming.toDouble())) / tendency.groupListCallIncoming.toDouble()) * 100).toInt()
+                        "그룹 등록 상대로 '전화를 거는 편이에요.'\n(발신이 $rating% 더 많아요.)"
+                    }
                 }
 
             callTypeTendencyInReco =
                 if (tendency.recommendationCallIncoming.toInt() >= tendency.recommendationCallOutgoing.toInt()) {
-                    recoTendency = false
-                    val rating = (((tendency.recommendationCallIncoming.toDouble()
-                        .minus(tendency.recommendationCallOutgoing.toDouble())) / tendency.recommendationCallOutgoing.toDouble()) * 100).toInt()
-                    "알람 등록 상대로 '전화를 받는 편이에요.'\n(수신이 $rating% 더 많아요.)"
+                    if (tendency.recommendationCallOutgoing.toInt() == 0) {
+                        recoTendency = false
+                        "알림 등록 상대로 '전화를 받는 편이에요.'"
+                    } else {
+                        recoTendency = false
+                        val rating = (((tendency.recommendationCallIncoming.toDouble()
+                            .minus(tendency.recommendationCallOutgoing.toDouble())) / tendency.recommendationCallOutgoing.toDouble()) * 100).toInt()
+                        "알림 등록 상대로 '전화를 받는 편이에요.'\n(수신이 $rating% 더 많아요.)"
+                    }
                 } else {
-                    recoTendency = true
-                    val rating = (((tendency.recommendationCallOutgoing.toDouble()
-                        .minus(tendency.recommendationCallIncoming.toDouble())) / tendency.recommendationCallIncoming.toDouble()) * 100).toInt()
-                    "알람 등록 상대로 '전화를 거는 편이에요.'\n(발신이 $rating% 더 많아요.)"
+                    if (tendency.recommendationCallIncoming.toInt() == 0) {
+                        recoTendency = true
+                        "알림 등록 상대로 '전화를 거는 편이에요.'"
+                    } else {
+                        recoTendency = true
+                        val rating = (((tendency.recommendationCallOutgoing.toDouble()
+                            .minus(tendency.recommendationCallIncoming.toDouble())) / tendency.recommendationCallIncoming.toDouble()) * 100).toInt()
+                        "알람 등록 상대로 '전화를 거는 편이에요.'\n(발신이 $rating% 더 많아요.)"
+                    }
                 }
 
             if (groupTendency && recoTendency) {
@@ -327,10 +348,10 @@ class MainSubFragment : Fragment() {
     }
 
     // Combined Chart 중 바 차트
-    private fun generateBarData(applyList : List<CombinedChartData>): BarData? {
+    private fun generateBarData(applyList: List<CombinedChartData>): BarData? {
         val entries1: ArrayList<BarEntry> = ArrayList()
-        for (index in 1 until applyList.lastIndex+1) {
-            entries1.add(BarEntry(index + 0f, applyList[index-1].duration/60.toFloat()))
+        for (index in 1 until applyList.lastIndex + 1) {
+            entries1.add(BarEntry(index + 0f, applyList[index - 1].duration / 60.toFloat()))
         }
         val set1 = BarDataSet(entries1, "통화시간(분)")
         set1.color = Color.rgb(60, 220, 78)
@@ -347,11 +368,11 @@ class MainSubFragment : Fragment() {
     }
 
     // Combined Chart 중 라인 차트
-    private fun generateLineData(applyList : List<CombinedChartData>): LineData? {
+    private fun generateLineData(applyList: List<CombinedChartData>): LineData? {
         val d = LineData()
         val entries: ArrayList<Entry> = arrayListOf()
-        for (index in 1 until applyList.lastIndex+1) entries.add(
-            Entry(index + 0f, applyList[index-1].times.toFloat())
+        for (index in 1 until applyList.lastIndex + 1) entries.add(
+            Entry(index + 0f, applyList[index - 1].times.toFloat())
         )
         val set = LineDataSet(entries, "통화횟수")
         set.color = Color.rgb(74, 101, 114)

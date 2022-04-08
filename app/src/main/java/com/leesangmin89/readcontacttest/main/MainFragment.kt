@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.animation.Easing
@@ -63,6 +64,8 @@ class MainFragment : Fragment() {
             childFragmentManager
         )
     }
+
+    private val approvalCallLog = MutableLiveData(false)
 
     var easterEggInt = 0
     var spin: Boolean = true
@@ -191,14 +194,32 @@ class MainFragment : Fragment() {
                     MainFragmentDirections.actionMainFragmentToMainActivationDialog(argsCountNumbers)
                 it.findNavController().navigate(action)
             } else {
-                Toast.makeText(requireContext(), "잠시 후 시도해주세요.", Toast.LENGTH_SHORT).show()
+                if (approvalCallLog.value == false) {
+                    Toast.makeText(requireContext(), "통화 기록 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "잠시 후 시도해주세요.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
+        // 통화기록 권한이 허용됬다면 성향을 보여주는 코드
+        approvalCallLog.observe(viewLifecycleOwner){ isApproved ->
+            if (isApproved) {
+                binding.cardViewTendency.visibility = View.VISIBLE
+                binding.cardViewVisibility.visibility = View.GONE
+            } else {
+                binding.cardViewTendency.visibility = View.GONE
+                binding.cardViewVisibility.visibility = View.VISIBLE
+            }
+        }
+        checkPermissionsAndConfirmTendency()
+
         // 성향 터치 시, 통화기록 권한이 허용됬다면 정보 detail 을 보여주는 코드
         binding.tendencyLayout.setOnClickListener {
-            checkPermissionsAndConfirmTendency(it)
+            val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
+            it.findNavController().navigate(action)
         }
+
 
         // 그룹 구성 터치 시, 이스터 에그
         binding.groupFormationLayout.setOnClickListener {
@@ -255,7 +276,6 @@ class MainFragment : Fragment() {
 
         return binding.root
     }
-
 
 
     private fun call(phoneNumber: String) {
@@ -366,7 +386,7 @@ class MainFragment : Fragment() {
     }
 
     // 활성화도가 0% 일 때, 작동하는 프로그래스바 코드
-    private fun activateStatusProgressBarWithZero(it:NumberForStatusProgressbar) {
+    private fun activateStatusProgressBarWithZero(it: NumberForStatusProgressbar) {
         // 알람 설정 상대가 없는 경우,
         if (it.allNumber == 0) {
             binding.textTotalActivation.text = "# 알람 설정된 상대가 없습니다."
@@ -393,7 +413,7 @@ class MainFragment : Fragment() {
         binding.textStatusProgressbar.text =
             getString(R.string.recommendation_active_rate, rateText.toInt())
         binding.statusProgressbar.setProgressWithAnimation(barState.toFloat(), 3000)
-        Log.i("차트","barState : $barState")
+        Log.i("차트", "barState : $barState")
         when (barState.toFloat()) {
             in 0f..59f -> {
                 // 색상 적용
@@ -486,25 +506,40 @@ class MainFragment : Fragment() {
 
         callTypeTendency =
             if (tendency.allCallIncoming.toInt() >= tendency.allCallOutgoing.toInt()) {
-                val rating = (((tendency.allCallIncoming.toDouble()
-                    .minus(tendency.allCallOutgoing.toDouble())) / tendency.allCallOutgoing.toDouble()) * 100).toInt()
-                "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
-
+                if (tendency.allCallOutgoing.toInt() == 0) {
+                    "'전화를 받는 편이에요.'"
+                } else {
+                    val rating = (((tendency.allCallIncoming.toDouble()
+                        .minus(tendency.allCallOutgoing.toDouble())) / tendency.allCallOutgoing.toDouble()) * 100).toInt()
+                    "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
+                }
             } else {
-                val rating = (((tendency.allCallOutgoing.toDouble()
-                    .minus(tendency.allCallIncoming.toDouble())) / tendency.allCallIncoming.toDouble()) * 100).toInt()
-                "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
+                if (tendency.allCallIncoming.toInt() == 0) {
+                    "'전화를 거는 편이에요.'"
+                } else {
+                    val rating = (((tendency.allCallOutgoing.toDouble()
+                        .minus(tendency.allCallIncoming.toDouble())) / tendency.allCallIncoming.toDouble()) * 100).toInt()
+                    "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
+                }
             }
 
         callTypeTendencyInReco =
             if (tendency.recommendationCallIncoming.toInt() >= tendency.recommendationCallOutgoing.toInt()) {
-                val rating = (((tendency.recommendationCallIncoming.toDouble()
-                    .minus(tendency.recommendationCallOutgoing.toDouble())) / tendency.recommendationCallOutgoing.toDouble()) * 100).toInt()
-                "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
+                if (tendency.recommendationCallOutgoing.toInt() == 0) {
+                    "'전화를 받는 편이에요.'"
+                } else {
+                    val rating = (((tendency.recommendationCallIncoming.toDouble()
+                        .minus(tendency.recommendationCallOutgoing.toDouble())) / tendency.recommendationCallOutgoing.toDouble()) * 100).toInt()
+                    "'전화를 받는 편이에요.'\n($rating% 더 받아요.)"
+                }
             } else {
-                val rating = (((tendency.recommendationCallOutgoing.toDouble()
-                    .minus(tendency.recommendationCallIncoming.toDouble())) / tendency.recommendationCallIncoming.toDouble()) * 100).toInt()
-                "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
+                if (tendency.recommendationCallIncoming.toInt() == 0) {
+                    "'전화를 거는 편이에요.'"
+                } else {
+                    val rating = (((tendency.recommendationCallOutgoing.toDouble()
+                        .minus(tendency.recommendationCallIncoming.toDouble())) / tendency.recommendationCallIncoming.toDouble()) * 100).toInt()
+                    "'전화를 거는 편이에요.'\n($rating% 더 걸어요.)"
+                }
             }
 
         callDurationTendency =
@@ -534,6 +569,7 @@ class MainFragment : Fragment() {
         } else {
             // 허용 되어있는 경우, 통화기록, 통계 가져오기
             appBuildLoadContact()
+            approvalCallLog.value = true
         }
     }
 
@@ -556,7 +592,7 @@ class MainFragment : Fragment() {
     }
 
     // 허용 체크 후, 통화 성향 보기
-    private fun checkPermissionsAndConfirmTendency(view:View) {
+    private fun checkPermissionsAndConfirmTendency() {
         val permission = Manifest.permission.READ_CALL_LOG
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -568,9 +604,8 @@ class MainFragment : Fragment() {
                 permission
             )
         } else {
-            // 허용 되어있는 경우, 서브 프레그먼트로 이동
-            val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
-            view.findNavController().navigate(action)
+            // 허용 되어있는 경우
+            approvalCallLog.value = true
         }
     }
 
@@ -592,11 +627,12 @@ class MainFragment : Fragment() {
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val granted = permissions.entries.all {
-                it.value == true
+                it.value
             }
             if (granted) {
                 // 허용된, 경우
                 Toast.makeText(context, "권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+                approvalCallLog.value = true
                 appBuildLoadContact()
             } else {
                 // 허용안된 경우,
@@ -622,9 +658,13 @@ class MainFragment : Fragment() {
             if (isGranted) {
                 // 허용된, 경우
                 Toast.makeText(context, "이제 통화 성향을 확인할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                approvalCallLog.value = true
+
             } else {
                 // 허용안된 경우,
-                Toast.makeText(context, "통화 성향을 확인하려면\n통화 기록 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "통화 성향을 확인하려면\n통화 기록 권한을 허용해주세요.", Toast.LENGTH_SHORT)
+                    .show()
+                approvalCallLog.value = false
             }
         }
 
