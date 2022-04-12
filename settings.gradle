@@ -7,5 +7,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "ReadContactTest"
+rootProject.name = "HowRU"
 include ':app'

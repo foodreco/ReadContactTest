@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.leesangmin89.readcontacttest.list.ListFragment"
+        android:name="com.dreamreco.howru.list.ListFragment"
         android:label="연락처"
         tools:layout="@layout/fragment_list">
         <argument
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainSubFragment"
-        android:name="com.leesangmin89.readcontacttest.main.MainSubFragment"
+        android:name="com.dreamreco.howru.main.MainSubFragment"
         android:label="통화성향"
         tools:layout="@layout/fragment_main_sub">
         <action
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupFragment"
-        android:name="com.leesangmin89.readcontacttest.group.GroupFragment"
+        android:name="com.dreamreco.howru.group.GroupFragment"
         android:label="그룹"
         tools:layout="@layout/fragment_group">
         <action
@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupListFragment"
-        android:name="com.leesangmin89.readcontacttest.group.groupList.GroupListFragment"
+        android:name="com.dreamreco.howru.group.groupList.GroupListFragment"
         android:label="{groupName}"
         tools:layout="@layout/fragment_group_list" >
         <action
@@ -70,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupDetailFragment"
-        android:name="com.leesangmin89.readcontacttest.group.groupDetail.GroupDetailFragment"
+        android:name="com.dreamreco.howru.group.groupDetail.GroupDetailFragment"
         android:label="{phoneName}님과 통화기록"
         tools:layout="@layout/fragment_group_detail">
         <action
@@ -90,12 +90,12 @@
     </fragment>
     <fragment
         android:id="@+id/callLogFragment"
-        android:name="com.leesangmin89.readcontacttest.callLog.CallLogFragment"
+        android:name="com.dreamreco.howru.callLog.CallLogFragment"
         android:label="통화기록"
         tools:layout="@layout/fragment_call_log"/>
     <fragment
         android:id="@+id/groupListAddFragment"
-        android:name="com.leesangmin89.readcontacttest.group.groupListAdd.GroupListAddFragment"
+        android:name="com.dreamreco.howru.group.groupListAdd.GroupListAddFragment"
         android:label="{groupName} 그룹추가"
         tools:layout="@layout/fragment_group_list_add">
         <argument
@@ -108,7 +108,7 @@
     </fragment>
     <dialog
         android:id="@+id/updateDialog"
-        android:name="com.leesangmin89.readcontacttest.customDialog.UpdateDialog"
+        android:name="com.dreamreco.howru.customDialog.UpdateDialog"
         android:label="UpdateDialog" >
         <action
             android:id="@+id/action_updateDialog_to_groupFragment"
@@ -117,7 +117,7 @@
     </dialog>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.leesangmin89.readcontacttest.main.MainFragment"
+        android:name="com.dreamreco.howru.main.MainFragment"
         android:label="홈"
         tools:layout="@layout/fragment_main">
         <action
@@ -135,7 +135,7 @@
     </fragment>
     <dialog
         android:id="@+id/groupAddDialog"
-        android:name="com.leesangmin89.readcontacttest.customDialog.GroupAddDialog"
+        android:name="com.dreamreco.howru.customDialog.GroupAddDialog"
         android:label="GroupAddDialog"
         tools:layout="@layout/group_add_dialog">
         <action
@@ -149,7 +149,7 @@
     </dialog>
     <dialog
         android:id="@+id/groupNameEditDialog"
-        android:name="com.leesangmin89.readcontacttest.customDialog.GroupNameEditDialog"
+        android:name="com.dreamreco.howru.customDialog.GroupNameEditDialog"
         android:label="GroupNameEditDialog" >
         <action
             android:id="@+id/action_groupNameEditDialog_to_groupFragment"
@@ -161,7 +161,7 @@
     </dialog>
     <dialog
         android:id="@+id/mainActivationDialog"
-        android:name="com.leesangmin89.readcontacttest.customDialog.MainActivationDialog"
+        android:name="com.dreamreco.howru.customDialog.MainActivationDialog"
         android:label="MainActivationDialog" >
         <action
             android:id="@+id/action_mainActivationDialog_to_mainFragment"
@@ -169,6 +169,6 @@
             app:popUpTo="@id/mainFragment" />
         <argument
             android:name="countNumbers"
-            app:argType="com.leesangmin89.readcontacttest.main.CountNumbers" />
+            app:argType="com.dreamreco.howru.main.CountNumbers" />
     </dialog>
 </navigation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -203,14 +204,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:layout_marginTop="32dp"
-                    android:gravity="end"
+                    android:layout_marginTop="16dp"
                     android:text="그룹 발수신 성향은..."
                     android:textColor="@color/hau_dark_green"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView19" />
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider" />
 
                 <TextView
                     android:id="@+id/text_callType_review2"
@@ -218,7 +218,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
-                    android:gravity="end"
                     android:text="알람 발수신 성향은..."
                     android:textColor="@color/hau_dark_green"
                     android:textSize="16sp"
@@ -245,6 +244,16 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rc_progressbar_reco" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -296,6 +305,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/duration_name_text" />
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/materialDivider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/combined_chart" />
+
                 <TextView
                     android:id="@+id/text_com_review"
                     android:layout_width="wrap_content"
@@ -307,7 +325,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/combined_chart" />
+                    app:layout_constraintTop_toBottomOf="@+id/materialDivider2" />
 
                 <TextView
                     android:id="@+id/text_com_review2"
@@ -326,86 +344,5 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
-
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:layout_margin="4dp"-->
-<!--            app:cardCornerRadius="14dp"-->
-<!--            android:id="@+id/cardView_for_activation"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/combined_chart_cardView">-->
-
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:id="@+id/call_duration_barchart_layout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="500dp"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="8dp">-->
-
-<!--                <ProgressBar-->
-<!--                    android:id="@+id/progressbar_for_call_duration"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"/>-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/duration_per_group_name_text"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="# 그룹별 통화시간 입니다."-->
-<!--                    android:textColor="@color/hau_dark_green"-->
-<!--                    android:textSize="20sp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                <com.github.mikephil.charting.charts.BarChart-->
-<!--                    android:id="@+id/bar_chart"-->
-<!--                    android:layout_width="300dp"-->
-<!--                    android:layout_height="300dp"-->
-<!--                    android:layout_marginTop="16dp"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/duration_per_group_name_text" />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/all_call_time"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:gravity="left"-->
-<!--                    android:text="총 통화시간"-->
-<!--                    android:textSize="16sp"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/bar_chart"/>-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/group_call_time"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:gravity="left"-->
-<!--                    android:text="그룹 통화시간"-->
-<!--                    android:textSize="16sp"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/all_call_time"/>-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/alarm_call_time"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="8dp"-->
-<!--                    android:gravity="left"-->
-<!--                    android:text="알람 통화시간"-->
-<!--                    android:textSize="16sp"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@+id/group_call_time"/>-->
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--        </androidx.cardview.widget.CardView>-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
