@@ -14,6 +14,7 @@ import com.dreamreco.howru.customDialog.UpdateDialog
 import com.dreamreco.howru.data.entity.ContactBase
 import com.dreamreco.howru.databinding.CallLogHeaderBinding
 import com.dreamreco.howru.databinding.ContactChildBinding
+import com.dreamreco.howru.databinding.ListFragmentEmptyHeaderBinding
 import com.dreamreco.howru.util.ContactBaseItem
 import com.dreamreco.howru.util.transformingToInitialSpell
 
@@ -29,6 +30,7 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
         return when (viewType) {
             ContactBaseItem.Header.VIEW_TYPE -> ContactBaseHeaderViewHolder.from(parent)
             ContactBaseItem.Item.VIEW_TYPE -> ContactBaseItemViewHolder.from(parent)
+            ContactBaseItem.EmptyHeader.VIEW_TYPE -> EmptyHeaderViewHolder.from(parent)
             else -> throw IllegalArgumentException("Cannot create ViewHolder for view type: $viewType")
         }
     }
@@ -62,6 +64,19 @@ class ContactAdapter(ctx: Context, fragmentManager: FragmentManager) :
         fun bind(item: ContactBaseItem) {
             val contactBase = (item as ContactBaseItem.Header).contactBase
             binding.textDate.text = transformingToInitialSpell(contactBase.name)
+        }
+    }
+
+    // empty 헤더용 뷰홀더
+    class EmptyHeaderViewHolder constructor(private val binding: ListFragmentEmptyHeaderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            fun from(parent: ViewGroup): EmptyHeaderViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ListFragmentEmptyHeaderBinding.inflate(layoutInflater, parent, false)
+                return EmptyHeaderViewHolder(binding)
+            }
         }
     }
 

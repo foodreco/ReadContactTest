@@ -63,4 +63,5 @@ interface GroupListDao {
 
     @Query("SELECT * FROM group_table WHERE name LIKE :searchQuery OR number LIKE :searchQuery OR `group` LIKE :searchQuery ")
     fun searchDatabase(searchQuery: String): Flow<List<GroupList>>
+
 }

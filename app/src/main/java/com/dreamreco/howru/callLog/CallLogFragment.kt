@@ -51,11 +51,9 @@ class CallLogFragment : Fragment() {
                     callLogViewModel.sortByNormal().observe(viewLifecycleOwner) {
                         if (sortNumber.value == SORT_NORMAL_STATE) {
                             if (it == emptyList<List<CallLogData>>()) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "최근 통화기록이 없습니다.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                binding.btnUpScroll.visibility = View.GONE
+                            } else {
+                                binding.btnUpScroll.visibility = View.VISIBLE
                             }
                             callLogViewModel.makeList(it)
                         }
@@ -66,11 +64,9 @@ class CallLogFragment : Fragment() {
                         list.let {
                             if (sortNumber.value == SORT_BY_CONTACT) {
                                 if (it == emptyList<List<CallLogData>>()) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "연락처 지정된 통화기록이 없습니다.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    binding.btnUpScroll.visibility = View.GONE
+                                } else {
+                                    binding.btnUpScroll.visibility = View.VISIBLE
                                 }
                                 callLogViewModel.makeList(it)
                             }
@@ -82,11 +78,9 @@ class CallLogFragment : Fragment() {
                         list.let {
                             if (sortNumber.value == SORT_BY_IMPORTANCE) {
                                 if (it == emptyList<List<CallLogData>>()) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "중요 기록이 없습니다.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    binding.btnUpScroll.visibility = View.GONE
+                                } else {
+                                    binding.btnUpScroll.visibility = View.VISIBLE
                                 }
                                 callLogViewModel.makeList(it)
                             }

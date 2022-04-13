@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // submitList 를 위한 코루틴 장치 적용
-private val adapterScope = CoroutineScope(Dispatchers.Default)
+val adapterScope = CoroutineScope(Dispatchers.Default)
 
 class GroupAdapter : ListAdapter<GroupFragmentItem, RecyclerView.ViewHolder>(GroupDiffCallback()) {
 

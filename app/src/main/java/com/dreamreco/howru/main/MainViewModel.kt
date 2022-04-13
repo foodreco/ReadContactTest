@@ -282,8 +282,11 @@ class MainViewModel @Inject constructor(
         }
         contacts.close()
 
-        // 0,0,0 요소 삭제
-        list.removeAt(0)
+        // 통화기록이 하나라도 존재할 때, list.add 가 시작됨
+        if (list.size != 0) {
+            // 0,0,0 요소 삭제
+            list.removeAt(0)
+        }
 
         // 최근 일자부터 재정렬
 //        list.sortByDescending { it.month }

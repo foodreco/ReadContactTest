@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dreamreco.howru.*
 import com.dreamreco.howru.customDialog.EditCallContent
 import com.dreamreco.howru.data.entity.CallLogData
+import com.dreamreco.howru.databinding.CallLogFragmentEmptyHeaderBinding
 import com.dreamreco.howru.databinding.CallLogHeaderBinding
 import com.dreamreco.howru.databinding.FragmentCallLogChildBinding
 import com.dreamreco.howru.util.CallLogItem
@@ -43,6 +44,7 @@ class CallLogAdapter(context: Context, fragmentManager: FragmentManager) :
         return when (viewType) {
             CallLogItem.Header.VIEW_TYPE -> CallLogHeaderViewHolder.from(parent)
             CallLogItem.Item.VIEW_TYPE -> CallLogItemViewHolder.from(parent)
+            CallLogItem.EmptyHeader.VIEW_TYPE -> CallLogEmptyHeaderViewHolder.from(parent)
             else -> throw IllegalArgumentException("Cannot create ViewHolder for view type: $viewType")
         }
     }
@@ -111,6 +113,19 @@ class CallLogAdapter(context: Context, fragmentManager: FragmentManager) :
             val callLogData = (item as CallLogItem.Header).callLog
             binding.apply {
                 textDate.text = callLogData.date?.let { convertLongToDateString(it.toLong()) }
+            }
+        }
+    }
+
+    // empty 헤더용 뷰홀더
+    class CallLogEmptyHeaderViewHolder constructor(private val binding: CallLogFragmentEmptyHeaderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        companion object {
+            fun from(parent: ViewGroup): CallLogEmptyHeaderViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = CallLogFragmentEmptyHeaderBinding.inflate(layoutInflater, parent, false)
+                return CallLogEmptyHeaderViewHolder(binding)
             }
         }
     }

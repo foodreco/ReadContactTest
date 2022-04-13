@@ -28,7 +28,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 import kotlin.math.round
 
-
 @AndroidEntryPoint
 class MainSubFragment : Fragment() {
 
@@ -171,8 +170,6 @@ class MainSubFragment : Fragment() {
     }
 
     private fun activateCombinedChart(applyList: List<CombinedChartData>) {
-
-        Log.i("차트", "applyList : $applyList")
 
         val chart = binding.combinedChart
 

@@ -143,12 +143,11 @@ data class CombinedChartData(
 
 // CallLog, GroupDetail Adapter 에서 헤더용으로 사용된 sealed class
 sealed class CallLogItem {
-    abstract val callLog: CallLogData
     abstract val layoutId: Int
 
     // 헤더
     data class Header(
-        override val callLog: CallLogData,
+        val callLog: CallLogData,
         override val layoutId: Int = VIEW_TYPE
     ) : CallLogItem() {
 
@@ -159,7 +158,7 @@ sealed class CallLogItem {
 
     // view
     data class Item(
-        override val callLog: CallLogData,
+        val callLog: CallLogData,
         override val layoutId: Int = VIEW_TYPE
     ) : CallLogItem() {
 
@@ -167,6 +166,17 @@ sealed class CallLogItem {
             const val VIEW_TYPE = R.layout.fragment_call_log_child
         }
     }
+
+    // 통화기록이 없을 때,
+    data class EmptyHeader(
+        override val layoutId: Int = VIEW_TYPE
+    ) : CallLogItem() {
+
+        companion object {
+            const val VIEW_TYPE = R.layout.call_log_fragment_empty_header
+        }
+    }
+
 }
 
 // 맞춤 차트 그래프 색
@@ -182,12 +192,11 @@ val CUSTOM_CHART_COLORS = arrayListOf<Int>(
 
 // ListFragment Adapter 에서 헤더용으로 사용된 sealed class
 sealed class ContactBaseItem {
-    abstract val contactBase: ContactBase
     abstract val layoutId: Int
 
     // 헤더
     data class Header(
-        override val contactBase: ContactBase,
+        val contactBase: ContactBase,
         override val layoutId: Int = VIEW_TYPE
     ) : ContactBaseItem() {
 
@@ -198,12 +207,22 @@ sealed class ContactBaseItem {
 
     // view
     data class Item(
-        override val contactBase: ContactBase,
+        val contactBase: ContactBase,
         override val layoutId: Int = VIEW_TYPE
     ) : ContactBaseItem() {
 
         companion object {
             const val VIEW_TYPE = R.layout.contact_child
+        }
+    }
+
+    // 연락처가 없을 때,
+    data class EmptyHeader(
+        override val layoutId: Int = VIEW_TYPE
+    ) : ContactBaseItem() {
+
+        companion object {
+            const val VIEW_TYPE = R.layout.list_fragment_empty_header
         }
     }
 }

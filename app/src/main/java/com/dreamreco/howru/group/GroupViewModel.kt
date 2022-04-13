@@ -1,10 +1,7 @@
 package com.dreamreco.howru.group
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.dreamreco.howru.MyApplication
 import com.dreamreco.howru.data.dao.CallLogDao
 import com.dreamreco.howru.data.entity.ContactBase
@@ -561,6 +558,11 @@ class GroupViewModel @Inject constructor(
         val newGroupList: List<GroupData> = it.sortedByDescending { it.groupNumber }
         _groupFragmentList.postValue(newGroupList)
     }
+
+    fun isContactBaseEmpty() : LiveData<String?> {
+        return database.emptyCheckContactBase().asLiveData()
+    }
+
 }
 
 data class GetDDCClass (

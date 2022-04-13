@@ -41,7 +41,7 @@ class RecommendationListShowDialog : DialogFragment() {
 
         // recommendation DB 를 불러오는 코드
         recoViewModel.getRecommendationMinimalLiveList().observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            adapter.addHeaderAndSubmitList(it)
         }
 
         // 확인 버튼 터치 시, dismiss

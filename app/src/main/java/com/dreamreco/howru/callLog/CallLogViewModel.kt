@@ -5,7 +5,9 @@ import androidx.lifecycle.*
 import com.dreamreco.howru.data.dao.CallLogDao
 import com.dreamreco.howru.data.dao.TendencyDao
 import com.dreamreco.howru.data.entity.CallLogData
+import com.dreamreco.howru.data.entity.ContactBase
 import com.dreamreco.howru.util.CallLogItem
+import com.dreamreco.howru.util.ContactBaseItem
 import com.dreamreco.howru.util.convertLongToDateString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,10 +21,10 @@ class CallLogViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     private val _dialogDismissEvent = MutableLiveData<Boolean>()
-    val dialogDismissEvent : LiveData<Boolean> = _dialogDismissEvent
+    val dialogDismissEvent: LiveData<Boolean> = _dialogDismissEvent
 
     private val _callLogItemData = MutableLiveData<List<CallLogItem>>()
-    val callLogItemData : LiveData<List<CallLogItem>> = _callLogItemData
+    val callLogItemData: LiveData<List<CallLogItem>> = _callLogItemData
 
     fun insert(callLogData: CallLogData) {
         viewModelScope.launch {
@@ -30,10 +32,11 @@ class CallLogViewModel @Inject constructor(
         }
     }
 
-    fun groupDetailList(number: String) : LiveData<List<CallLogData>> {
+    fun groupDetailList(number: String): LiveData<List<CallLogData>> {
         return dataCallLog.groupDetailList(number).asLiveData()
     }
-    fun groupDetailImportanceList(number: String) : LiveData<List<CallLogData>> {
+
+    fun groupDetailImportanceList(number: String): LiveData<List<CallLogData>> {
         return dataCallLog.groupDetailImportanceList(number).asLiveData()
     }
 
@@ -70,22 +73,26 @@ class CallLogViewModel @Inject constructor(
     // DB 에서 가져온 리스트 가공 (미리 날짜별로 정렬한 리스트를 가져와야 함)
     private fun List<CallLogData>.toListItems(): List<CallLogItem> {
         val result = arrayListOf<CallLogItem>() // 결과를 리턴할 리스트
-        var groupHeaderDate = "" // 그룹날짜
-        this.forEach { callLog ->
-            // 날짜가 달라지면 그룹헤더를 추가.
-            if (groupHeaderDate != callLog.date?.let { convertLongToDateString(it.toLong()) }) {
-                result.add(CallLogItem.Header(callLog))
+        if (this == emptyList<CallLogData>()) {
+            result.add(CallLogItem.EmptyHeader())
+        } else {
+            var groupHeaderDate = "" // 그룹날짜
+            this.forEach { callLog ->
+                // 날짜가 달라지면 그룹헤더를 추가.
+                if (groupHeaderDate != callLog.date?.let { convertLongToDateString(it.toLong()) }) {
+                    result.add(CallLogItem.Header(callLog))
+                }
+
+                // 그때의 CallLogData 추가.
+                result.add(CallLogItem.Item(callLog))
+
+                // 그룹날짜를 바로 이전 날짜로 설정.
+                groupHeaderDate =
+                    callLog.date?.let { convertLongToDateString(it.toLong()) }.toString()
             }
-
-            // 그때의 CallLogData 추가.
-            result.add(CallLogItem.Item(callLog))
-
-            // 그룹날짜를 바로 이전 날짜로 설정.
-            groupHeaderDate = callLog.date?.let { convertLongToDateString(it.toLong()) }.toString()
         }
         return result
     }
-
 
 
 }

@@ -103,6 +103,34 @@
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/mipmap-anydpi-v26/ic_phone_round.xml" value="0.1985" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/mipmap-anydpi-v26/none_profile.xml" value="0.223" />
         <entry key="..\:/Users/miny3/ReadContactTest/app/src/main/res/mipmap-anydpi-v26/none_profile_round.xml" value="0.223" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/activity_splash.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/call_log_fragment_empty_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/call_log_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/contact_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/contact_group_add_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/edit_call_content_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_call_log.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_group_list.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_group_list_add.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_list.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_main.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/fragment_main_activation.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_add_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_fragment_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_list_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_list_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/group_name_edit_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/groupdetail_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/list_fragment_empty_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/recommendation_list_child.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/recommendation_list_empty_header.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/recommendation_list_show_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/layout/update_dialog.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/menu/bottom_menu.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/menu/group_list_add_menu.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/menu/group_menu.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/miny3/howru/app/src/main/res/menu/list_menu.xml" value="0.36614583333333334" />
       </map>
     </option>
   </component>

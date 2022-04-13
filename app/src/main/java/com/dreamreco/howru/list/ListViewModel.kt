@@ -76,24 +76,27 @@ class ListViewModel @Inject constructor(
         _contactBaseItemData.postValue(listItems)
     }
 
-    // DB 에서 가져온 리스트 가공 (미리 날짜별로 정렬한 리스트를 가져와야 함)
+    // DB 에서 가져온 리스트 가공 (미리 이름순으로 정렬한 리스트를 가져와야 함)
     private fun List<ContactBase>.toListItems(): List<ContactBaseItem> {
         val result = arrayListOf<ContactBaseItem>() // 결과를 리턴할 리스트
-        var listHeaderText = "" // 리스트 초성
-        this.forEach { contactBase ->
-            // 초성이 달라지면 헤더로 추가
-            if (listHeaderText != transformingToInitialSpell(contactBase.name)) {
-                result.add(ContactBaseItem.Header(contactBase))
-            }
-            // entity 데이터 추가
-            result.add(ContactBaseItem.Item(contactBase))
+        if (this == emptyList<ContactBase>()) {
+            result.add(ContactBaseItem.EmptyHeader())
+        } else {
+            var listHeaderText = "" // 리스트 초성
+            this.forEach { contactBase ->
+                // 초성이 달라지면 헤더로 추가
+                if (listHeaderText != transformingToInitialSpell(contactBase.name)) {
+                    result.add(ContactBaseItem.Header(contactBase))
+                }
+                // entity 데이터 추가
+                result.add(ContactBaseItem.Item(contactBase))
 
-            // 헤더값 설정
-            listHeaderText = transformingToInitialSpell(contactBase.name)
+                // 헤더값 설정
+                listHeaderText = transformingToInitialSpell(contactBase.name)
+            }
         }
         return result
     }
-
 
     private fun updateGroupNameInContactBase() {
         viewModelScope.launch {

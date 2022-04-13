@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -50,24 +51,14 @@ class GroupFragment : Fragment() {
                 SORT_BY_IMPORTANCE -> {
                     groupViewModel.groupInfo.observe(viewLifecycleOwner) {
                         if (sortNumber.value == SORT_BY_IMPORTANCE) {
-//                            if (it == emptyList<List<GroupData>>()) {
-//                                popUpDialog()
-//                                Toast.makeText(requireContext(),"그룹이 없습니다.\n상단 ＋를 눌러 그룹을 추가해주세요.", Toast.LENGTH_LONG).show()
-//                            } else {
                             groupViewModel.sortGroupByImportance(it)
-//                            }
                         }
                     }
                 }
                 SORT_BY_MEMBERS -> {
                     groupViewModel.groupInfo.observe(viewLifecycleOwner) {
                         if (sortNumber.value == SORT_BY_MEMBERS) {
-//                            if (it == emptyList<List<GroupData>>()) {
-//                                popUpDialog()
-//                                Toast.makeText(requireContext(),"그룹이 없습니다.\n상단 ＋를 눌러 그룹을 추가해주세요.", Toast.LENGTH_LONG).show()
-//                            }
                             groupViewModel.sortGroupByMembers(it)
-//                        }
                         }
                     }
                 }
@@ -88,18 +79,6 @@ class GroupFragment : Fragment() {
         return binding.root
     }
 
-    // 그룹이 empty 인 경우, 확인창을 띄우는 코드
-    private fun popUpDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setPositiveButton("그룹추가") { dialog, _ ->
-            Log.i("확인", "다이아로그 ok")
-            dialog.dismiss()
-            addGroup()
-        }
-        builder.setTitle("그룹 없음")
-        builder.setMessage("연락처에 지정된 그룹이 없습니다. \n 그룹을 추가하세요!")
-        builder.create().show()
-    }
 
     // 메뉴 활성화
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -109,9 +88,17 @@ class GroupFragment : Fragment() {
     // 메뉴 터치 시 작동
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_group_add -> addGroup()
+            R.id.menu_group_add ->
+                groupViewModel.isContactBaseEmpty().observe(viewLifecycleOwner) {
+                    if (it == null) {
+                        Toast.makeText(requireContext(), "연락처가 없습니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        addGroup()
+                    }
+                }
             R.id.group_sort_by_members -> sortByMembers()
             R.id.group_sort_by_importance -> sortByImportance()
+
         }
         return super.onOptionsItemSelected(item)
     }

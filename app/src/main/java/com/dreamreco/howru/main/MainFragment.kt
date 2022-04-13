@@ -68,6 +68,7 @@ class MainFragment : Fragment() {
     }
 
     private val approvalCallLog = MutableLiveData(false)
+    var isCallLogEmpty = false
 
     var easterEggInt = 0
     var spin: Boolean = true
@@ -146,6 +147,10 @@ class MainFragment : Fragment() {
         recoViewModel.getTendencyLive()?.observe(viewLifecycleOwner) { tendency ->
             if (tendency != null) {
                 getBindTextView(tendency)
+                // 통화기록이 없으면 MainSub 로 넘어가지 않게 하는 코드
+                if (tendency.allCallCount.toInt() == 0) {
+                    isCallLogEmpty = true
+                }
             }
         }
 
@@ -188,8 +193,6 @@ class MainFragment : Fragment() {
             mainViewModel.countNumbers.observe(viewLifecycleOwner) { countNumbers ->
                 if (countNumbers != null) {
                     argsCountNumbers = countNumbers
-                } else {
-                    Toast.makeText(requireContext(), "통화 기록 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
             // argsCountNumbers 생성 확인 후 넘어간다.
@@ -201,7 +204,7 @@ class MainFragment : Fragment() {
                 if (approvalCallLog.value == false) {
                     Toast.makeText(requireContext(), "통화 기록 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "잠시 후 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "연락처, 통화기록 데이터가 없습니다.\n다음에 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -218,10 +221,15 @@ class MainFragment : Fragment() {
         }
         checkPermissionsAndConfirmTendency()
 
-        // 성향 터치 시, 통화기록 권한이 허용됬다면 정보 detail 을 보여주는 코드
+        // 성향 터치 시, 통화기록 권한이 허용됬다면(View VISIBLE) 정보 detail 을 보여주는 코드
         binding.tendencyLayout.setOnClickListener {
-            val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
-            it.findNavController().navigate(action)
+            // 단, 통화기록이 있을때만 넘어감
+            if (!isCallLogEmpty) {
+                val action = MainFragmentDirections.actionMainFragmentToMainSubFragment()
+                it.findNavController().navigate(action)
+            } else {
+                Toast.makeText(requireContext(),"통화기록이 없습니다.",Toast.LENGTH_SHORT).show()
+            }
         }
 
 

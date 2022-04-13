@@ -6,20 +6,20 @@
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_baseline_search_24"
         android:iconTint="@color/menu_icon_tint_color"
-        app:showAsAction="ifRoom"
+        app:showAsAction="ifRoom|collapseActionView"
         android:title="검색"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
     <item
-        android:id="@+id/delete_menu"
+        android:id="@+id/update_menu"
         android:icon="@drawable/ic_baseline_sync_24"
         android:iconTint="@color/menu_icon_tint_color"
         android:title="업데이트"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:icon="@drawable/ic_baseline_sort_24"
         android:iconTint="@color/menu_icon_tint_color"
-        android:title="Sort"
-        app:showAsAction="ifRoom">
+        android:title="정렬"
+        app:showAsAction="ifRoom|collapseActionView">
         <menu>
             <item
                 android:id="@+id/sort_all"

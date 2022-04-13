@@ -15,8 +15,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.dreamreco.howru.R
+import com.dreamreco.howru.data.entity.ContactBase
 import com.dreamreco.howru.databinding.FragmentListBinding
+import com.dreamreco.howru.util.ContactBaseItem
 import com.hieupt.android.standalonescrollbar.attachTo
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -56,16 +59,20 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         with(listViewModel) {
+            // ContactBase DB 모든 값을 이름오름차순으로 가져오는 코드
+            getContactBaseLiveData().observe(viewLifecycleOwner) {
+                if (it == emptyList<ContactBase>()) {
+                    // 만약 연락처 리스트가 아무것도 없다면 (empty 헤더밖에 없다면,)
+                    binding.btnUpScroll.visibility = View.GONE
+                } else {
+                    binding.btnUpScroll.visibility = View.VISIBLE
+                }
+                listViewModel.makeList(it)
+            }
             // 변환된 코드를 헤더 adapter 에 적용하는 코드
             contactBaseItemData.observe(viewLifecycleOwner) {
                 adapter.submitList(it)
             }
-
-            // ContactBase DB 모든 값을 이름오름차순으로 가져오는 코드
-            getContactBaseLiveData().observe(viewLifecycleOwner) {
-                listViewModel.makeList(it)
-            }
-
             // 연락처 업데이트 옵저버
             initializeContactEvent.observe(
                 viewLifecycleOwner
@@ -91,6 +98,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_menu, menu)
 
@@ -98,6 +106,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val searchView = search?.actionView as? SearchView
         searchView?.isSubmitButtonEnabled = true
         searchView?.setOnQueryTextListener(this)
+
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -114,15 +123,16 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun searchDatabase(query: String) {
         val searchQuery = "%$query%"
         listViewModel.searchDatabase(searchQuery).observe(this) { list ->
-            list.let {
-                listViewModel.makeList(it)
+            if (list != emptyList<ContactBase>()) {
+                listViewModel.makeList(list)
             }
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.delete_menu -> {
+            R.id.update_menu -> {
                 checkPermissionsAndStart(PERMISSIONS)
                 true
             }
@@ -137,16 +147,18 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     // 통화이력 있는 연락처만 가져오는 코드
     private fun getHavingCallLogDataContactBaseOnly() {
-        listViewModel.sortByCallLog().observe(viewLifecycleOwner){ numberList ->
+        listViewModel.sortByCallLog().observe(viewLifecycleOwner) { numberList ->
             if (numberList != emptyList<String>()) {
                 listViewModel.checkCallLogData(numberList)
+            } else {
+                // 통화기록이 없을 때,
+                Toast.makeText(requireContext(), "통화기록이 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }

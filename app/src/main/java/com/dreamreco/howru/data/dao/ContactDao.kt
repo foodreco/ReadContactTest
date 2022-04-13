@@ -44,5 +44,8 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table ORDER BY name ASC")
     fun getAllContactBaseFlow(): Flow<List<ContactBase>>
 
+    @Query("SELECT number FROM contact_table ORDER BY name ASC LIMIT 1")
+    fun emptyCheckContactBase(): Flow<String?>
+
 
 }

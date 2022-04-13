@@ -21,7 +21,6 @@
             app:layout_constraintEnd_toEndOf="@+id/recyclerView_recommendation_list"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_round_question_mark_24"
-            android:alpha="0.5"
             android:contentDescription="알림 설정 목록 설명"/>
 
         <TextView
@@ -40,6 +39,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_recommendation_list"
+            android:contentDescription="알림목록"
             android:layout_width="250dp"
             android:layout_height="400dp"
             android:layout_marginTop="8dp"
@@ -59,8 +59,8 @@
 
         <ImageButton
             android:id="@+id/btn_dismiss"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:backgroundTint="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"

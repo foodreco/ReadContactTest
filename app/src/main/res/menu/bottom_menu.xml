@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_baseline_home_24"/>
     <item android:title="그룹"
         android:id="@+id/groupFragment"
-        android:icon="@drawable/ic_baseline_group_24"/>
+        android:icon="@drawable/ic_baseline_group_24" />
     <item android:title="연락처"
         android:id="@+id/listFragment"
         android:icon="@drawable/ic_baseline_contact_phone_24"/>
